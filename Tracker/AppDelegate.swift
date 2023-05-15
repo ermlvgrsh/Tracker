@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  Tracker
-//
-//  Created by Greg on 03.04.2023.
-//
-
 import UIKit
 import CoreData
 

@@ -9,17 +9,6 @@ class ScheduleCell: UITableViewCell {
     
     var selectedDay: WeekDay?
     var schedule = ButtonCell().subLabel.text
-    
-    enum WeekDay: String, CaseIterable {
-        case Monday
-        case Tuesday
-        case Wednesday
-        case Thursday
-        case Friday
-        case Saturday
-        case Sunday
-        
-    }
    
     let switcher: UISwitch = {
         let switcher = UISwitch()

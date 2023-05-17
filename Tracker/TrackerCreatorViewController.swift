@@ -5,7 +5,7 @@ final class TrackerCreatorViewController: UIViewController {
  
     private let createTrackerLabel: UILabel = {
         let createTrackerLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 149, height: 22))
-        createTrackerLabel.font = .systemFont(ofSize: 16)
+        createTrackerLabel.font = .systemFont(ofSize: 16, weight: .medium)
         createTrackerLabel.backgroundColor = .white
         createTrackerLabel.textAlignment = .center
         var paragraphStyle = NSMutableParagraphStyle()
@@ -20,9 +20,9 @@ final class TrackerCreatorViewController: UIViewController {
     private lazy var centerStackView: UIStackView = {
        let stackView = UIStackView(arrangedSubviews: [habbitButton, irregularEventButton])
         stackView.axis = .horizontal
-        stackView.spacing = 16
+        stackView.spacing = 8
         stackView.alignment = .center
-        stackView.distribution = .fillEqually
+        stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
@@ -44,7 +44,7 @@ final class TrackerCreatorViewController: UIViewController {
         habbitButton.layer.cornerRadius = 16
         
         let titleAttribute: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 16)
+            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
         let titleAtributedString = NSAttributedString(string: "Привычка",
                                                       attributes: titleAttribute)
@@ -63,7 +63,7 @@ final class TrackerCreatorViewController: UIViewController {
         irregularEventButton.layer.cornerRadius = 16
         
         let titleAttribute: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 16)
+            .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
         let titleAttributedString = NSAttributedString(string: "Нерегулярное событие",
                                                        attributes: titleAttribute)
@@ -75,7 +75,7 @@ final class TrackerCreatorViewController: UIViewController {
     }()
     
     @objc func irregularEventButtonPressed() {
-        print("Need to creat Irregular event")
+        print("Need to create irregular event")
     }
     @objc func habbitButtonPressed() {
         let newHabbitView = NewHabbitViewController()
@@ -90,7 +90,7 @@ final class TrackerCreatorViewController: UIViewController {
             createTrackerLabel.heightAnchor.constraint(equalToConstant: 22),
             createTrackerLabel.widthAnchor.constraint(equalToConstant: 149),
             createTrackerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            createTrackerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13),
+            createTrackerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 27),
             
             mainStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             mainStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -101,12 +101,12 @@ final class TrackerCreatorViewController: UIViewController {
             habbitButton.widthAnchor.constraint(equalToConstant: 335),
             habbitButton.heightAnchor.constraint(equalToConstant: 60),
             habbitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            habbitButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -45),
+            habbitButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -40),
             
             irregularEventButton.widthAnchor.constraint(equalToConstant: 335),
             irregularEventButton.heightAnchor.constraint(equalToConstant: 60),
             irregularEventButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            irregularEventButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 45)
+            irregularEventButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40)
         ])
     }
     

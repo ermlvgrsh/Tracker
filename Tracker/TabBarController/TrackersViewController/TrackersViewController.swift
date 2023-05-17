@@ -5,10 +5,30 @@ final class TrackersViewController: UIViewController {
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(TrackersViewCell.self, forCellWithReuseIdentifier: "cell")
-        collectionView.backgroundView = UIImageView(image: UIImage(named: "1"))
+        collectionView.register(TrackersViewCell.self, forCellWithReuseIdentifier: TrackersViewCell.identifier)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
+    }()
+    
+    private let placeholderImage: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "1"))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private let placeholderLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.backgroundColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.26
+        paragraphStyle.alignment = .center
+        label.attributedText =
+        NSMutableAttributedString(string: "Что будем отслеживать?", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     private let trackerLabel: UILabel = {
@@ -85,15 +105,28 @@ final class TrackersViewController: UIViewController {
     private func constraintsForTrackerView() {
         view.addSubview(trackerLabel)
         view.addSubview(collectionView)
+        view.addSubview(placeholderImage)
+        view.addSubview(placeholderLabel)
         collectionView.dataSource = self
         collectionView.delegate = self
         NSLayoutConstraint.activate([
             trackerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
             trackerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
             trackerLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -105),
+            
             collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 146),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            placeholderImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 402),
+            placeholderImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderImage.widthAnchor.constraint(equalToConstant: 80),
+            placeholderImage.heightAnchor.constraint(equalToConstant: 80),
+        
+            placeholderLabel.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 8),
+            placeholderLabel.centerXAnchor.constraint(equalTo: placeholderImage.centerXAnchor),
+            placeholderLabel.widthAnchor.constraint(equalToConstant: 343),
+            placeholderLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     

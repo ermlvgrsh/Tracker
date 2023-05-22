@@ -36,4 +36,62 @@ class ColorCell: UICollectionViewCell {
     func configureCell(with color: UIColor) {
         colorView.backgroundColor = color
     }
+    
+    func configure(colorCollectionView: UICollectionView, and data: [Colors]) {
+        colorCollectionView.delegate = self
+        colorCollectionView.dataSource = self
+    }
+}
+
+extension ColorCell: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return Colors.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
+        let index = indexPath.row % Colors.count
+        let color = Colors.colors[index]
+        colorCell.colorView.backgroundColor = color.color
+        return colorCell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        var id: String
+        switch kind {
+        case UICollectionView.elementKindSectionHeader: id = "header"
+        case UICollectionView.elementKindSectionFooter: id = "footer"
+        default: id = ""
+        }
+        guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? ColorSupplementaryView else { return UICollectionReusableView() }
+        view.titleLabel.text = "Цвет"
+        return view
+    }
+}
+
+extension ColorCell: UICollectionViewDelegate {
+    
+}
+
+extension ColorCell: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let indexPath = IndexPath(row: 0, section: section)
+        let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
+        return headerView.systemLayoutSizeFitting(CGSize(width: collectionView.frame.width, height: UIView.layoutFittingExpandedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let horizontalPadding: CGFloat = 17
+        let verticalPadding: CGFloat = 12
+        let headerWidth = collectionView.bounds.width - (horizontalPadding * 2)
+        let itemsPerRow: CGFloat = 6
+        let rows: CGFloat = 3
+        let availableWidth = headerWidth - horizontalPadding * (itemsPerRow - 1)
+        let widthPerItem = availableWidth / itemsPerRow
+        let availableHeight = collectionView.bounds.height - (verticalPadding * (rows - 1))
+        let heightPerItem = availableHeight / rows
+        let size = CGSize(width: widthPerItem, height: heightPerItem)
+        return size
+    }
 }

@@ -4,8 +4,8 @@ final class NewHabbitViewController: UIViewController {
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.isScrollEnabled = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsVerticalScrollIndicator = false
         return scrollView
     }()
     
@@ -52,6 +52,7 @@ final class NewHabbitViewController: UIViewController {
         
         let titleAtributedString = NSAttributedString(string: "Создать",
                                                       attributes: titleAttribute)
+        createHabbitButton.tintColor = .white
         createHabbitButton.setAttributedTitle(titleAtributedString, for: .normal)
         createHabbitButton.translatesAutoresizingMaskIntoConstraints = false
         createHabbitButton.addTarget(self, action: #selector(createHabbitButtonTapped), for: .touchUpInside)
@@ -72,6 +73,7 @@ final class NewHabbitViewController: UIViewController {
         
         let titleAtributedString = NSAttributedString(string: "Отменить",
                                                       attributes: titleAttribute)
+        cancelButton.tintColor = .red
         cancelButton.setAttributedTitle(titleAtributedString, for: .normal)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
@@ -164,9 +166,9 @@ extension NewHabbitViewController {
         scrollView.addSubview(lowStackView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             habbitLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 38),
@@ -175,55 +177,41 @@ extension NewHabbitViewController {
             habbitLabel.widthAnchor.constraint(equalToConstant: 133),
             
             habbitNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 110),
-            habbitNameTextField.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            habbitNameTextField.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
+            habbitNameTextField.centerXAnchor.constraint(equalTo: habbitLabel.centerXAnchor),
             habbitNameTextField.widthAnchor.constraint(equalToConstant: 343),
             habbitNameTextField.heightAnchor.constraint(equalToConstant: 75),
             
             centralTableView.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 24),
-            centralTableView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            centralTableView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
+            centralTableView.centerXAnchor.constraint(equalTo: habbitNameTextField.centerXAnchor),
             centralTableView.heightAnchor.constraint(equalToConstant: 150),
+            centralTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             emojiCollectionView.topAnchor.constraint(equalTo: centralTableView.bottomAnchor, constant: 32),
-            emojiCollectionView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 29),
-            emojiCollectionView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -29),
-            emojiCollectionView.bottomAnchor.constraint(equalTo: colorCollectionView.topAnchor, constant: -47),
+            emojiCollectionView.centerXAnchor.constraint(equalTo: centralTableView.centerXAnchor),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 220),
+            emojiCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 80),
-            colorCollectionView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 25),
-            colorCollectionView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -25),
-            colorCollectionView.bottomAnchor.constraint(equalTo: lowStackView.topAnchor, constant: -46),
+            colorCollectionView.centerXAnchor.constraint(equalTo: emojiCollectionView.centerXAnchor),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
+            colorCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             lowStackView.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 46),
-            lowStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
-            lowStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
+            lowStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             lowStackView.heightAnchor.constraint(equalToConstant: 60),
-            lowStackView.widthAnchor.constraint(equalToConstant: 161),
             
             createHabbitButton.heightAnchor.constraint(equalToConstant: 60),
             createHabbitButton.widthAnchor.constraint(equalToConstant: 161),
             
             cancelButton.widthAnchor.constraint(equalToConstant: 161),
             cancelButton.heightAnchor.constraint(equalToConstant: 60)
-
         ])
-        scrollView.contentSize = CGSize(width: view.frame.width, height: view.frame.height)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: view.bounds.height)
     }
-    func configure(with emojiCollectionView: UICollectionView, and data: [String]) {
-        emojiCollectionView.delegate = self
-        emojiCollectionView.dataSource = self
-    }
-    func configure (colorCollectionView: UICollectionView, and data: [Colors]) {
-        colorCollectionView.delegate = self
-        colorCollectionView.dataSource = self
-    }
-    
+   
     func setCollections() {
-        configure(with: emojiCollectionView, and: Emojis.emojis)
-        configure(colorCollectionView: colorCollectionView, and: Colors.colors)
+        EmojiCell().configure(with: emojiCollectionView, and: Emojis.emojis)
+        ColorCell().configure(colorCollectionView: colorCollectionView, and: Colors.colors)
     }
 }
 
@@ -265,77 +253,3 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension NewHabbitViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    // метод который отвечает за количество ячеек в секции
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == emojiCollectionView {
-            return Emojis.count
-        } else {
-            return Colors.count
-            }
-       }
-    
-        //метод реализующий саму ячейку в коллекции
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == emojiCollectionView {
-            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else { return UICollectionViewCell() }
-            let index = indexPath.row % Emojis.count
-            let emoji = Emojis[index]
-            
-            emojiCell.titleLabel.text = emoji
-            
-            return emojiCell
-        } else {
-            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
-            let index = indexPath.row % Colors.count
-            let color = Colors.colors[index]
-            colorCell.colorView.backgroundColor = color.color
-            return colorCell
-        }
-    }
-    //метод отвечающий за отображение сапплементари вью
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        var id: String
-        switch kind {
-        case UICollectionView.elementKindSectionHeader: id = "header"
-        case UICollectionView.elementKindSectionFooter: id = "footer"
-        default: id = ""
-        }
-        if collectionView == emojiCollectionView {
-            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? EmojiSupplementaryView else { return UICollectionReusableView() }
-            view.titleLabel.text = "Emoji"
-            return view
-        } else {
-            guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? ColorSupplementaryView else { return UICollectionReusableView() }
-            view.titleLabel.text = "Цвет"
-            return view
-        }
-    }
-}
-
-
-
-extension NewHabbitViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let indexPath = IndexPath(row: 0, section: section)
-        let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
-        return headerView.systemLayoutSizeFitting(CGSize(width: collectionView.frame.width, height: UIView.layoutFittingExpandedSize.height), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
-    }
-    
-    //метод задающий размер для каждой ячейки
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width / 6, height: 60)
-    }
-
-        //метод отвечающий за минимальный отступ между ячейками
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        guard collectionView == emojiCollectionView else { return 14 }
-        return 25
-    }
-
-        //метод отвечающий за минимальный отступ между строками коллекции
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 14
-    }
-
-}

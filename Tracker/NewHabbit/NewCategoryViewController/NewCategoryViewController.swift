@@ -3,6 +3,10 @@ import UIKit
 
 final class NewCategoryViewController: UIViewController {
     
+    weak var delegate: NewCategoryDelegete?
+    
+    var namedCategory: String?
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = false
@@ -41,7 +45,12 @@ final class NewCategoryViewController: UIViewController {
      }()
     
     @objc func doneButtonTapped() {
-        print("")
+        guard let categoryName = categoryTextField.text else { return }
+        var categories = CategoriesViewController().categories
+        let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
+        categories.append(newCategory)
+        delegate?.didSaveCategory(newCategory, namedCategory: namedCategory)
+        dismiss(animated: true)
     }
     
     @objc func textFieldDidChanged(_ textfield: UITextField) {
@@ -75,6 +84,7 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        categoryTextField.delegate = self
      }
     
     func setupUI() {
@@ -112,5 +122,11 @@ final class NewCategoryViewController: UIViewController {
 }
 
 extension NewCategoryViewController: UITextFieldDelegate {
-    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        namedCategory = textField.text
+    }
+}
+
+protocol NewCategoryDelegete: AnyObject {
+    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?)
 }

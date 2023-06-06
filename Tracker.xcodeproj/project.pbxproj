@@ -21,6 +21,7 @@
 		37A6F8972A100DE000C8F41D /* SupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A6F8962A100DE000C8F41D /* SupplementaryView.swift */; };
 		37A6F89A2A100E0A00C8F41D /* Emojis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A6F8992A100E0A00C8F41D /* Emojis.swift */; };
 		37A6F89C2A100E1400C8F41D /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A6F89B2A100E1400C8F41D /* Colors.swift */; };
+		37B4C77F2A2331DC001BFFF8 /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B4C77E2A2331DC001BFFF8 /* CategoryCell.swift */; };
 		37EC3AA02A135A7100681250 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EC3A9F2A135A7100681250 /* Tracker.swift */; };
 		37EC3AA22A135BF900681250 /* Weekday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EC3AA12A135BF900681250 /* Weekday.swift */; };
 		37EC3AA42A135C6700681250 /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EC3AA32A135C6700681250 /* TrackerCategory.swift */; };
@@ -50,6 +51,7 @@
 		37A6F8962A100DE000C8F41D /* SupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryView.swift; sourceTree = "<group>"; };
 		37A6F8992A100E0A00C8F41D /* Emojis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emojis.swift; sourceTree = "<group>"; };
 		37A6F89B2A100E1400C8F41D /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		37B4C77E2A2331DC001BFFF8 /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
 		37EC3A9F2A135A7100681250 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
 		37EC3AA12A135BF900681250 /* Weekday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weekday.swift; sourceTree = "<group>"; };
 		37EC3AA32A135C6700681250 /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
@@ -80,8 +82,9 @@
 		376C4D6E29ED960000B87CA3 /* NewHabbit */ = {
 			isa = PBXGroup;
 			children = (
-				37A6F8852A100A9400C8F41D /* ScheduleVIewController */,
 				37A6F8842A100A7F00C8F41D /* CategoriesViewController */,
+				37A6F88C2A100B3B00C8F41D /* NewCategoryViewController */,
+				37A6F8852A100A9400C8F41D /* ScheduleVIewController */,
 				37775A7A29E9F1F800507D37 /* NewHabbitViewController.swift */,
 				376C4D6F29ED964B00B87CA3 /* NewHabbitCells.swift */,
 			);
@@ -91,7 +94,6 @@
 		37A6F8842A100A7F00C8F41D /* CategoriesViewController */ = {
 			isa = PBXGroup;
 			children = (
-				37A6F88C2A100B3B00C8F41D /* NewCategoryViewController */,
 				37A6F8882A100ABD00C8F41D /* CategoriesViewController.swift */,
 			);
 			path = CategoriesViewController;
@@ -110,10 +112,10 @@
 		37A6F88C2A100B3B00C8F41D /* NewCategoryViewController */ = {
 			isa = PBXGroup;
 			children = (
+				37B4C77D2A2331BA001BFFF8 /* CategoriesCell */,
+				37B202B22A1FE3DA00358E87 /* CollectionViewCells */,
 				37A6F8982A100E0000C8F41D /* Models */,
 				37A6F8952A100DBE00C8F41D /* SupplementaryView */,
-				37A6F8922A100D5C00C8F41D /* ColorCell */,
-				37A6F88F2A100D0900C8F41D /* EmojiCell */,
 				37A6F88D2A100B4F00C8F41D /* NewCategoryViewController.swift */,
 			);
 			path = NewCategoryViewController;
@@ -150,6 +152,32 @@
 				37A6F89B2A100E1400C8F41D /* Colors.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		37B202B12A1FDB1700358E87 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				37F59B7229DB082000341B05 /* AppDelegate.swift */,
+				37F59B7429DB082000341B05 /* SceneDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		37B202B22A1FE3DA00358E87 /* CollectionViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				37A6F88F2A100D0900C8F41D /* EmojiCell */,
+				37A6F8922A100D5C00C8F41D /* ColorCell */,
+			);
+			path = CollectionViewCells;
+			sourceTree = "<group>";
+		};
+		37B4C77D2A2331BA001BFFF8 /* CategoriesCell */ = {
+			isa = PBXGroup;
+			children = (
+				37B4C77E2A2331DC001BFFF8 /* CategoryCell.swift */,
+			);
+			path = CategoriesCell;
 			sourceTree = "<group>";
 		};
 		37EC3A9E2A135A4F00681250 /* Models */ = {
@@ -208,10 +236,9 @@
 		37F59B7129DB082000341B05 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				37B202B12A1FDB1700358E87 /* Delegates */,
 				37EC3A9E2A135A4F00681250 /* Models */,
-				37F59B7229DB082000341B05 /* AppDelegate.swift */,
 				37EC3AA92A1374D300681250 /* TabBarController */,
-				37F59B7429DB082000341B05 /* SceneDelegate.swift */,
 				37775A7829E9CDEA00507D37 /* TrackerCreatorViewController.swift */,
 				376C4D6E29ED960000B87CA3 /* NewHabbit */,
 				37F59B7829DB082000341B05 /* Main.storyboard */,
@@ -305,6 +332,7 @@
 				37F59B7729DB082000341B05 /* TrackersViewController.swift in Sources */,
 				37EC3AA22A135BF900681250 /* Weekday.swift in Sources */,
 				37F59B7329DB082000341B05 /* AppDelegate.swift in Sources */,
+				37B4C77F2A2331DC001BFFF8 /* CategoryCell.swift in Sources */,
 				37EC3AA42A135C6700681250 /* TrackerCategory.swift in Sources */,
 				37775A7529E980CA00507D37 /* TrackersViewCell.swift in Sources */,
 				37F22BCF29E77EAB00C547BE /* StatisticViewController.swift in Sources */,

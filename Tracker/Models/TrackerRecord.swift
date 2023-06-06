@@ -1,6 +1,5 @@
 import UIKit
 
 struct TrackerRecord {
-    var id: UInt
-    
+    let id: UInt
 }

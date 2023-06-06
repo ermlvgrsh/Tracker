@@ -1,10 +1,10 @@
 import UIKit
 
-class ButtonCell: UITableViewCell {
+class NewHabbitCell: UITableViewCell {
     
-    static let identifier = "ButtonCell"
+    static let identifier = "NewHabbitCell"
     
-    let myImageView: UIImageView = {
+    let iconImageView: UIImageView = {
        let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.image = UIImage(named: "Icon")
@@ -12,7 +12,7 @@ class ButtonCell: UITableViewCell {
         return iv
     }()
     
-     let myLabel: UILabel = {
+     let mainLabel: UILabel = {
        let label = UILabel()
         label.textColor = .black
         label.textAlignment = .left
@@ -26,14 +26,14 @@ class ButtonCell: UITableViewCell {
         label.textColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 17)
+        label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     func configureCell(with text: String?, and image: UIImage?) {
-        self.myLabel.text = text
-        self.myImageView.image = image
-        
+        self.mainLabel.text = text
+        self.iconImageView.image = image
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -42,28 +42,28 @@ class ButtonCell: UITableViewCell {
 
     func setUI() {
  
-        contentView.addSubview(myLabel)
-        contentView.addSubview(myImageView)
+        contentView.addSubview(mainLabel)
+        contentView.addSubview(iconImageView)
         contentView.addSubview(subLabel)
         NSLayoutConstraint.activate([
             
-            myLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
-            myLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            myLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
-            myLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
-            myLabel.widthAnchor.constraint(equalToConstant: 271),
-            myLabel.heightAnchor.constraint(equalToConstant: 22),
+            mainLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
+            mainLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            mainLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
+            mainLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
+            mainLabel.widthAnchor.constraint(equalToConstant: 271),
+            mainLabel.heightAnchor.constraint(equalToConstant: 22),
             
-            subLabel.topAnchor.constraint(equalTo: myLabel.bottomAnchor, constant: 2),
-            subLabel.leadingAnchor.constraint(equalTo: myLabel.leadingAnchor),
-            subLabel.trailingAnchor.constraint(equalTo: myLabel.trailingAnchor),
+            subLabel.topAnchor.constraint(equalTo: mainLabel.bottomAnchor, constant: 2),
+            subLabel.leadingAnchor.constraint(equalTo: mainLabel.leadingAnchor),
+            subLabel.trailingAnchor.constraint(equalTo: mainLabel.trailingAnchor),
             subLabel.widthAnchor.constraint(equalToConstant: 271),
             subLabel.heightAnchor.constraint(equalToConstant: 22),
 
-            myImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            myImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -31),
-            myImageView.widthAnchor.constraint(equalToConstant: 7),
-            myImageView.heightAnchor.constraint(equalToConstant: 12)
+            iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            iconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -31),
+            iconImageView.widthAnchor.constraint(equalToConstant: 7),
+            iconImageView.heightAnchor.constraint(equalToConstant: 12)
             
         ])
     }
@@ -71,5 +71,12 @@ class ButtonCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+
+    func moveLabel() {
+        mainLabel.transform = CGAffineTransform(translationX: 0, y: -12)
+        subLabel.transform = CGAffineTransform(translationX: 0, y: -12)
+        subLabel.isHidden = false
     }
 }

@@ -8,7 +8,7 @@ class ScheduleCell: UITableViewCell {
     }
     
     var selectedDay: WeekDay?
-    var schedule = ButtonCell().subLabel.text
+    var schedule = NewHabbitCell().subLabel.text
    
     let switcher: UISwitch = {
         let switcher = UISwitch()

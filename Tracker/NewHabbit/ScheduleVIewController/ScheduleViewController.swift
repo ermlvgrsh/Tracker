@@ -1,8 +1,14 @@
 import UIKit
 
-
+protocol ScheduleViewControllerDelegate: AnyObject {
+    func didSetSchedule(for weekDays: [WeekDay])
+}
 
 final class ScheduleViewController: UIViewController {
+    
+    weak var delegate: ScheduleViewControllerDelegate?
+    
+    var selectedSchedule: [WeekDay?] = []
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -59,6 +65,7 @@ final class ScheduleViewController: UIViewController {
     }()
     
     @objc func doneButtonTapped() {
+        delegate?.didSetSchedule(for: selectedSchedule.compactMap{ $0 } )
         dismiss(animated: true)
     }
     
@@ -116,10 +123,12 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCell.identifier, for: indexPath) as? ScheduleCell else { return UITableViewCell() }
         let weekDay = ScheduleCell().weekDays[indexPath.row]
         cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+        cell.delegate = self
         cell.configureCell(with: weekDay)
         return cell
         
     }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
@@ -127,5 +136,22 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.size.width, bottom: 0, right: 0)
         }
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        scheduleTableView.deselectRow(at: indexPath, animated: true)
+    }
 }
+
+extension ScheduleViewController: ScheduleCellDelegate {
+    func switchValueDidChanged(for cell: ScheduleCell, isOn: Bool) {
+        guard let indexPath = scheduleTableView.indexPath(for: cell) else { fatalError() }
+        let selectedDay = cell.weekDays[indexPath.row]
+        if isOn {
+            selectedSchedule.append(selectedDay)
+        } else {
+            if let index = selectedSchedule.firstIndex(of: selectedDay) {
+                selectedSchedule.remove(at: index)
+            }
+        }
+    }
+}
+

@@ -1,15 +1,20 @@
 import UIKit
 
+protocol ScheduleCellDelegate: AnyObject {
+    func switchValueDidChanged(for cell: ScheduleCell, isOn: Bool)
+}
+
+
 class ScheduleCell: UITableViewCell {
+    
+    weak var delegate: ScheduleCellDelegate?
     
     static let identifier = "Schedule"
     var weekDays: [WeekDay] {
         return WeekDay.allCases
     }
-    
     var selectedDay: WeekDay?
-    var schedule = NewHabbitCell().subLabel.text
-   
+    
     let switcher: UISwitch = {
         let switcher = UISwitch()
         switcher.isOn = false
@@ -21,11 +26,8 @@ class ScheduleCell: UITableViewCell {
     }()
     
     @objc func switchHandler(_ switcher: UISwitch) {
-        if switcher.isOn {
-            if let selectedDay = self.selectedDay {
-                self.schedule = self.shortName(weekDay: selectedDay)
-            }
-        }
+        let isOn = switcher.isOn
+        delegate?.switchValueDidChanged(for: self, isOn: isOn)
     }
 
     let titleLabel: UILabel = {
@@ -71,41 +73,22 @@ class ScheduleCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         contentView.addSubview(switcher)
         NSLayoutConstraint.activate([
-        titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
-        titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-        titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
-        titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
-        titleLabel.widthAnchor.constraint(equalToConstant: 271),
-        titleLabel.heightAnchor.constraint(equalToConstant: 22),
-        
-        switcher.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
-        switcher.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 276),
-        switcher.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-        switcher.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -22),
-        switcher.widthAnchor.constraint(equalToConstant: 51),
-        switcher.heightAnchor.constraint(equalToConstant: 31),
-        
-        contentView.widthAnchor.constraint(equalToConstant: 343),
-        contentView.heightAnchor.constraint(equalToConstant: 75)
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
+            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
+            titleLabel.widthAnchor.constraint(equalToConstant: 271),
+            titleLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            switcher.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
+            switcher.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 276),
+            switcher.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            switcher.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -22),
+            switcher.widthAnchor.constraint(equalToConstant: 51),
+            switcher.heightAnchor.constraint(equalToConstant: 31),
+            
+            contentView.widthAnchor.constraint(equalToConstant: 343),
+            contentView.heightAnchor.constraint(equalToConstant: 75)
         ])
-    }
-    
-    func shortName(weekDay: WeekDay) -> String {
-       switch weekDay {
-        case .Monday:
-            return "Пн"
-        case .Tuesday:
-            return "Вт"
-        case .Wednesday:
-            return "Ср"
-        case .Thursday:
-            return "Чт"
-        case .Friday:
-            return "Пт"
-        case .Saturday:
-            return "Сб"
-        case .Sunday:
-            return "Вс"
-        }
     }
 }

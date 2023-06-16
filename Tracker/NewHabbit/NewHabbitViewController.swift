@@ -1,11 +1,16 @@
 import UIKit
 
+protocol NewTrackerDelegate: AnyObject {
+    func didCreateTracker(newTracker: Tracker)
+}
+
+
 final class NewHabbitViewController: UIViewController {
     var selectedName: String?
     var selectedColor: Colors?
     var selectedEmoji: String?
     var selectedCategory: String?
-    var selectedSchedule: WeekDay?
+ 
     
     var isShifted = false
     var selectedEmojiIndexPath: IndexPath?
@@ -166,21 +171,26 @@ final class NewHabbitViewController: UIViewController {
     }()
     
     private let emojiCollectionView: UICollectionView = {
-       let layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 25
+        layout.minimumLineSpacing = 14
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-       collectionView.translatesAutoresizingMaskIntoConstraints = false
-       collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
-       collectionView.register(EmojiSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmojiSupplementaryView.identifier)
-       collectionView.backgroundColor = .clear
-       collectionView.isScrollEnabled = false
-       return collectionView
-       
-   }()
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 9, bottom: 0, right: 9)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
+        collectionView.register(EmojiSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmojiSupplementaryView.identifier)
+        collectionView.backgroundColor = .clear
+        collectionView.isScrollEnabled = false
+        return collectionView
+        
+    }()
     
     private let colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        layout.minimumInteritemSpacing = 17
+        layout.minimumLineSpacing = 12
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
         collectionView.isScrollEnabled = false
@@ -262,10 +272,7 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configureCell(with: text, and: image)
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        75
-    }
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
         if indexPath.row == lastRowIndex {
@@ -278,10 +285,11 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
             category.delegate = self
             self.present(category, animated: true)
         case 1: let schedule = ScheduleViewController()
+            schedule.delegate = self
             self.present(schedule, animated: true)
         default: return
-            centralTableView.deselectRow(at: indexPath, animated: true)
         }
+        centralTableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
@@ -300,7 +308,7 @@ extension NewHabbitViewController: UICollectionViewDataSource {
             guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
             let index = indexPath.row % Colors.count
             let color = Colors.colors[index]
-            colorCell.colorView.backgroundColor = color.color
+            colorCell.configureCell(with: color.color)
             return colorCell
         }
     }
@@ -338,7 +346,7 @@ extension NewHabbitViewController: UICollectionViewDelegate {
         case emojiCollectionView:
             if let selectedIndexPath = selectedEmojiIndexPath,
                 let selectedCell = collectionView.cellForItem(at: selectedIndexPath) as? EmojiCell {
-                selectedCell.emojiBackgroundView.isHidden = true
+                selectedCell.emojiBackgroundView.isHidden = false
             }
 
             guard let emojiCell = collectionView.cellForItem(at: indexPath) as? EmojiCell else {
@@ -357,7 +365,7 @@ extension NewHabbitViewController: UICollectionViewDelegate {
             guard let colorCell = collectionView.cellForItem(at: indexPath) as? ColorCell else {
                 fatalError("Couldn't choose color!")
             }
-            colorCell.backgroundView = colorBackgroundView
+            colorCell.colorBackgroundView.isHidden = false
             selectedColorIndexPath = indexPath
 
         default:
@@ -532,6 +540,19 @@ extension NewHabbitViewController: CategoriesDelegate {
         cell.moveLabel()
     }
 }
-    
-    
 
+extension NewHabbitViewController: ScheduleViewControllerDelegate {
+    
+    func didSetSchedule(for weekDays: [WeekDay]) {
+        guard let cell = centralTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? NewHabbitCell else { fatalError() }
+        if weekDays.count == WeekDay.allCases.count {
+            cell.subLabel.text = "Каждый день"
+            cell.moveLabel()
+        } else {
+            let shortenedDays = weekDays.map { $0.shortName() }
+            let shortenedDaysString = shortenedDays.joined(separator: ", ")
+            cell.subLabel.text = shortenedDaysString
+            cell.moveLabel()
+        }
+    }
+}

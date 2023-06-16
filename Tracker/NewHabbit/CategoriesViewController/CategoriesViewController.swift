@@ -1,5 +1,9 @@
 import UIKit
 
+protocol CategoriesDelegate: AnyObject {
+    func didSelectCategory(_ selectedCategory: String?)
+}
+
 
 final class CategoriesViewController: UIViewController {
     
@@ -179,7 +183,9 @@ extension CategoriesViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
         let selectedCategories = categories[indexPath.row]
+        categoryCell.checkmarkImage.isHidden = false
         delegate?.didSelectCategory(selectedCategories.categoryName)
         dismiss(animated: true)
     }
@@ -209,6 +215,3 @@ extension CategoriesViewController: UITableViewDataSource {
     }
   }
 
-protocol CategoriesDelegate: AnyObject {
-    func didSelectCategory(_ selectedCategory: String?)
-}

@@ -13,8 +13,8 @@ class EmojiCell: UICollectionViewCell {
        let view = UIView(frame: CGRect(x: 0, y: 0, width: 52, height: 52))
         view.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 1).cgColor
         view.layer.masksToBounds = true
-        view.layer.cornerRadius = 16
         view.isHidden = true
+        view.layer.cornerRadius = 16
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -22,27 +22,20 @@ class EmojiCell: UICollectionViewCell {
     static let identifier = "Emoji"
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.addSubview(emojiBackgroundView) // Add emojiBackgroundView as a subview
-           
-           // Set constraints for emojiBackgroundView
-           emojiBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-           NSLayoutConstraint.activate([
-               emojiBackgroundView.centerXAnchor.constraint(equalTo: centerXAnchor),
-               emojiBackgroundView.centerYAnchor.constraint(equalTo: centerYAnchor),
-               emojiBackgroundView.widthAnchor.constraint(equalToConstant: 52),
-               //emojiBackgroundView.heightAnchor.constraint(equalToConstant: 52)
-           ])
-           
-           contentView.addSubview(titleLabel) // Add titleLabel as a subview
-           
-           // Set constraints for titleLabel
-           titleLabel.translatesAutoresizingMaskIntoConstraints = false
-           NSLayoutConstraint.activate([
-            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+        contentView.addSubview(emojiBackgroundView)
+        contentView.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            emojiBackgroundView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            emojiBackgroundView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            emojiBackgroundView.widthAnchor.constraint(equalToConstant: 52),
+            emojiBackgroundView.heightAnchor.constraint(equalToConstant: 52),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
             titleLabel.widthAnchor.constraint(equalToConstant: 32),
             titleLabel.heightAnchor.constraint(equalToConstant: 38)
-           ])
+        ])
     }
     
     required init?(coder: NSCoder) {
@@ -58,7 +51,7 @@ extension EmojiCell {
         guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else
         { fatalError("Unable to calculate colorCell size!") }
         
-        let horizontalPadding: CGFloat = 25
+        let horizontalPadding: CGFloat = 9
         let itemsPerRow: CGFloat = 6
         let interItemSpacing = layout.minimumInteritemSpacing
         

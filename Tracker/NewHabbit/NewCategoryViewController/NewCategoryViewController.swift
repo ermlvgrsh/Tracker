@@ -1,5 +1,8 @@
 import UIKit
 
+protocol NewCategoryDelegete: AnyObject {
+    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?)
+}
 
 final class NewCategoryViewController: UIViewController {
     
@@ -127,6 +130,4 @@ extension NewCategoryViewController: UITextFieldDelegate {
     }
 }
 
-protocol NewCategoryDelegete: AnyObject {
-    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?)
-}
+

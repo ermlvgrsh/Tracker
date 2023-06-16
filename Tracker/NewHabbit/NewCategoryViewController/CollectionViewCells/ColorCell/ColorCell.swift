@@ -2,32 +2,65 @@ import UIKit
 
 class ColorCell: UICollectionViewCell {
     
-     static let identifier = "ColorCell"
+    static let identifier = "ColorCell"
     
     let colorView : UIView = {
-       let view = UIView()
+        let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.masksToBounds = true
         view.layer.cornerRadius = 8
+        
+        let whiteStroke = UIView()
+        whiteStroke.translatesAutoresizingMaskIntoConstraints = false
+        whiteStroke.layer.masksToBounds = true
+        whiteStroke.layer.cornerRadius = 8
+        whiteStroke.layer.borderWidth = 3
+        whiteStroke.layer.borderColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1).cgColor
+        
+        view.addSubview(whiteStroke)
+        NSLayoutConstraint.activate([
+            whiteStroke.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            whiteStroke.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            whiteStroke.heightAnchor.constraint(equalToConstant: 46),
+            whiteStroke.widthAnchor.constraint(equalToConstant: 46)
+        ])
         return view
     }()
     
+    let colorBackgroundView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = 8
+        view.alpha = 0.3
+        view.layer.borderWidth = 3
+        view.isHidden = true
+        return view
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
     }
    
     func setupCell() {
-         contentView.addSubview(colorView)
+        contentView.addSubview(colorBackgroundView)
+        contentView.addSubview(colorView)
+        
         NSLayoutConstraint.activate([
             colorView.topAnchor.constraint(equalTo: contentView.topAnchor),
             colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             colorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             colorView.heightAnchor.constraint(equalToConstant: 40),
-            colorView.widthAnchor.constraint(equalToConstant: 40)
+            colorView.widthAnchor.constraint(equalToConstant: 40),
+            
+            colorBackgroundView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            colorBackgroundView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            colorBackgroundView.heightAnchor.constraint(equalToConstant: 50),
+            colorBackgroundView.widthAnchor.constraint(equalToConstant: 50)
         ])
-       
+        
     }
     
     required init?(coder: NSCoder) {
@@ -36,8 +69,9 @@ class ColorCell: UICollectionViewCell {
     
     func configureCell(with color: UIColor) {
         colorView.backgroundColor = color
+        colorBackgroundView.layer.borderColor = color.cgColor
     }
-     
+    
 }
 
 extension ColorCell {
@@ -62,6 +96,6 @@ extension ColorCell {
         let size = CGSize(width: widthPerItem, height: heightPerItem)
         return size
     }
-
-
+    
+    
 }

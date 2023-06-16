@@ -48,8 +48,6 @@ class CategoryCell: UITableViewCell {
     func setUI() {
         contentView.addSubview(categoryLabel)
         contentView.addSubview(checkmarkImage)
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cellTapped))
-//        contentView.addGestureRecognizer(tapGesture)
         NSLayoutConstraint.activate([
             categoryLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
             categoryLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),

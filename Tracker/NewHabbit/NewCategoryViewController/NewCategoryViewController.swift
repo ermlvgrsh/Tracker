@@ -87,11 +87,11 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        categoryTextField.delegate = self
+
      }
     
     func setupUI() {
-        categoryTextField.becomeFirstResponder()
+        categoryTextField.delegate = self
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(categoryTextField)
@@ -127,6 +127,9 @@ final class NewCategoryViewController: UIViewController {
 extension NewCategoryViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         namedCategory = textField.text
+    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        addDoneButtonToKeyboard()
     }
 }
 

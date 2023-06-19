@@ -2,19 +2,26 @@ import UIKit
 
 protocol NewTrackerDelegate: AnyObject {
     func didCreateTracker(newTracker: Tracker)
+    func didCreateTrackerCategory(newCategory: TrackerCategory)
 }
 
 
 final class NewHabbitViewController: UIViewController {
+    var lastID: UInt = 0
+    
     var selectedName: String?
-    var selectedColor: Colors?
+    var selectedColor: UIColor?
     var selectedEmoji: String?
-    var selectedCategory: String?
+    var selectedCategory: TrackerCategory?
+    var selectedSchedule: [WeekDay]? = []
+    var delegate: NewTrackerDelegate?
  
     
     var isShifted = false
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
+    
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -49,8 +56,10 @@ final class NewHabbitViewController: UIViewController {
         textField.layer.cornerRadius = 16
         textField.font = UIFont.systemFont(ofSize: 17)
         textField.translatesAutoresizingMaskIntoConstraints = false
+        
         return textField
     }()
+
     
     private let limitCharacterLabel: UILabel = {
        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
@@ -211,6 +220,7 @@ final class NewHabbitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+ 
      }
 
 
@@ -219,7 +229,17 @@ final class NewHabbitViewController: UIViewController {
     }
     
     @objc func createHabbitButtonTapped() {
-        print("save habbit")
+        guard let name = selectedName,
+              let emoji = selectedEmoji,
+              let color = selectedColor,
+              let category = selectedCategory,
+              let schedule = selectedSchedule else { fatalError("Couldn't make a tracker") }
+        let newTracker = Tracker(id: generateID(), name: name, schedule: schedule, color: color, emoji: emoji)
+        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+
+        delegate?.didCreateTracker(newTracker: newTracker)
+        delegate?.didCreateTrackerCategory(newCategory: category)
+        
     }
     
     func setTextFieldDelegate() {
@@ -254,6 +274,7 @@ extension NewHabbitViewController {
         setCollections()
         setTableView()
         setTextFieldDelegate()
+        habbitNameTextField.delegate = self
     }
 }
 
@@ -344,30 +365,34 @@ extension NewHabbitViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView {
         case emojiCollectionView:
-            if let selectedIndexPath = selectedEmojiIndexPath,
-                let selectedCell = collectionView.cellForItem(at: selectedIndexPath) as? EmojiCell {
-                selectedCell.emojiBackgroundView.isHidden = false
+            if let previousSelected = selectedEmojiIndexPath {
+                if let previousSelectedEmojiCell = collectionView.cellForItem(at: previousSelected) as? EmojiCell {
+                    previousSelectedEmojiCell.emojiBackgroundView.isHidden = true
+                }
             }
-
-            guard let emojiCell = collectionView.cellForItem(at: indexPath) as? EmojiCell else {
+            guard let selectedEmojiCell = collectionView.cellForItem(at: indexPath) as? EmojiCell else {
                 fatalError("Couldn't choose emoji!")
             }
-            emojiCell.emojiBackgroundView.isHidden = false
+            selectedEmojiCell.emojiBackgroundView.isHidden = false
             selectedEmojiIndexPath = indexPath
-            selectedEmoji = emojiCell.titleLabel.text
+            selectedEmoji = selectedEmojiCell.titleLabel.text
+            
 
         case colorCollectionView:
-            if let selectedIndexPath = selectedColorIndexPath,
-                let selectedCell = collectionView.cellForItem(at: selectedIndexPath) as? ColorCell {
-                selectedCell.backgroundView = nil
+            if let previousSelected = selectedColorIndexPath {
+                if let previousSelectedColorCell = collectionView.cellForItem(at: previousSelected) as? ColorCell {
+                    previousSelectedColorCell.colorBackgroundView.isHidden = true
+                }
             }
-
-            guard let colorCell = collectionView.cellForItem(at: indexPath) as? ColorCell else {
+            guard let selectedColorCell = collectionView.cellForItem(at: indexPath) as? ColorCell else {
                 fatalError("Couldn't choose color!")
             }
-            colorCell.colorBackgroundView.isHidden = false
+            selectedColorCell.colorBackgroundView.isHidden = false
             selectedColorIndexPath = indexPath
-
+            selectedColor = Colors.colors[indexPath.row].color
+            if isTrackerComplete() {
+                createHabbitButton.layer.backgroundColor = UIColor.black.cgColor
+            }
         default:
             break
         }
@@ -401,6 +426,10 @@ extension NewHabbitViewController: UICollectionViewDelegateFlowLayout {
 //MARK: UITextFieldDelegate
 extension NewHabbitViewController: UITextFieldDelegate {
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        addDoneButtonToKeyboard()
+    }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let habbitName = textField.text ?? ""
         
@@ -426,6 +455,7 @@ extension NewHabbitViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         selectedName = textField.text
+        deleteButton.isHidden = true
     }
 }
 
@@ -530,13 +560,29 @@ extension NewHabbitViewController {
         ])
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
     }
+    
+    func generateID() -> UInt {
+        lastID += 1
+        return lastID - 1
+     }
+    
+   private func isTrackerComplete() -> Bool {
+        guard let name = selectedName,
+              let category = selectedCategory,
+              !name.isEmpty,
+              !category.categoryName.isEmpty,
+              selectedEmoji != nil,
+              selectedColor != nil,
+              selectedSchedule != nil else { return false }
+        return true
+    }
 }
 
 extension NewHabbitViewController: CategoriesDelegate {
-    func didSelectCategory(_ selectedCategory: String?) {
+    func didSelectCategory(_ selectedCategory: TrackerCategory) {
         self.selectedCategory = selectedCategory
         guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
-        cell.subLabel.text = selectedCategory
+        cell.subLabel.text = selectedCategory.categoryName
         cell.moveLabel()
     }
 }
@@ -548,11 +594,13 @@ extension NewHabbitViewController: ScheduleViewControllerDelegate {
         if weekDays.count == WeekDay.allCases.count {
             cell.subLabel.text = "Каждый день"
             cell.moveLabel()
+            selectedSchedule = weekDays
         } else {
             let shortenedDays = weekDays.map { $0.shortName() }
             let shortenedDaysString = shortenedDays.joined(separator: ", ")
             cell.subLabel.text = shortenedDaysString
             cell.moveLabel()
+            selectedSchedule = weekDays
         }
     }
 }

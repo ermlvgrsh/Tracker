@@ -1,7 +1,7 @@
 import UIKit
 
 protocol CategoriesDelegate: AnyObject {
-    func didSelectCategory(_ selectedCategory: String?)
+    func didSelectCategory(_ selectedCategory: TrackerCategory)
 }
 
 
@@ -186,7 +186,7 @@ extension CategoriesViewController: UITableViewDelegate {
         guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
         let selectedCategories = categories[indexPath.row]
         categoryCell.checkmarkImage.isHidden = false
-        delegate?.didSelectCategory(selectedCategories.categoryName)
+        delegate?.didSelectCategory(selectedCategories)
         dismiss(animated: true)
     }
 }

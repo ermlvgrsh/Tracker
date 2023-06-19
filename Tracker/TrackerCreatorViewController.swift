@@ -80,6 +80,8 @@ final class TrackerCreatorViewController: UIViewController {
     @objc func habbitButtonPressed() {
         let newHabbitView = NewHabbitViewController()
         self.present(newHabbitView, animated: true)
+        newHabbitView.delegate = TrackersViewController()
+        
     }
     
     func constraintsForView() {

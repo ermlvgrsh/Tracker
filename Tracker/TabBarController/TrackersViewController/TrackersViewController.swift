@@ -15,9 +15,12 @@ final class TrackersViewController: UIViewController {
     
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 9
+        layout.minimumLineSpacing = 10
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(TrackersViewCell.self, forCellWithReuseIdentifier: TrackersViewCell.identifier)
         collectionView.register(TrackerSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerSupplementaryView.identifier)
+        collectionView.backgroundColor = .clear
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -77,16 +80,18 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         constraintsForTrackerView()
-      
+
     }
-
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateTrackers()
+    }
     
     @objc func addTracker() {
         let trackerCreator = TrackerCreatorViewController()
+        trackerCreator.delegate = self
         self.present(trackerCreator, animated: true)
-        let newHabbitVC = NewHabbitViewController()
-        newHabbitVC.delegate = self
         
     }
     
@@ -163,9 +168,10 @@ final class TrackersViewController: UIViewController {
             trackerLabel.heightAnchor.constraint(equalToConstant: 41),
             trackerLabel.trailingAnchor.constraint(equalTo: datePickerView.leadingAnchor, constant: -12),
             
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 146),
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 64),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
             
             placeholderImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 402),
             placeholderImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -190,7 +196,7 @@ final class TrackersViewController: UIViewController {
     func updateTrackers() {
         let currentDay = Calendar.current
         let currentWeekday = currentDay.component(.weekday, from: currentDate)
-        let currentWeekdayString = WeekDay.allCases[currentWeekday - 1].rawValue
+        let currentWeekdayString = WeekDay.allCases[currentWeekday].rawValue
         
         guard let currentWeekDayEnum = WeekDay(rawValue: currentWeekdayString) else { return }
         let filteredTrackers = trackers.filter { tracker in
@@ -207,13 +213,11 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersViewCell.identifier, for: indexPath) as? TrackersViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersViewCell.identifier, for: indexPath) as? TrackersViewCell else { fatalError("Unable to dequeue TrackersViewCell") }
         let tracker = trackers[indexPath.row]
         cell.configureCell(with: tracker.name, color: tracker.color, emoji: tracker.emoji)
          return cell
     }
-    
-    
 }
 
 extension TrackersViewController: UICollectionViewDelegate {
@@ -246,10 +250,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         let widthPerItem = headerWidth / 2 - padding
         return CGSize(width: widthPerItem, height: 50)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
-    }
+
 }
 
 extension TrackersViewController: UISearchTextFieldDelegate {
@@ -259,19 +260,17 @@ extension TrackersViewController: UISearchTextFieldDelegate {
     
 }
 extension TrackersViewController: NewTrackerDelegate {
-    func didCreateTrackerCategory(newCategory: TrackerCategory) {
-        trackersCategory.append(newCategory)
-    }
-    
-    func didCreateTracker(newTracker: Tracker) {
-        trackers.append(newTracker)
- 
+    func didCreateTracker(newTracker: Tracker, with category: TrackerCategory) {
         placeholderImage.isHidden = true
         placeholderLabel.isHidden = true
-        
+        trackersCategory.append(category)
+        trackers.append(newTracker)
         configureCollectionView()
         collectionView.reloadData()
     }
     
-    
+
+
 }
+
+

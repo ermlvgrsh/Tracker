@@ -2,7 +2,8 @@ import UIKit
 
 final class TrackerCreatorViewController: UIViewController {
     
- 
+    weak var delegate: NewTrackerDelegate?
+    
     private let createTrackerLabel: UILabel = {
         let createTrackerLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 149, height: 22))
         createTrackerLabel.font = .systemFont(ofSize: 16, weight: .medium)
@@ -79,9 +80,8 @@ final class TrackerCreatorViewController: UIViewController {
     }
     @objc func habbitButtonPressed() {
         let newHabbitView = NewHabbitViewController()
+        newHabbitView.delegate = delegate 
         self.present(newHabbitView, animated: true)
-        newHabbitView.delegate = TrackersViewController()
-        
     }
     
     func constraintsForView() {

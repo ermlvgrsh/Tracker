@@ -2,7 +2,7 @@ import UIKit
 
 class TrackerSupplementaryView: UICollectionReusableView {
     
-    static let identifier = "TrackerSupplementaryView"
+    static let identifier = "header"
     
     let categoryLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 149, height: 18))

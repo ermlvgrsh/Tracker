@@ -1,8 +1,7 @@
 import UIKit
 
 protocol NewTrackerDelegate: AnyObject {
-    func didCreateTracker(newTracker: Tracker)
-    func didCreateTrackerCategory(newCategory: TrackerCategory)
+    func didCreateTracker(newTracker: Tracker, with category: TrackerCategory)
 }
 
 
@@ -235,11 +234,9 @@ final class NewHabbitViewController: UIViewController {
               let category = selectedCategory,
               let schedule = selectedSchedule else { fatalError("Couldn't make a tracker") }
         let newTracker = Tracker(id: generateID(), name: name, schedule: schedule, color: color, emoji: emoji)
-        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
-
-        delegate?.didCreateTracker(newTracker: newTracker)
-        delegate?.didCreateTrackerCategory(newCategory: category)
         
+        delegate?.didCreateTracker(newTracker: newTracker, with: category)
+        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     func setTextFieldDelegate() {

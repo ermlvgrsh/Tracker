@@ -7,9 +7,7 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupVC()
-        
     }
-
     
     fileprivate func createNavController(for
                                          rootViewController: UIViewController,
@@ -30,7 +28,5 @@ final class TabBarController: UITabBarController {
             createNavController(for: TrackersViewController(), title: "Трекеры", image: trackerImage),
             createNavController(for: StatisticViewController(), title: "Статистика", image: statisticImage)
         ]
-        
     }
-    
 }

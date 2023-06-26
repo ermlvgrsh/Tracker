@@ -1,13 +1,13 @@
 import Foundation
 
-enum WeekDay: String, CaseIterable {
-    case Monday = "Понедельник"
-    case Tuesday = "Вторник"
-    case Wednesday = "Среда"
-    case Thursday = "Четверг"
-    case Friday = "Пятница"
-    case Saturday = "Суббота"
-    case Sunday = "Воскресенье"
+enum WeekDay: Int, CaseIterable {
+    case Sunday = 1
+    case Monday = 2
+    case Tuesday = 3
+    case Wednesday = 4
+    case Thursday = 5
+    case Friday = 6
+    case Saturday = 7
     
 }
 

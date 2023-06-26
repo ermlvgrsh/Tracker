@@ -232,7 +232,7 @@ final class NewHabbitViewController: UIViewController {
               let emoji = selectedEmoji,
               let color = selectedColor,
               let category = selectedCategory,
-              let schedule = selectedSchedule else { fatalError("Couldn't make a tracker") }
+              let schedule = selectedSchedule else { return }
         let newTracker = Tracker(id: generateID(), name: name, schedule: schedule, color: color, emoji: emoji)
         
         delegate?.didCreateTracker(newTracker: newTracker, with: category)

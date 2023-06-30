@@ -11,8 +11,9 @@ final class TrackersViewController: UIViewController {
     }
     
     var trackers: [Tracker] = []
-    
+    var visibleTrackers: [Tracker] = []
     var trackersCategory: [TrackerCategory] = []
+    var visibleTrackersCategory: [TrackerCategory] = []
     private var datePicker: UIDatePicker?
     private var datePickerView: UIView?
     private var addButtonView: UIView?
@@ -33,6 +34,30 @@ final class TrackersViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    
+    private let errorImage: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "2"))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.isHidden = true
+        return imageView
+    }()
+    
+    private let errorLabel: UILabel = {
+       let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        label.backgroundColor = .white
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.26
+        paragraphStyle.alignment = .center
+        label.attributedText =
+        NSMutableAttributedString(string: "Ничего не найдено", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
+    
     
     private let placeholderLabel: UILabel = {
         let label = UILabel()
@@ -164,6 +189,8 @@ final class TrackersViewController: UIViewController {
         view.addSubview(placeholderLabel)
         view.addSubview(searchBar)
         view.addSubview(trackerLabel)
+        view.addSubview(errorImage)
+        view.addSubview(errorLabel)
         
         NSLayoutConstraint.activate([
 
@@ -202,44 +229,72 @@ final class TrackersViewController: UIViewController {
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             searchBar.widthAnchor.constraint(equalToConstant: 343),
-            searchBar.heightAnchor.constraint(equalToConstant: 36)
+            searchBar.heightAnchor.constraint(equalToConstant: 36),
+            
+            errorImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            errorImage.widthAnchor.constraint(equalToConstant: 80),
+            errorImage.heightAnchor.constraint(equalToConstant: 80),
+            
+            errorLabel.centerXAnchor.constraint(equalTo: errorImage.centerXAnchor),
+            errorLabel.topAnchor.constraint(equalTo: errorImage.bottomAnchor, constant: 8),
+            errorLabel.widthAnchor.constraint(equalToConstant: 343),
+            errorLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
         
     }
+    
     @objc func datePickerValueDidChanged(_ sender: UIDatePicker) {
         valueDatePicker = sender.date
     }
+    
     func updateTrackers() {
+        visibleTrackersCategory.removeAll()
         let currentDay = Calendar.current
-        let currentWeekday = currentDay.component(.weekday, from: valueDatePicker)
-        
-        guard let currentWeekDayEnum = WeekDay(rawValue: currentWeekday)
-        else { return }
-        let filteredTrackers = trackers.filter { tracker in
-            return tracker.schedule.contains(currentWeekDayEnum)
-        }
-        trackers = filteredTrackers
+        let currentWeekday = currentDay.component(.weekday, from: currentDate)
+        guard let currentWeekDayEnum = WeekDay(rawValue: currentWeekday) else { return }
+                
+        let selectedDay = Calendar.current.component(.weekday, from: valueDatePicker)
+        guard let selectedWeekDayEnum = WeekDay(rawValue: selectedDay) else { return }
 
-        if filteredTrackers.isEmpty {
-            placeholderImage.isHidden = false
-            placeholderLabel.isHidden = false
+        for category in trackersCategory {
+            visibleTrackers = category.trackers.filter { tracker in
+                return tracker.schedule.contains(selectedWeekDayEnum) ||
+                tracker.schedule.contains(currentWeekDayEnum)
+            }
+            
+            if !visibleTrackers.isEmpty {
+                let visibleCategory = TrackerCategory(categoryName: category.categoryName, trackers: visibleTrackers)
+                visibleTrackersCategory.append(visibleCategory)
+            }
+        }
+
+        if visibleTrackersCategory.isEmpty {
+            errorLabel.isHidden = false
+            errorImage.isHidden = false
             collectionView.isHidden = true
         } else {
-            placeholderImage.isHidden = true
-            placeholderLabel.isHidden = true
+            errorImage.isHidden = true
+            errorLabel.isHidden = true
+            collectionView.isHidden = false
             collectionView.reloadData()
         }
     }
+    
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return visibleTrackersCategory.count
+        
+    }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return trackers.count
+        return visibleTrackersCategory[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersViewCell.identifier, for: indexPath) as? TrackersViewCell else { fatalError("Unable to dequeue TrackersViewCell") }
-        let tracker = trackers[indexPath.row]
+        let tracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
         cell.delegate = self
         cell.configureCell(with: tracker.name, color: tracker.color, emoji: tracker.emoji)
         
@@ -256,7 +311,10 @@ extension TrackersViewController: UICollectionViewDelegate {
         default: id = ""
         }
         guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? TrackerSupplementaryView else { return UICollectionReusableView() }
-        view.categoryLabel.text = trackersCategory[indexPath.row].categoryName
+        guard indexPath.section < visibleTrackersCategory.count else { return view }
+        let category = visibleTrackersCategory[indexPath.section]
+        view.categoryLabel.text = category.categoryName
+        
         return view
     }
 }
@@ -288,9 +346,12 @@ extension TrackersViewController: UISearchTextFieldDelegate {
     }
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard let searchText = searchBar.text else { return }
-        let filteredTrackers = trackers.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-        trackers = filteredTrackers
-        collectionView.reloadData()
+        
+        if !searchText.isEmpty {
+            visibleTrackers = trackers.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            trackers = visibleTrackers
+        }
+
     }
 }
 
@@ -298,11 +359,21 @@ extension TrackersViewController: NewTrackerDelegate {
     func didCreateTracker(newTracker: Tracker, with category: TrackerCategory) {
         placeholderImage.isHidden = true
         placeholderLabel.isHidden = true
-        trackersCategory.append(category)
-        trackers.append(newTracker)
+        
+        if let index = trackersCategory.firstIndex(where: { $0.categoryName == category.categoryName }) {
+            let updatedCategory = trackersCategory[index].trackers + [newTracker]
+            trackersCategory[index] = TrackerCategory(categoryName: category.categoryName, trackers: updatedCategory)
+            trackers = trackersCategory[index].trackers
+        } else {
+            let updateCategory = TrackerCategory(categoryName: category.categoryName, trackers: [newTracker])
+            trackersCategory.append(updateCategory)
+            trackers.append(newTracker)
+        }
         configureCollectionView()
         collectionView.reloadData()
+        updateTrackers()
     }
+
 }
 
 

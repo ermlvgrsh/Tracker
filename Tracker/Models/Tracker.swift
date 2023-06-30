@@ -1,7 +1,7 @@
 import UIKit
 
 struct Tracker {
-    let id: UInt
+    let id: UUID
     let name: String
     let schedule: [WeekDay]
     let color: UIColor

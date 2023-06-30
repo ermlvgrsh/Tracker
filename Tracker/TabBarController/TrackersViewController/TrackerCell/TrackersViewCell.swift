@@ -93,7 +93,7 @@ class TrackersViewCell: UICollectionViewCell {
                 self.backgroundViewDone.alpha = 0.3
                 self.daysCounter.text = "\(self.dayCounter) день"
             }
-        } else { plusButton.isEnabled = false
+        } else {
             backgroundViewDone.isHidden = true }
     }
     
@@ -146,7 +146,7 @@ class TrackersViewCell: UICollectionViewCell {
             trackerName.heightAnchor.constraint(equalToConstant: 34),
             
             daysCounter.topAnchor.constraint(equalTo: trackerView.bottomAnchor, constant: 16),
-            daysCounter.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
+            daysCounter.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             daysCounter.widthAnchor.constraint(equalToConstant: 101),
             daysCounter.heightAnchor.constraint(equalToConstant: 18),
             

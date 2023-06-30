@@ -6,7 +6,6 @@ protocol NewTrackerDelegate: AnyObject {
 
 
 final class NewHabbitViewController: UIViewController {
-    var lastID: UInt = 0
     
     var selectedName: String?
     var selectedColor: UIColor?
@@ -20,7 +19,7 @@ final class NewHabbitViewController: UIViewController {
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
     
-    
+     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -233,8 +232,9 @@ final class NewHabbitViewController: UIViewController {
               let color = selectedColor,
               let category = selectedCategory,
               let schedule = selectedSchedule else { return }
-        let newTracker = Tracker(id: generateID(), name: name, schedule: schedule, color: color, emoji: emoji)
         
+        let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji)
+
         delegate?.didCreateTracker(newTracker: newTracker, with: category)
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
@@ -387,9 +387,13 @@ extension NewHabbitViewController: UICollectionViewDelegate {
             selectedColorCell.colorBackgroundView.isHidden = false
             selectedColorIndexPath = indexPath
             selectedColor = Colors.colors[indexPath.row].color
-            if isTrackerComplete() {
+            if !isTrackerComplete() {
+                createHabbitButton.isEnabled = false
+            } else {
                 createHabbitButton.layer.backgroundColor = UIColor.black.cgColor
+                createHabbitButton.isEnabled = true
             }
+            
         default:
             break
         }
@@ -557,11 +561,7 @@ extension NewHabbitViewController {
         ])
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
     }
-    
-    func generateID() -> UInt {
-        lastID += 1
-        return lastID - 1
-     }
+
     
    private func isTrackerComplete() -> Bool {
         guard let name = selectedName,
@@ -570,7 +570,8 @@ extension NewHabbitViewController {
               !category.categoryName.isEmpty,
               selectedEmoji != nil,
               selectedColor != nil,
-              selectedSchedule != nil else { return false }
+              let selectedSchedule = selectedSchedule,
+              !selectedSchedule.isEmpty else { return false }
         return true
     }
 }

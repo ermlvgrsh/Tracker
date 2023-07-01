@@ -44,7 +44,7 @@ final class TrackersViewController: UIViewController {
     }()
     
     private let errorLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         label.backgroundColor = .white
         label.numberOfLines = 0
@@ -103,7 +103,7 @@ final class TrackersViewController: UIViewController {
     @objc func cancelButtonTapped() {
         searchBar.text = ""
         searchBar.resignFirstResponder()
-//        collectionView.reloadData()
+        //        collectionView.reloadData()
     }
     
     
@@ -132,7 +132,7 @@ final class TrackersViewController: UIViewController {
         addButton.tintColor = .black
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-
+        
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
         addButtonView = view
         addButtonView?.translatesAutoresizingMaskIntoConstraints = false
@@ -166,7 +166,7 @@ final class TrackersViewController: UIViewController {
             datePicker.trailingAnchor.constraint(equalTo: datePickerView.trailingAnchor),
             datePicker.bottomAnchor.constraint(equalTo: datePickerView.bottomAnchor),
         ])
- 
+        
         let dateItem = UIBarButtonItem(customView: datePickerView)
         return dateItem
     }
@@ -182,7 +182,7 @@ final class TrackersViewController: UIViewController {
         navigationItem.rightBarButtonItem = dateItem
         
         guard let datePickerView = datePickerView,
-        let addButtonView = addButtonView else { return }
+              let addButtonView = addButtonView else { return }
         
         view.addSubview(datePickerView)
         view.addSubview(addButtonView)
@@ -195,7 +195,7 @@ final class TrackersViewController: UIViewController {
         view.addSubview(errorLabel)
         
         NSLayoutConstraint.activate([
-
+            
             datePickerView.topAnchor.constraint(equalTo: view.topAnchor, constant: 91),
             datePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 282),
             datePickerView.heightAnchor.constraint(equalToConstant: 34),
@@ -255,28 +255,21 @@ final class TrackersViewController: UIViewController {
         let currentDay = Calendar.current
         let currentWeekday = currentDay.component(.weekday, from: currentDate)
         guard let currentWeekDayEnum = WeekDay(rawValue: currentWeekday) else { return }
-                
+        
         let selectedDay = Calendar.current.component(.weekday, from: valueDatePicker)
         guard let selectedWeekDayEnum = WeekDay(rawValue: selectedDay) else { return }
-        var visibleTrackersInCategory = [Tracker]()
         
         for category in trackersCategory {
-            let filteredTrackers = category.trackers.filter { tracker in
+            let visibleTrackersInCategory = category.trackers.filter { tracker in
                 return tracker.schedule.contains(selectedWeekDayEnum) || tracker.schedule.contains(currentWeekDayEnum)
             }
-
-            for tracker in category.trackers {
-                if tracker.schedule.contains(selectedWeekDayEnum) {
-                    visibleTrackersInCategory.append(tracker)
-                }
-            }
-
+            
             if !visibleTrackersInCategory.isEmpty {
                 let visibleCategory = TrackerCategory(categoryName: category.categoryName, trackers: visibleTrackersInCategory)
                 visibleTrackersCategory.append(visibleCategory)
             }
         }
-
+        
         if visibleTrackersCategory.isEmpty {
             errorLabel.isHidden = false
             errorImage.isHidden = false
@@ -288,8 +281,6 @@ final class TrackersViewController: UIViewController {
             collectionView.reloadData()
         }
     }
-
-    
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
@@ -356,16 +347,18 @@ extension TrackersViewController: UISearchTextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard let searchText = searchBar.text else { return }
         
-        if !searchText.isEmpty {
+        if searchText.isEmpty {
+            visibleTrackersCategory = trackersCategory
+    
+        } else {
             visibleTrackersCategory = trackersCategory.map { category in
                 let searchedTrackers = category.trackers.filter { tracker in
                     tracker.name.localizedStandardContains(searchText)
                 }
                 return TrackerCategory(categoryName: category.categoryName, trackers: searchedTrackers)
             }
-            collectionView.reloadData()
         }
-
+        collectionView.reloadData()
     }
 }
 

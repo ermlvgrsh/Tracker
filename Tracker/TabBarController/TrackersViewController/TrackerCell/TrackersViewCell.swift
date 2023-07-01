@@ -1,12 +1,13 @@
 import UIKit
 protocol TrackerViewCellDelegate: AnyObject {
-    func dateValueDidChanged() -> Bool
+    func doneButtonDidTapped(for cell: TrackersViewCell)
+    func doneButtonUntapped(for cell: TrackersViewCell)
 }
 
 class TrackersViewCell: UICollectionViewCell {
     
     static let identifier = "TrackerViewCell"
-    private var dayCounter = 0
+    var dayCounter = 0
     private let isCompleted = false
     weak var delegate: TrackerViewCellDelegate? 
     
@@ -69,6 +70,7 @@ class TrackersViewCell: UICollectionViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "Done"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(removeDayToHabbit), for: .touchUpInside)
         button.layer.masksToBounds = true
         button.isHidden = true
         return button
@@ -85,16 +87,12 @@ class TrackersViewCell: UICollectionViewCell {
 
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
-        if delegate.dateValueDidChanged() {
-            plusButton.isEnabled = true
-            animateButtonWithTransition(previousButton: plusButton, to: doneButton) {
-                self.dayCounter += 1
-                self.backgroundViewDone.isHidden = false
-                self.backgroundViewDone.alpha = 0.3
-                self.daysCounter.text = "\(self.dayCounter) день"
-            }
-        } else {
-            backgroundViewDone.isHidden = true }
+        delegate.doneButtonDidTapped(for: self)
+    }
+    
+    @objc func removeDayToHabbit() {
+        guard let delegate = delegate else { return }
+        delegate.doneButtonUntapped(for: self)
     }
     
     override init(frame: CGRect) {
@@ -186,10 +184,8 @@ extension TrackersViewCell {
             previousButton.alpha = 0
             newButton.alpha = 1
         }) { (_) in
-            
             previousButton.isHidden = true
             newButton.isHidden = false
-            previousButton.removeFromSuperview()
             completion()
         }
     }

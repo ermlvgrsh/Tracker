@@ -14,6 +14,7 @@ final class TrackersViewController: UIViewController {
     var visibleTrackers: [Tracker] = []
     var trackersCategory: [TrackerCategory] = []
     var visibleTrackersCategory: [TrackerCategory] = []
+    var completedTrackers: Set<TrackerRecord> = []
     private var datePicker: UIDatePicker?
     private var datePickerView: UIView?
     private var addButtonView: UIView?
@@ -102,6 +103,7 @@ final class TrackersViewController: UIViewController {
     @objc func cancelButtonTapped() {
         searchBar.text = ""
         searchBar.resignFirstResponder()
+//        collectionView.reloadData()
     }
     
     
@@ -256,15 +258,21 @@ final class TrackersViewController: UIViewController {
                 
         let selectedDay = Calendar.current.component(.weekday, from: valueDatePicker)
         guard let selectedWeekDayEnum = WeekDay(rawValue: selectedDay) else { return }
-
+        var visibleTrackersInCategory = [Tracker]()
+        
         for category in trackersCategory {
-            visibleTrackers = category.trackers.filter { tracker in
-                return tracker.schedule.contains(selectedWeekDayEnum) ||
-                tracker.schedule.contains(currentWeekDayEnum)
+            let filteredTrackers = category.trackers.filter { tracker in
+                return tracker.schedule.contains(selectedWeekDayEnum) || tracker.schedule.contains(currentWeekDayEnum)
             }
-            
-            if !visibleTrackers.isEmpty {
-                let visibleCategory = TrackerCategory(categoryName: category.categoryName, trackers: visibleTrackers)
+
+            for tracker in category.trackers {
+                if tracker.schedule.contains(selectedWeekDayEnum) {
+                    visibleTrackersInCategory.append(tracker)
+                }
+            }
+
+            if !visibleTrackersInCategory.isEmpty {
+                let visibleCategory = TrackerCategory(categoryName: category.categoryName, trackers: visibleTrackersInCategory)
                 visibleTrackersCategory.append(visibleCategory)
             }
         }
@@ -280,6 +288,7 @@ final class TrackersViewController: UIViewController {
             collectionView.reloadData()
         }
     }
+
     
 }
 
@@ -348,8 +357,13 @@ extension TrackersViewController: UISearchTextFieldDelegate {
         guard let searchText = searchBar.text else { return }
         
         if !searchText.isEmpty {
-            visibleTrackers = trackers.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-            trackers = visibleTrackers
+            visibleTrackersCategory = trackersCategory.map { category in
+                let searchedTrackers = category.trackers.filter { tracker in
+                    tracker.name.localizedStandardContains(searchText)
+                }
+                return TrackerCategory(categoryName: category.categoryName, trackers: searchedTrackers)
+            }
+            collectionView.reloadData()
         }
 
     }
@@ -378,7 +392,31 @@ extension TrackersViewController: NewTrackerDelegate {
 
 
 extension TrackersViewController: TrackerViewCellDelegate {
-    func dateValueDidChanged() -> Bool {
-       return currentDate > valueDatePicker
+    func doneButtonUntapped(for cell: TrackersViewCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let tracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
+        if completedTrackers.contains(where: { $0.id == tracker.id }) {
+            completedTrackers = completedTrackers.filter { $0.id != tracker.id }
+            cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
+                cell.dayCounter -= 1
+                cell.backgroundViewDone.isHidden = true
+                cell.daysCounter.text = "\(cell.dayCounter) дней"
+            }
+        }
+    }
+    
+    func doneButtonDidTapped(for cell: TrackersViewCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        let tracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
+        if currentDate >= valueDatePicker {
+            completedTrackers.insert(TrackerRecord(id: tracker.id, date: currentDate))
+            cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
+                cell.dayCounter += 1
+                cell.backgroundViewDone.alpha = 0.3
+                cell.backgroundViewDone.isHidden = false
+                cell.daysCounter.text = "\(cell.dayCounter) день"
+            }
+        }
     }
 }
+

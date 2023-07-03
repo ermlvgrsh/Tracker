@@ -76,7 +76,8 @@ final class TrackerCreatorViewController: UIViewController {
     }()
     
     @objc func irregularEventButtonPressed() {
-        print("Need to create irregular event")
+       let irregularView = IrregularEventViewController()
+        self.present(irregularView, animated: true)
     }
     @objc func habbitButtonPressed() {
         let newHabbitView = NewHabbitViewController()

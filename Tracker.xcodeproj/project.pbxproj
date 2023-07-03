@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		37129C712A3DF1A3003022A6 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37129C702A3DF1A3003022A6 /* TextField.swift */; };
 		3713FF8929E6E93700287D77 /* Tab Bar Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713FF8829E6E93700287D77 /* Tab Bar Controller.swift */; };
+		37600B6A2A53039D00A712C4 /* IrregularEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37600B692A53039D00A712C4 /* IrregularEventViewController.swift */; };
 		376C4D7029ED964B00B87CA3 /* NewHabbitCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C4D6F29ED964B00B87CA3 /* NewHabbitCells.swift */; };
 		37775A7529E980CA00507D37 /* TrackersViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37775A7429E980CA00507D37 /* TrackersViewCell.swift */; };
 		37775A7929E9CDEA00507D37 /* TrackerCreatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37775A7829E9CDEA00507D37 /* TrackerCreatorViewController.swift */; };
@@ -41,6 +42,7 @@
 /* Begin PBXFileReference section */
 		37129C702A3DF1A3003022A6 /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		3713FF8829E6E93700287D77 /* Tab Bar Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tab Bar Controller.swift"; sourceTree = "<group>"; };
+		37600B692A53039D00A712C4 /* IrregularEventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEventViewController.swift; sourceTree = "<group>"; };
 		376C4D6F29ED964B00B87CA3 /* NewHabbitCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewHabbitCells.swift; sourceTree = "<group>"; };
 		37775A7429E980CA00507D37 /* TrackersViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewCell.swift; sourceTree = "<group>"; };
 		37775A7829E9CDEA00507D37 /* TrackerCreatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCreatorViewController.swift; sourceTree = "<group>"; };
@@ -89,6 +91,14 @@
 				37129C702A3DF1A3003022A6 /* TextField.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		37600B682A53037600A712C4 /* IrregularEvent */ = {
+			isa = PBXGroup;
+			children = (
+				37600B692A53039D00A712C4 /* IrregularEventViewController.swift */,
+			);
+			path = IrregularEvent;
 			sourceTree = "<group>";
 		};
 		376C4D6E29ED960000B87CA3 /* NewHabbit */ = {
@@ -270,6 +280,7 @@
 				37EC3A9E2A135A4F00681250 /* Models */,
 				37EC3AA92A1374D300681250 /* TabBarController */,
 				37775A7829E9CDEA00507D37 /* TrackerCreatorViewController.swift */,
+				37600B682A53037600A712C4 /* IrregularEvent */,
 				376C4D6E29ED960000B87CA3 /* NewHabbit */,
 				37F59B7829DB082000341B05 /* Main.storyboard */,
 				37F59B7E29DB082200341B05 /* Assets.xcassets */,
@@ -377,6 +388,7 @@
 				37A6F8912A100D2200C8F41D /* EmojiCell.swift in Sources */,
 				37A6F8872A100AAD00C8F41D /* ScheduleViewController.swift in Sources */,
 				37775A7B29E9F1F800507D37 /* NewHabbitViewController.swift in Sources */,
+				37600B6A2A53039D00A712C4 /* IrregularEventViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

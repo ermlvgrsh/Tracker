@@ -248,6 +248,7 @@ final class TrackersViewController: UIViewController {
     
     @objc func datePickerValueDidChanged(_ sender: UIDatePicker) {
         valueDatePicker = sender.date
+        updateTrackers()
     }
     
     func updateTrackers() {
@@ -273,6 +274,8 @@ final class TrackersViewController: UIViewController {
         if visibleTrackersCategory.isEmpty {
             errorLabel.isHidden = false
             errorImage.isHidden = false
+            placeholderImage.isHidden = true
+            placeholderLabel.isHidden = true
             collectionView.isHidden = true
         } else {
             errorImage.isHidden = true

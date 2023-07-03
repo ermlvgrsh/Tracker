@@ -93,12 +93,6 @@ final class NewHabbitViewController: UIViewController {
         view.isHidden = true
         return view
     }()
-    
-    private let textFieldContainerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
    
     @objc func deleteHabbitName() {
         habbitNameTextField.text = ""
@@ -271,7 +265,6 @@ extension NewHabbitViewController {
         setCollections()
         setTableView()
         setTextFieldDelegate()
-        habbitNameTextField.delegate = self
     }
 }
 
@@ -487,6 +480,7 @@ extension NewHabbitViewController {
         
         isShifted = false
     }
+    
     func constraintsForView() {
         view.addSubview(scrollView)
         scrollView.addSubview(centralTableView)

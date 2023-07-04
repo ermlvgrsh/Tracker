@@ -25,16 +25,16 @@ final class IrregularEventViewController: UIViewController {
         return label
     }()
     
-   private let scrollView: UIScrollView = {
-       let scrollView = UIScrollView()
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.isDirectionalLockEnabled = true
         scrollView.showsVerticalScrollIndicator = false
-        scrollView.isDirectionalLockEnabled = false
         return scrollView
     }()
     
-   private let irregularNameTextField: UITextField = {
-       let textField = UITextField()
+    private let irregularNameTextField: UITextField = {
+        let textField = UITextField()
         textField.placeholder = "Введите название трекера"
         textField.textColor = .black
         textField.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3).cgColor
@@ -51,7 +51,7 @@ final class IrregularEventViewController: UIViewController {
     let categoryViewInset = ["Категория"]
     
     private let textLimitLabel: UILabel = {
-       let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         label.backgroundColor = .white
         label.textColor = UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1)
@@ -65,7 +65,7 @@ final class IrregularEventViewController: UIViewController {
     }()
     
     private let deleteButton: UIButton = {
-        guard let image = UIImage(named: "xmark.circle") else { return }
+        guard let image = UIImage(named: "xmark.circle") else { fatalError() }
         let button = UIButton()
         button.setImage(image, for: .normal)
         button.tintColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
@@ -74,18 +74,13 @@ final class IrregularEventViewController: UIViewController {
     }()
     
     private let deleteButtonView: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.backgroundColor = .clear
         view.isHidden = true
         view.translatesAutoresizingMaskIntoConstraints = false
-    }()
-    
-    private let textFieldContainerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     private let createHabbitButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
@@ -123,7 +118,7 @@ final class IrregularEventViewController: UIViewController {
     }()
     
     private let categoryTableView: UITableView = {
-       let tableView = UITableView()
+        let tableView = UITableView()
         tableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]
         tableView.layer.cornerRadius = 16
         tableView.backgroundColor = .white
@@ -135,7 +130,7 @@ final class IrregularEventViewController: UIViewController {
     }()
     
     private let emojiCollectionView: UICollectionView = {
-       let layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 14
         layout.minimumLineSpacing = 25
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -161,7 +156,7 @@ final class IrregularEventViewController: UIViewController {
     }()
     
     private lazy var lowStackView: UIStackView = {
-       let stackView = UIStackView(arrangedSubviews: [cancelButton, createHabbitButton])
+        let stackView = UIStackView()
         stackView.spacing = 10
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
@@ -217,6 +212,7 @@ extension IrregularEventViewController {
         deleteButtonView.isHidden = false
         deleteButton.isHidden = false
     }
+    
     private func moveViewUp(by amount: CGFloat) {
         textLimitLabel.isHidden = false
         categoryTableView.frame.origin.y += amount
@@ -280,7 +276,7 @@ extension IrregularEventViewController {
             deleteButtonView.topAnchor.constraint(equalTo: irregularNameTextField.topAnchor),
             deleteButtonView.bottomAnchor.constraint(equalTo: irregularNameTextField.bottomAnchor),
             deleteButtonView.widthAnchor.constraint(equalToConstant: 41),
-            
+                    
             deleteButton.centerYAnchor.constraint(equalTo: irregularNameTextField.centerYAnchor),
             deleteButton.trailingAnchor.constraint(equalTo: irregularNameTextField.trailingAnchor, constant: -12),
             deleteButton.widthAnchor.constraint(equalToConstant: 17),
@@ -293,15 +289,16 @@ extension IrregularEventViewController {
             
             categoryTableView.topAnchor.constraint(equalTo: irregularNameTextField.bottomAnchor, constant: 24),
             categoryTableView.centerXAnchor.constraint(equalTo: irregularNameTextField.centerXAnchor),
+            categoryTableView.heightAnchor.constraint(equalToConstant: 150),
             categoryTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            categoryTableView.heightAnchor.constraint(equalToConstant: 75),
             
             emojiCollectionView.topAnchor.constraint(equalTo: categoryTableView.bottomAnchor, constant: 32),
             emojiCollectionView.centerXAnchor.constraint(equalTo: categoryTableView.centerXAnchor),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 220),
             emojiCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-            colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 42),
+
+            colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 47),
             colorCollectionView.centerXAnchor.constraint(equalTo: emojiCollectionView.centerXAnchor),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
             colorCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
@@ -311,11 +308,11 @@ extension IrregularEventViewController {
             lowStackView.heightAnchor.constraint(equalToConstant: 60),
             lowStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
-            cancelButton.widthAnchor.constraint(equalToConstant: 161),
-            cancelButton.heightAnchor.constraint(equalToConstant: 60),
-            
+            createHabbitButton.heightAnchor.constraint(equalToConstant: 60),
             createHabbitButton.widthAnchor.constraint(equalToConstant: 161),
-            createHabbitButton.heightAnchor.constraint(equalToConstant: 60)
+            
+            cancelButton.widthAnchor.constraint(equalToConstant: 161),
+            cancelButton.heightAnchor.constraint(equalToConstant: 60)
         ])
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
     }
@@ -384,14 +381,16 @@ extension IrregularEventViewController: UICollectionViewDelegate {
 
 extension IrregularEventViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        switch collectionView {
-        case emojiCollectionView:
-            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else { fatalError() }
+        if collectionView == emojiCollectionView {
+            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else {
+                fatalError("Unable to dequeue EmojiCell")
+            }
             return emojiCell.calculateEmojiCell(collectionView: emojiCollectionView)
-        case colorCollectionView:
-            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { fatalError() }
+        } else {
+            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else {
+                fatalError("Unable to dequeue ColorCell")
+            }
             return colorCell.calculateColorCell(collectionView: colorCollectionView)
-        default: break
         }
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -476,6 +475,4 @@ extension IrregularEventViewController: CategoriesDelegate {
         cell.subLabel.text = selectedCategory.categoryName
         cell.moveLabel()
     }
-    
-    
 }

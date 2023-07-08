@@ -3,10 +3,14 @@ import UIKit
 protocol NewCategoryDelegete: AnyObject {
     func didSaveCategory(_ category: TrackerCategory, namedCategory: String?)
 }
+protocol NewEventCategoryDelegate: AnyObject {
+    func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?)
+}
 
 final class NewCategoryViewController: UIViewController {
     
     weak var delegate: NewCategoryDelegete?
+    weak var eventDelegate: NewEventCategoryDelegate?
     
     var namedCategory: String?
     
@@ -49,10 +53,17 @@ final class NewCategoryViewController: UIViewController {
     
     @objc func doneButtonTapped() {
         guard let categoryName = categoryTextField.text else { return }
-        var categories = CategoriesViewController().categories
-        let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
-        categories.append(newCategory)
-        delegate?.didSaveCategory(newCategory, namedCategory: namedCategory)
+        if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
+            var categories = CategoriesViewController().categories
+            let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
+            categories.append(newCategory)
+            delegate?.didSaveCategory(newCategory, namedCategory: namedCategory)
+        } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
+            var categories = EventCategoryViewController().eventCategories
+            let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
+            categories.append(newEvent)
+            eventDelegate?.didSaveEventCategory(newEvent, namedCategory: namedCategory)
+        }
         dismiss(animated: true)
     }
     

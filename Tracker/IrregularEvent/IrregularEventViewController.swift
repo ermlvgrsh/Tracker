@@ -1,14 +1,17 @@
 import UIKit
-
+protocol IrregularEventDelegate: AnyObject {
+    func didCreateIrregularEvent(newEvent: IrregularEvent, with category: IrregularEventCategory)
+}
 
 final class IrregularEventViewController: UIViewController {
     
+    weak var delegate: IrregularEventDelegate?
     var selectedName: String?
     var selectedEmoji: String?
     var selectedColor: UIColor?
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
-    var selectedCategory: TrackerCategory?
+    var selectedCategory: IrregularEventCategory?
     var isShifted: Bool = false
     
    private let irregularEventLabel: UILabel = {
@@ -66,10 +69,12 @@ final class IrregularEventViewController: UIViewController {
     
     private let deleteButton: UIButton = {
         guard let image = UIImage(named: "xmark.circle") else { fatalError() }
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setImage(image, for: .normal)
         button.tintColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
+        button.isHidden = true
         button.addTarget(self, action: #selector(deleteButtonDidTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -131,32 +136,35 @@ final class IrregularEventViewController: UIViewController {
     
     private let emojiCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 14
-        layout.minimumLineSpacing = 25
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.contentInset = UIEdgeInsets(top: 0, left: 9, bottom: 0, right: 9)
-        collection.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
-        collection.register(EmojiSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmojiSupplementaryView.identifier)
-        collection.backgroundColor = .clear
-        collection.isScrollEnabled = false
-        return collection
+        layout.minimumInteritemSpacing = 25
+        layout.minimumLineSpacing = 14
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 9, bottom: 0, right: 9)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
+        collectionView.register(EmojiSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: EmojiSupplementaryView.identifier)
+        collectionView.backgroundColor = .clear
+        collectionView.isScrollEnabled = false
+        return collectionView
+        
     }()
     
     private let colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 12
         layout.minimumInteritemSpacing = 17
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
-        collection.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
-        collection.register(ColorSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: ColorSupplementaryView.identifier)
-        collection.isScrollEnabled = false
-        collection.backgroundColor = .clear
-        return collection
+        layout.minimumLineSpacing = 12
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .clear
+        collectionView.isScrollEnabled = false
+        collectionView.register(ColorSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ColorSupplementaryView.identifier)
+        collectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
+        return collectionView
     }()
     
     private lazy var lowStackView: UIStackView = {
-        let stackView = UIStackView()
+        let stackView = UIStackView(arrangedSubviews: [cancelButton, createHabbitButton])
         stackView.spacing = 10
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
@@ -174,7 +182,14 @@ final class IrregularEventViewController: UIViewController {
     }
     
     @objc func createIrregularEvent() {
-     print("WWW")
+    guard let name = selectedName,
+          let category = selectedCategory,
+          let emoji = selectedEmoji,
+          let color = selectedColor else { return }
+        
+        let newEvent = IrregularEvent(id: UUID(), name: name, category: category, emoji: emoji, color: color)
+        delegate?.didCreateIrregularEvent(newEvent: newEvent, with: category)
+        presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
 
     
@@ -211,6 +226,16 @@ extension IrregularEventViewController {
     private func showDeleteButton() {
         deleteButtonView.isHidden = false
         deleteButton.isHidden = false
+    }
+    
+    private func isEventComplete() -> Bool {
+        guard let name = selectedName,
+              let category = selectedCategory,
+              !name.isEmpty,
+              !category.categoryName.isEmpty,
+              selectedEmoji != nil,
+              selectedColor != nil else { return false }
+        return true
     }
     
     private func moveViewUp(by amount: CGFloat) {
@@ -266,7 +291,7 @@ extension IrregularEventViewController {
             irregularEventLabel.widthAnchor.constraint(equalToConstant: 244),
             irregularEventLabel.heightAnchor.constraint(equalToConstant: 22),
             
-            irregularNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 110),
+            irregularNameTextField.topAnchor.constraint(equalTo: irregularEventLabel.bottomAnchor, constant: 38),
             irregularNameTextField.centerXAnchor.constraint(equalTo: irregularEventLabel.centerXAnchor),
             irregularNameTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             irregularNameTextField.heightAnchor.constraint(equalToConstant: 75),
@@ -276,7 +301,7 @@ extension IrregularEventViewController {
             deleteButtonView.topAnchor.constraint(equalTo: irregularNameTextField.topAnchor),
             deleteButtonView.bottomAnchor.constraint(equalTo: irregularNameTextField.bottomAnchor),
             deleteButtonView.widthAnchor.constraint(equalToConstant: 41),
-                    
+
             deleteButton.centerYAnchor.constraint(equalTo: irregularNameTextField.centerYAnchor),
             deleteButton.trailingAnchor.constraint(equalTo: irregularNameTextField.trailingAnchor, constant: -12),
             deleteButton.widthAnchor.constraint(equalToConstant: 17),
@@ -289,16 +314,15 @@ extension IrregularEventViewController {
             
             categoryTableView.topAnchor.constraint(equalTo: irregularNameTextField.bottomAnchor, constant: 24),
             categoryTableView.centerXAnchor.constraint(equalTo: irregularNameTextField.centerXAnchor),
-            categoryTableView.heightAnchor.constraint(equalToConstant: 150),
+            categoryTableView.heightAnchor.constraint(equalToConstant: 75),
             categoryTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
+
             emojiCollectionView.topAnchor.constraint(equalTo: categoryTableView.bottomAnchor, constant: 32),
             emojiCollectionView.centerXAnchor.constraint(equalTo: categoryTableView.centerXAnchor),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 220),
             emojiCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
 
-            colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 47),
+            colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 40),
             colorCollectionView.centerXAnchor.constraint(equalTo: emojiCollectionView.centerXAnchor),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
             colorCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
@@ -348,35 +372,71 @@ extension IrregularEventViewController: UITextFieldDelegate {
     }
 }
 
+
+
 extension IrregularEventViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch collectionView {
         case emojiCollectionView:
-           guard let selectedEmojiCell = collectionView.cellForItem(at: indexPath) as? EmojiCell else { fatalError("Couldn't choose Emoji")}
+            if let previousSelected = selectedEmojiIndexPath {
+                if let previousSelectedEmojiCell = collectionView.cellForItem(at: previousSelected) as? EmojiCell {
+                    previousSelectedEmojiCell.emojiBackgroundView.isHidden = true
+                }
+            }
+            guard let selectedEmojiCell = collectionView.cellForItem(at: indexPath) as? EmojiCell else {
+                fatalError("Couldn't choose emoji!")
+            }
             selectedEmojiCell.emojiBackgroundView.isHidden = false
             selectedEmojiIndexPath = indexPath
             selectedEmoji = selectedEmojiCell.titleLabel.text
             
-            if let previousSelected = selectedEmojiIndexPath {
-                if let previousSelectedCell = collectionView.cellForItem(at: previousSelected) as? EmojiCell {
-                    previousSelectedCell.emojiBackgroundView.isHidden = true
+
+        case colorCollectionView:
+            if let previousSelected = selectedColorIndexPath {
+                if let previousSelectedColorCell = collectionView.cellForItem(at: previousSelected) as? ColorCell {
+                    previousSelectedColorCell.colorBackgroundView.isHidden = true
                 }
             }
-        case colorCollectionView:
             guard let selectedColorCell = collectionView.cellForItem(at: indexPath) as? ColorCell else {
-                fatalError("Couldn't choose Color") }
+                fatalError("Couldn't choose color!")
+            }
             selectedColorCell.colorBackgroundView.isHidden = false
             selectedColorIndexPath = indexPath
             selectedColor = Colors.colors[indexPath.row].color
-            
-            if let previousSelected = selectedColorIndexPath {
-                if let previousSelectedCell = collectionView.cellForItem(at: previousSelected) as? ColorCell {
-                    previousSelectedCell.colorBackgroundView.isHidden = true
-                }
+            if !isEventComplete() {
+                createHabbitButton.isEnabled = false
+            } else {
+                createHabbitButton.layer.backgroundColor = UIColor.black.cgColor
+                createHabbitButton.isEnabled = true
             }
-        default: break
+            
+        default:
+            break
         }
     }
+}
+
+extension IrregularEventViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return categoryViewInset.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: NewHabbitCell.identifier, for: indexPath) as? NewHabbitCell else { return UITableViewCell() }
+        let text = categoryViewInset[indexPath.row]
+        let image = cell.iconImageView.image
+        cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+        cell.layer.masksToBounds = true
+        cell.configureCell(with: text, and: image)
+        return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let categories = EventCategoryViewController()
+        categories.delegate = self
+        self.present(categories, animated: true)
+        categoryTableView.deselectRow(at: indexPath, animated: true)
+    }
+    
 }
 
 extension IrregularEventViewController: UICollectionViewDelegateFlowLayout {
@@ -409,13 +469,13 @@ extension IrregularEventViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == emojiCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else { fatalError() }
-            let index = Emojis.count % indexPath.row
+            let index = indexPath.row % Emojis.count
             let emoji = Emojis[index]
             cell.titleLabel.text = emoji
             return cell
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { fatalError() }
-            let index = Colors.count % indexPath.row
+            let index = indexPath.row % Colors.count
             let color = Colors.colors[index]
             cell.configureCell(with: color.color)
             return cell
@@ -443,36 +503,11 @@ extension IrregularEventViewController: UICollectionViewDataSource {
     
 }
 
-
-
-extension IrregularEventViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryViewInset.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: NewHabbitCell.identifier, for: indexPath) as? NewHabbitCell else { return UITableViewCell() }
-        let text = categoryViewInset[indexPath.row]
-        let image = cell.iconImageView.image
-        cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
-        cell.layer.masksToBounds = true
-        cell.configureCell(with: text, and: image)
-        return cell
-    }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let categories = CategoriesViewController()
-        categories.delegate = self
-        self.present(categories, animated: true)
-    }
-    
-}
-
-extension IrregularEventViewController: CategoriesDelegate {
-    func didSelectCategory(_ selectedCategory: TrackerCategory) {
-        self.selectedCategory = selectedCategory
-        
+extension IrregularEventViewController: EventCategoriesDelegate {
+    func didSelectCategory(_ category: IrregularEventCategory) {
+        self.selectedCategory = category
         guard let cell = categoryTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
-        cell.subLabel.text = selectedCategory.categoryName
+        cell.subLabel.text = category.categoryName
         cell.moveLabel()
     }
 }

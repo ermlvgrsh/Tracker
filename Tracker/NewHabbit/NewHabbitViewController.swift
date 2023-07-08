@@ -12,7 +12,7 @@ final class NewHabbitViewController: UIViewController {
     var selectedEmoji: String?
     var selectedCategory: TrackerCategory?
     var selectedSchedule: [WeekDay]? = []
-    var delegate: NewTrackerDelegate?
+    weak var delegate: NewTrackerDelegate?
  
     
     var isShifted = false
@@ -571,6 +571,7 @@ extension NewHabbitViewController {
 }
 
 extension NewHabbitViewController: CategoriesDelegate {
+
     func didSelectCategory(_ selectedCategory: TrackerCategory) {
         self.selectedCategory = selectedCategory
         guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }

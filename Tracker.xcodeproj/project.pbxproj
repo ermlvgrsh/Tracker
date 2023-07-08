@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		370D0D0B2A542E960074F515 /* IrregularEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D0A2A542E960074F515 /* IrregularEvent.swift */; };
+		370D0D0D2A542F870074F515 /* IrregularEventCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D0C2A542F870074F515 /* IrregularEventCategory.swift */; };
+		370D0D112A542FBD0074F515 /* IrregularEventRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D102A542FBD0074F515 /* IrregularEventRecord.swift */; };
+		370D0D1A2A5618BB0074F515 /* EventCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D192A5618BB0074F515 /* EventCategoryViewController.swift */; };
 		37129C712A3DF1A3003022A6 /* TextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37129C702A3DF1A3003022A6 /* TextField.swift */; };
 		3713FF8929E6E93700287D77 /* Tab Bar Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713FF8829E6E93700287D77 /* Tab Bar Controller.swift */; };
 		37600B6A2A53039D00A712C4 /* IrregularEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37600B692A53039D00A712C4 /* IrregularEventViewController.swift */; };
@@ -40,6 +44,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		370D0D0A2A542E960074F515 /* IrregularEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEvent.swift; sourceTree = "<group>"; };
+		370D0D0C2A542F870074F515 /* IrregularEventCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEventCategory.swift; sourceTree = "<group>"; };
+		370D0D102A542FBD0074F515 /* IrregularEventRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEventRecord.swift; sourceTree = "<group>"; };
+		370D0D192A5618BB0074F515 /* EventCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCategoryViewController.swift; sourceTree = "<group>"; };
 		37129C702A3DF1A3003022A6 /* TextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextField.swift; sourceTree = "<group>"; };
 		3713FF8829E6E93700287D77 /* Tab Bar Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tab Bar Controller.swift"; sourceTree = "<group>"; };
 		37600B692A53039D00A712C4 /* IrregularEventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEventViewController.swift; sourceTree = "<group>"; };
@@ -85,6 +93,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		370D0D0E2A542F8F0074F515 /* Trackers */ = {
+			isa = PBXGroup;
+			children = (
+				37EC3AA32A135C6700681250 /* TrackerCategory.swift */,
+				37EC3AA52A135E1F00681250 /* TrackerRecord.swift */,
+				37EC3A9F2A135A7100681250 /* Tracker.swift */,
+			);
+			path = Trackers;
+			sourceTree = "<group>";
+		};
+		370D0D0F2A542FA10074F515 /* IrregularEvent */ = {
+			isa = PBXGroup;
+			children = (
+				370D0D0A2A542E960074F515 /* IrregularEvent.swift */,
+				370D0D0C2A542F870074F515 /* IrregularEventCategory.swift */,
+				370D0D102A542FBD0074F515 /* IrregularEventRecord.swift */,
+			);
+			path = IrregularEvent;
+			sourceTree = "<group>";
+		};
+		370D0D182A5618950074F515 /* EventCategory */ = {
+			isa = PBXGroup;
+			children = (
+				370D0D192A5618BB0074F515 /* EventCategoryViewController.swift */,
+			);
+			path = EventCategory;
+			sourceTree = "<group>";
+		};
 		37129C6F2A3DF18D003022A6 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				37600B692A53039D00A712C4 /* IrregularEventViewController.swift */,
+				370D0D182A5618950074F515 /* EventCategory */,
 			);
 			path = IrregularEvent;
 			sourceTree = "<group>";
@@ -205,9 +242,8 @@
 		37EC3A9E2A135A4F00681250 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				37EC3A9F2A135A7100681250 /* Tracker.swift */,
-				37EC3AA32A135C6700681250 /* TrackerCategory.swift */,
-				37EC3AA52A135E1F00681250 /* TrackerRecord.swift */,
+				370D0D0F2A542FA10074F515 /* IrregularEvent */,
+				370D0D0E2A542F8F0074F515 /* Trackers */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -368,6 +404,7 @@
 				37775A7929E9CDEA00507D37 /* TrackerCreatorViewController.swift in Sources */,
 				37EC3AA62A135E1F00681250 /* TrackerRecord.swift in Sources */,
 				37A6F8892A100ABD00C8F41D /* CategoriesViewController.swift in Sources */,
+				370D0D0B2A542E960074F515 /* IrregularEvent.swift in Sources */,
 				37A6F88B2A100AFF00C8F41D /* ScheduleCell.swift in Sources */,
 				37F59B7D29DB082000341B05 /* Tracker.xcdatamodeld in Sources */,
 				37F59B7729DB082000341B05 /* TrackersViewController.swift in Sources */,
@@ -378,13 +415,16 @@
 				37775A7529E980CA00507D37 /* TrackersViewCell.swift in Sources */,
 				37F22BCF29E77EAB00C547BE /* StatisticViewController.swift in Sources */,
 				37A6F8942A100D8700C8F41D /* ColorCell.swift in Sources */,
+				370D0D1A2A5618BB0074F515 /* EventCategoryViewController.swift in Sources */,
 				37EC3AA02A135A7100681250 /* Tracker.swift in Sources */,
 				37A6F89C2A100E1400C8F41D /* Colors.swift in Sources */,
 				37F59B7529DB082000341B05 /* SceneDelegate.swift in Sources */,
 				3713FF8929E6E93700287D77 /* Tab Bar Controller.swift in Sources */,
+				370D0D112A542FBD0074F515 /* IrregularEventRecord.swift in Sources */,
 				37EDC4842A3F559B009581BD /* TrackerSupplementaryView.swift in Sources */,
 				37129C712A3DF1A3003022A6 /* TextField.swift in Sources */,
 				37A6F88E2A100B4F00C8F41D /* NewCategoryViewController.swift in Sources */,
+				370D0D0D2A542F870074F515 /* IrregularEventCategory.swift in Sources */,
 				37A6F8912A100D2200C8F41D /* EmojiCell.swift in Sources */,
 				37A6F8872A100AAD00C8F41D /* ScheduleViewController.swift in Sources */,
 				37775A7B29E9F1F800507D37 /* NewHabbitViewController.swift in Sources */,

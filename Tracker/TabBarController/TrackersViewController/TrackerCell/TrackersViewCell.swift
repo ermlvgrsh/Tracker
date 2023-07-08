@@ -2,6 +2,7 @@ import UIKit
 protocol TrackerViewCellDelegate: AnyObject {
     func doneButtonDidTapped(for cell: TrackersViewCell)
     func doneButtonUntapped(for cell: TrackersViewCell)
+ 
 }
 
 class TrackersViewCell: UICollectionViewCell {
@@ -84,6 +85,22 @@ class TrackersViewCell: UICollectionViewCell {
         view.isHidden = true
         return view
     }()
+    
+    func updateDayCounterLabel() {
+        let dayCounterText: String
+        switch dayCounter {
+        case 0:
+            dayCounterText = "0 дней"
+        case 1:
+            dayCounterText = "1 день"
+        case let count where count >= 5:
+            dayCounterText = "\(dayCounter) дней"
+        default:
+            dayCounterText = "\(dayCounter) дней"
+        }
+        daysCounter.text = dayCounterText
+    }
+
 
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
@@ -172,6 +189,7 @@ class TrackersViewCell: UICollectionViewCell {
         self.trackerName.text = trackerName
         self.emoji.text = emoji
         self.backgroundViewDone.layer.backgroundColor = color.cgColor
+        updateDayCounterLabel()
     }
 }
 
@@ -190,3 +208,4 @@ extension TrackersViewCell {
         }
     }
 }
+

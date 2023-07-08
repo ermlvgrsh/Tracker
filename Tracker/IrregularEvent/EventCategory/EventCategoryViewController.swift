@@ -1,15 +1,12 @@
 import UIKit
-
-protocol CategoriesDelegate: AnyObject {
-    func didSelectCategory(_ selectedCategory: TrackerCategory)
+protocol EventCategoriesDelegate: AnyObject {
+    func didSelectCategory(_ category: IrregularEventCategory)
 }
 
-
-final class CategoriesViewController: UIViewController {
+final class EventCategoryViewController: UIViewController {
+    var eventCategories = [IrregularEventCategory]()
     
-    var categories = [TrackerCategory]()
-    
-    weak var delegate: CategoriesDelegate?
+    weak var delegate: EventCategoriesDelegate?
     
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
     
@@ -87,18 +84,18 @@ final class CategoriesViewController: UIViewController {
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(createCategory), for: .touchUpInside)
+        button.addTarget(self, action: #selector(createEventCategory), for: .touchUpInside)
         return button
     }()
     
-    @objc func createCategory() {
+    @objc func createEventCategory() {
         let newCategoryVC = NewCategoryViewController()
-        newCategoryVC.delegate = self
+        newCategoryVC.eventDelegate = self
         present(newCategoryVC, animated: true)
     }
     
     func checkingTableView() {
-        if !categories.isEmpty {
+        if !eventCategories.isEmpty {
             placeholderImage.isHidden = true
             placeholderLabel.isHidden = true
             categoryTableView.isHidden = false
@@ -164,35 +161,35 @@ final class CategoriesViewController: UIViewController {
     }
 }
 
-extension CategoriesViewController: NewCategoryDelegete {
-    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?) {
+extension EventCategoryViewController: NewEventCategoryDelegate {
+    func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?) {
         placeholderImage.isHidden = true
         placeholderLabel.isHidden = true
         categoryTableView.isHidden = false
-        categories.append(category)
+        eventCategories.append(category)
         categoryTableView.reloadData()
         categoryTableView.layoutIfNeeded()
         categoryTableViewHeightConstraint?.constant = categoryTableView.contentSize.height
     }
 }
 
-extension CategoriesViewController: UITableViewDelegate {
+extension EventCategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
-        let selectedCategories = categories[indexPath.row]
+        let selectedCategories = eventCategories[indexPath.row]
         categoryCell.checkmarkImage.isHidden = false
         delegate?.didSelectCategory(selectedCategories)
         dismiss(animated: true)
     }
 }
 
-extension CategoriesViewController: UITableViewDataSource {
+extension EventCategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         return categories.count
+         return eventCategories.count
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -205,7 +202,7 @@ extension CategoriesViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let category = categories[indexPath.row]
+        let category = eventCategories[indexPath.row]
         guard let categoryCell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { return UITableViewCell() }
         let categoryName = category.categoryName
         categoryCell.categoryLabel.text = categoryName
@@ -213,4 +210,3 @@ extension CategoriesViewController: UITableViewDataSource {
         return categoryCell
     }
 }
-

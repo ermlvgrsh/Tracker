@@ -35,7 +35,7 @@ final class NewCategoryViewController: UIViewController {
         return label
     }()
     
-    private let categoryTextField: UITextField = {
+    lazy var categoryTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название категории"
         textField.textColor = .black
@@ -76,7 +76,7 @@ final class NewCategoryViewController: UIViewController {
         }
     }
     
-    private let addCategory: UIButton = {
+    lazy var addCategory: UIButton = {
         let button = UIButton(type: .system)
         button.frame = CGRect(x: 0, y: 0, width: 335, height: 60)
         button.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
@@ -121,7 +121,6 @@ final class NewCategoryViewController: UIViewController {
             
             categoryTextField.topAnchor.constraint(equalTo: newCategoryLabel.bottomAnchor, constant: 38),
             categoryTextField.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            categoryTextField.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
             categoryTextField.widthAnchor.constraint(equalToConstant: 343),
             categoryTextField.heightAnchor.constraint(equalToConstant: 75),
             

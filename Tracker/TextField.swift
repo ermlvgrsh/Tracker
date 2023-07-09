@@ -1,14 +1,22 @@
-
 import UIKit
 
+class CustomToolBar: UIToolbar {
+    
+    override var intrinsicContentSize: CGSize {
+        let height: CGFloat = 44.0
+        let width: CGFloat = UIScreen.main.bounds.width
+        
+        return CGSize(width: width, height: height)
+    }
+}
 extension UIViewController {
     
     func addDoneButtonToKeyboard() {
         let doneButton = UIBarButtonItem(title: "Готово", style: .done, target: self, action: #selector(doneKeyboardTapped))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let toolBar = UIToolbar()
+        let toolBar = CustomToolBar()
         toolBar.items = [flexibleSpace, doneButton]
-        toolBar.sizeToFit()
+        toolBar.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44)
         
         for view in self.view.subviews {
             if let textField = view as? UITextField  {

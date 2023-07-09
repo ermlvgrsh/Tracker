@@ -15,7 +15,7 @@ class ScheduleCell: UITableViewCell {
     }
     var selectedDay: WeekDay?
     
-    let switcher: UISwitch = {
+    lazy var switcher: UISwitch = {
         let switcher = UISwitch()
         switcher.isOn = false
         switcher.onTintColor = UIColor(red: 0.216, green: 0.447, blue: 0.906, alpha: 1)
@@ -75,20 +75,15 @@ class ScheduleCell: UITableViewCell {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
-            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
             titleLabel.widthAnchor.constraint(equalToConstant: 271),
             titleLabel.heightAnchor.constraint(equalToConstant: 22),
             
-            switcher.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 22),
-            switcher.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 276),
+
             switcher.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             switcher.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -22),
             switcher.widthAnchor.constraint(equalToConstant: 51),
             switcher.heightAnchor.constraint(equalToConstant: 31),
             
-            contentView.widthAnchor.constraint(equalToConstant: 343),
-            contentView.heightAnchor.constraint(equalToConstant: 75)
         ])
     }
 }

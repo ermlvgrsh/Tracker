@@ -50,7 +50,6 @@ class CategoryCell: UITableViewCell {
         contentView.addSubview(checkmarkImage)
         NSLayoutConstraint.activate([
             categoryLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
-            categoryLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
             categoryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             categoryLabel.heightAnchor.constraint(equalToConstant: 22),
             categoryLabel.widthAnchor.constraint(equalToConstant: 286),

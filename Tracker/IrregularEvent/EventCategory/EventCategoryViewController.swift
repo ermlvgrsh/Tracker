@@ -69,7 +69,7 @@ final class EventCategoryViewController: UIViewController {
         return tableView
     }()
     
-    private let addCategory: UIButton = {
+    lazy var addCategory: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .white
         button.layer.backgroundColor = UIColor(red: 0.102, green: 0.106, blue: 0.133, alpha: 1).cgColor

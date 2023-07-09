@@ -31,10 +31,7 @@ class EmojiCell: UICollectionViewCell {
             emojiBackgroundView.heightAnchor.constraint(equalToConstant: 52),
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
-            titleLabel.widthAnchor.constraint(equalToConstant: 32),
-            titleLabel.heightAnchor.constraint(equalToConstant: 38)
+
         ])
     }
     

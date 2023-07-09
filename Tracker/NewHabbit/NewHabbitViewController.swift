@@ -74,7 +74,7 @@ final class NewHabbitViewController: UIViewController {
         
     }()
     
-    private let deleteButton: UIButton = {
+    lazy var deleteButton: UIButton = {
         guard let xMarkImage = UIImage(named: "xmark.circle") else { fatalError() }
         
         let button = UIButton(type: .system)
@@ -105,7 +105,7 @@ final class NewHabbitViewController: UIViewController {
     
     let tableViewInstets = ["Категория", "Расписание"]
     
-    private let createHabbitButton: UIButton = {
+    lazy var createHabbitButton: UIButton = {
         let createHabbitButton = UIButton(type: .system)
         createHabbitButton.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
         createHabbitButton.layer.masksToBounds = true
@@ -124,7 +124,7 @@ final class NewHabbitViewController: UIViewController {
         return createHabbitButton
     }()
     
-    private let cancelButton: UIButton = {
+    lazy var cancelButton: UIButton = {
         let cancelButton = UIButton(type: .system)
         cancelButton.backgroundColor = .white
         cancelButton.layer.masksToBounds = true
@@ -145,18 +145,6 @@ final class NewHabbitViewController: UIViewController {
         return cancelButton
     }()
     
-    private let colorBackgroundView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 46, height: 46))
-        view.backgroundColor = UIColor(red: 0.2, green: 0.812, blue: 0.412, alpha: 1)
-        view.layer.masksToBounds = true
-        view.alpha = 0.3
-        view.layer.cornerRadius = 8
-        view.layer.borderWidth = 3
-        view.layer.borderColor = UIColor.white.cgColor
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     private let centralTableView: UITableView = {
         let tableView = UITableView()
          tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
@@ -171,7 +159,7 @@ final class NewHabbitViewController: UIViewController {
          return tableView
     }()
     
-    private let emojiCollectionView: UICollectionView = {
+    lazy var emojiCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 25
         layout.minimumLineSpacing = 14
@@ -186,12 +174,11 @@ final class NewHabbitViewController: UIViewController {
         
     }()
     
-    private let colorCollectionView: UICollectionView = {
+    lazy var colorCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 17
         layout.minimumLineSpacing = 12
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .clear
         collectionView.isScrollEnabled = false
@@ -554,6 +541,7 @@ extension NewHabbitViewController {
             cancelButton.heightAnchor.constraint(equalToConstant: 60)
         ])
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
+        colorCollectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     }
 
     

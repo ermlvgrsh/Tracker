@@ -7,7 +7,7 @@ protocol ScheduleViewControllerDelegate: AnyObject {
 final class ScheduleViewController: UIViewController {
     
     weak var delegate: ScheduleViewControllerDelegate?
-    
+    let weekDays = ScheduleCell().weekDays.count
     var selectedSchedule: [WeekDay?] = []
     
     private let scrollView: UIScrollView = {
@@ -36,6 +36,7 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMinYCorner]
         tableView.layer.cornerRadius = 16
         tableView.backgroundColor = .white
+        tableView.rowHeight = 75
         tableView.isScrollEnabled = false
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
         tableView.separatorColor = .darkGray
@@ -44,7 +45,7 @@ final class ScheduleViewController: UIViewController {
         return tableView
     }()
     
-    private let doneButton: UIButton = {
+    lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.frame = CGRect(x: 0, y: 0, width: 335, height: 60)
         button.backgroundColor = .white
@@ -97,8 +98,7 @@ final class ScheduleViewController: UIViewController {
         scheduleTableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -149),
         
         doneButton.topAnchor.constraint(equalTo: scheduleTableView.bottomAnchor, constant: 39),
-        doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+        doneButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
         doneButton.widthAnchor.constraint(equalToConstant: 335),
         doneButton.heightAnchor.constraint(equalToConstant: 60)
         
@@ -114,7 +114,6 @@ final class ScheduleViewController: UIViewController {
 
 extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let weekDays = ScheduleCell().weekDays.count
         return weekDays
     }
     

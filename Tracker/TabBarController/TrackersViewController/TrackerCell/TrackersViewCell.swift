@@ -6,11 +6,12 @@ protocol TrackerViewCellDelegate: AnyObject {
 }
 
 class TrackersViewCell: UICollectionViewCell {
-    
+
     static let identifier = "TrackerViewCell"
     var dayCounter = 0
     private let isCompleted = false
     weak var delegate: TrackerViewCellDelegate? 
+    var trackerID: UUID?
     
     let trackerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 167, height: 90))
@@ -42,6 +43,7 @@ class TrackersViewCell: UICollectionViewCell {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 143, height: 34))
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         label.textColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
+        label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -57,7 +59,7 @@ class TrackersViewCell: UICollectionViewCell {
         return label
     }()
     
-    let plusButton: UIButton = {
+    lazy var plusButton: UIButton = {
         let button = UIButton()
         let circleImage = UIImage(named: "1plus")?.withRenderingMode(.alwaysTemplate)
         button.setImage(circleImage, for: .normal)
@@ -67,7 +69,7 @@ class TrackersViewCell: UICollectionViewCell {
         return button
     }()
 
-    let doneButton: UIButton = {
+    lazy var doneButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "Done"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -93,6 +95,8 @@ class TrackersViewCell: UICollectionViewCell {
             dayCounterText = "0 дней"
         case 1:
             dayCounterText = "1 день"
+        case 2, 3, 4:
+            dayCounterText = "\(dayCounter) дня"
         case let count where count >= 5:
             dayCounterText = "\(dayCounter) дней"
         default:
@@ -100,7 +104,6 @@ class TrackersViewCell: UICollectionViewCell {
         }
         daysCounter.text = dayCounterText
     }
-
 
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
@@ -151,8 +154,7 @@ class TrackersViewCell: UICollectionViewCell {
             emoji.leadingAnchor.constraint(equalTo: emojiBackgroundView.leadingAnchor),
             emoji.trailingAnchor.constraint(equalTo: emojiBackgroundView.trailingAnchor),
             emoji.bottomAnchor.constraint(equalTo: emojiBackgroundView.bottomAnchor),
-            emoji.heightAnchor.constraint(equalToConstant: 20),
-            emoji.widthAnchor.constraint(equalToConstant: 16),
+
             
             trackerName.topAnchor.constraint(equalTo: trackerView.topAnchor, constant: 44),
             trackerName.leadingAnchor.constraint(equalTo: trackerView.leadingAnchor, constant: 12),

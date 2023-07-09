@@ -49,14 +49,11 @@ class NewHabbitCell: UITableViewCell {
             
             mainLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 27),
             mainLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            mainLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -41),
             mainLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -26),
             mainLabel.widthAnchor.constraint(equalToConstant: 271),
-            mainLabel.heightAnchor.constraint(equalToConstant: 22),
             
             subLabel.topAnchor.constraint(equalTo: mainLabel.bottomAnchor, constant: 2),
             subLabel.leadingAnchor.constraint(equalTo: mainLabel.leadingAnchor),
-            subLabel.trailingAnchor.constraint(equalTo: mainLabel.trailingAnchor),
             subLabel.widthAnchor.constraint(equalToConstant: 271),
             subLabel.heightAnchor.constraint(equalToConstant: 22),
 

@@ -48,10 +48,9 @@ class ColorCell: UICollectionViewCell {
         contentView.addSubview(colorView)
         
         NSLayoutConstraint.activate([
-            colorView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            colorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            colorView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            colorView.centerYAnchor.constraint(equalTo: centerYAnchor),
+
             colorView.heightAnchor.constraint(equalToConstant: 40),
             colorView.widthAnchor.constraint(equalToConstant: 40),
             

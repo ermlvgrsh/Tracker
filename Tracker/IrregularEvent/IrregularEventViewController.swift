@@ -67,7 +67,7 @@ final class IrregularEventViewController: UIViewController {
         return label
     }()
     
-    private let deleteButton: UIButton = {
+    lazy var deleteButton: UIButton = {
         guard let image = UIImage(named: "xmark.circle") else { fatalError() }
         let button = UIButton(type: .system)
         button.setImage(image, for: .normal)
@@ -86,7 +86,7 @@ final class IrregularEventViewController: UIViewController {
         return view
     }()
 
-    private let createHabbitButton: UIButton = {
+    lazy var createHabbitButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
         button.layer.masksToBounds = true
@@ -103,7 +103,7 @@ final class IrregularEventViewController: UIViewController {
         return button
     }()
     
-    private let cancelButton: UIButton = {
+    lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .white
         button.layer.borderColor = UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1).cgColor

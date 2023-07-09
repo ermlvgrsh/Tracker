@@ -21,24 +21,24 @@ final class TrackerCreatorViewController: UIViewController {
     
     private lazy var centerStackView: UIStackView = {
        let stackView = UIStackView(arrangedSubviews: [habbitButton, irregularEventButton])
-        stackView.axis = .horizontal
-        stackView.spacing = 8
+        stackView.axis = .vertical
+        stackView.spacing = 16
         stackView.alignment = .center
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
     
     private lazy var mainStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [createTrackerLabel, UIView(), centerStackView])
+        let stackView = UIStackView(arrangedSubviews: [createTrackerLabel, centerStackView])
         stackView.axis = .vertical
-        stackView.spacing = 0
+        stackView.spacing = 16
         stackView.alignment = .center
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-    private let habbitButton: UIButton = {
+   lazy var habbitButton: UIButton = {
         let habbitButton = UIButton(type: .system)
         habbitButton.backgroundColor = .black
         habbitButton.setTitleColor(.white, for: .normal)
@@ -57,7 +57,7 @@ final class TrackerCreatorViewController: UIViewController {
         return habbitButton
     }()
     
-    private let irregularEventButton: UIButton = {
+    lazy var irregularEventButton: UIButton = {
         let irregularEventButton = UIButton(type: .system)
         irregularEventButton.backgroundColor = .black
         irregularEventButton.setTitleColor(.white, for: .normal)
@@ -99,19 +99,12 @@ final class TrackerCreatorViewController: UIViewController {
             
             mainStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             mainStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            mainStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            mainStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            mainStackView.topAnchor.constraint(equalTo: createTrackerLabel.bottomAnchor, constant: 16),
             
             habbitButton.widthAnchor.constraint(equalToConstant: 335),
             habbitButton.heightAnchor.constraint(equalToConstant: 60),
-            habbitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            habbitButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -40),
             
             irregularEventButton.widthAnchor.constraint(equalToConstant: 335),
             irregularEventButton.heightAnchor.constraint(equalToConstant: 60),
-            irregularEventButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            irregularEventButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 40)
         ])
     }
     

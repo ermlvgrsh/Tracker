@@ -12,6 +12,7 @@ class TrackersViewCell: UICollectionViewCell {
     private let isCompleted = false
     weak var delegate: TrackerViewCellDelegate? 
     var trackerID: UUID?
+    var eventID: UUID?
     
     let trackerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 167, height: 90))
@@ -107,11 +108,13 @@ class TrackersViewCell: UICollectionViewCell {
 
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
+        updateDayCounterLabel()
         delegate.doneButtonDidTapped(for: self)
     }
     
     @objc func removeDayToHabbit() {
         guard let delegate = delegate else { return }
+        updateDayCounterLabel()
         delegate.doneButtonUntapped(for: self)
     }
     

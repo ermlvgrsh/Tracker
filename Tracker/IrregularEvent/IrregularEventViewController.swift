@@ -12,6 +12,7 @@ final class IrregularEventViewController: UIViewController {
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
     var selectedCategory: IrregularEventCategory?
+    var dayCounter = 0
     var isShifted: Bool = false
     
    private let irregularEventLabel: UILabel = {
@@ -127,6 +128,7 @@ final class IrregularEventViewController: UIViewController {
         tableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]
         tableView.layer.cornerRadius = 16
         tableView.backgroundColor = .white
+        tableView.separatorStyle = .none
         tableView.isScrollEnabled = false
         tableView.register(NewHabbitCell.self, forCellReuseIdentifier: NewHabbitCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -187,7 +189,7 @@ final class IrregularEventViewController: UIViewController {
           let emoji = selectedEmoji,
           let color = selectedColor else { return }
         
-        let newEvent = IrregularEvent(id: UUID(), name: name, category: category, emoji: emoji, color: color)
+        let newEvent = IrregularEvent(id: UUID(), name: name, category: category, emoji: emoji, color: color, dayCounter: dayCounter)
         delegate?.didCreateIrregularEvent(newEvent: newEvent, with: category)
         presentingViewController?.presentingViewController?.dismiss(animated: true)
     }

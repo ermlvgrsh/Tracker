@@ -21,12 +21,8 @@ final class TrackersViewController: UIViewController {
     var irregularCategories: [IrregularEventCategory] = []
     var visibleIrregularCategories: [IrregularEventCategory] = []
     var completedEvents: Set<IrregularEventRecord> = []
-    var trackersCounter: [UUID: Int] = [:] {
-        didSet {
-            print("--------TRACKERCOUNTER \(trackersCounter)")
-        }
-    }
-    var eventCounter: [UUID: Int] = [:]
+    var dayCounter = 0
+
     private var datePicker: UIDatePicker?
     private var datePickerView: UIView?
     private var addButtonView: UIView?
@@ -267,23 +263,7 @@ final class TrackersViewController: UIViewController {
         errorLabel.isHidden = true
         collectionView.isHidden = false
     }
-    private func findTrackerByID(_ trackerID: UUID) -> Tracker? {
-        for category in trackersCategory {
-            if let tracker = category.trackers.first(where: { $0.id == trackerID }) {
-                return tracker
-            }
-        }
-        return nil
-    }
-    
-    private func findEventByID(_ eventID: UUID) -> IrregularEvent? {
-        for category in irregularCategories {
-            if let event = category.irregularEvents.first(where: { $0.id == eventID}) {
-                return event
-            }
-        }
-        return nil
-    }
+
     
     private func formattedDateToString(date: Date) -> String {
         let dateFormatter = DateFormatter()
@@ -298,7 +278,7 @@ final class TrackersViewController: UIViewController {
     }
  
     private func updateTrackers() {
-        visibleTrackersCategory.removeAll()
+        visibleTrackersCategory = []
         
         let selectedDay = Calendar.current.component(.weekday, from: valueDatePicker)
         guard let selectedWeekDayEnum = WeekDay(rawValue: selectedDay) else { return }
@@ -339,12 +319,11 @@ final class TrackersViewController: UIViewController {
         
         if let tracker = tracker {
             isTrackerCompleted = isTrackerCompletedOnDate(tracker: tracker, date: datePicker)
-            //trackersCounter[tracker.id] = cell.dayCounter
+            
             isEventCompleted = false
         } else if let event = event {
             isTrackerCompleted = false
             isEventCompleted = isEventCompletedOnDate(event: event, date: datePicker)
-            //eventCounter[event.id] = cell.dayCounter
         } else {
             isTrackerCompleted = false
             isEventCompleted = false
@@ -388,25 +367,19 @@ extension TrackersViewController: UICollectionViewDataSource {
             let visibleTracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
 
             cell.delegate = self
-            cell.configureCell(with: visibleTracker.name, color: visibleTracker.color, emoji: visibleTracker.emoji)
+
+            cell.configureCell(with: visibleTracker.name, color: visibleTracker.color, emoji: visibleTracker.emoji, dayCounter: visibleTracker.dayCounter)
             updateStateButton(for: cell, tracker: visibleTracker, event: nil)
-            if let tracker = findTrackerByID(visibleTracker.id) {
-                cell.trackerID = tracker.id
-                trackersCounter[tracker.id] = cell.dayCounter
-            }
+
             return cell
         } else {
             let irregularSectionIndex = indexPath.section - visibleTrackersCategory.count
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersViewCell.identifier, for: indexPath) as? TrackersViewCell else { fatalError("Unable to dequeue Event") }
             let visibleEvent = visibleIrregularCategories[irregularSectionIndex].irregularEvents[indexPath.row]
-     
+            
             cell.delegate = self
-            cell.configureCell(with: visibleEvent.name, color: visibleEvent.color, emoji: visibleEvent.emoji)
+            cell.configureCell(with: visibleEvent.name, color: visibleEvent.color, emoji: visibleEvent.emoji, dayCounter: visibleEvent.dayCounter)
             updateStateButton(for: cell, tracker: nil, event: visibleEvent)
-            if let event = findEventByID(visibleEvent.id) {
-                cell.eventID = event.id
-                eventCounter[event.id] = cell.dayCounter
-            }
             return cell
         }
     }
@@ -561,32 +534,46 @@ extension TrackersViewController: TrackerViewCellDelegate {
 
     func doneButtonUntapped(for cell: TrackersViewCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        
         let isTrackerSection = indexPath.section < visibleTrackersCategory.count
         if isTrackerSection {
-            let tracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
+            let trackerIndex = indexPath.row
+            let categoryIndex = indexPath.section
+            var category = trackersCategory[categoryIndex]
+            
+            var trackers = category.trackers
+            let tracker = trackers[trackerIndex]
+            
             if completedTrackers.contains(where: { $0.id == tracker.id && $0.date == valueDatePicker }) {
-                completedTrackers = completedTrackers.filter {$0.id == tracker.id && $0.date != valueDatePicker }
+                let updateTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, dayCounter: tracker.dayCounter - 1)
+                trackers[trackerIndex] = updateTracker
+                
+                let updateCategory = TrackerCategory(categoryName: category.categoryName, trackers: trackers)
+                trackersCategory[categoryIndex] = updateCategory
+                completedTrackers = completedTrackers.filter { $0.id == tracker.id && $0.date != valueDatePicker }
+                
                 cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
-                    if cell.dayCounter > 0 {
-                        cell.dayCounter -= 1
-                    }
-                    self.trackersCounter[tracker.id] = cell.dayCounter
+                    cell.daysCounter.text = cell.updateDayCounterLabel(with: updateTracker.dayCounter)
                     cell.backgroundViewDone.isHidden = true
-                    cell.updateDayCounterLabel()
                 }
             }
         } else {
             let eventIndexSection = indexPath.section - visibleTrackersCategory.count
-            let event = visibleIrregularCategories[eventIndexSection].irregularEvents[indexPath.row]
+            let eventIndex = indexPath.row
+            let category = visibleIrregularCategories[eventIndexSection]
+            var events = category.irregularEvents
+            let event = events[eventIndex]
+            
             if completedEvents.contains(where: { $0.id == event.id && $0.date == valueDatePicker}) {
+                let updateEvent = IrregularEvent(id: event.id, name: event.name, category: event.category, emoji: event.emoji, color: event.color, dayCounter: event.dayCounter - 1)
+                events[eventIndex] = updateEvent
+                let updateCategory = IrregularEventCategory(categoryName: category.categoryName, irregularEvents: events)
+                visibleIrregularCategories[eventIndexSection] = updateCategory
                 completedEvents = completedEvents.filter{ $0.id == event.id && $0.date != valueDatePicker }
                 cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
-                    if cell.dayCounter > 0 {
-                        cell.dayCounter -= 1
-                    }
-                    self.eventCounter[event.id] = cell.dayCounter
+                    cell.daysCounter.text = cell.updateDayCounterLabel(with: updateEvent.dayCounter)
                     cell.backgroundViewDone.isHidden = true
-                    cell.updateDayCounterLabel()
+                   
                 }
             }
         }
@@ -600,36 +587,46 @@ extension TrackersViewController: TrackerViewCellDelegate {
         
         let isTrackSection = indexPath.section < visibleTrackersCategory.count
         if isTrackSection {
-            let tracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
+            let trackerIndex = indexPath.row
+            let categoryIndex = indexPath.section
+            
+            var category = trackersCategory[categoryIndex]
+            var trackers = category.trackers
+            let tracker = trackers[trackerIndex]
+
             if today >= datePicker {
+                let updatedTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, dayCounter: tracker.dayCounter + 1)
+                trackers[trackerIndex] = updatedTracker
+                let updatedCategory = TrackerCategory(categoryName: category.categoryName, trackers: trackers)
+                trackersCategory[categoryIndex] = updatedCategory
                 completedTrackers.insert(TrackerRecord(id: tracker.id, date: valueDatePicker))
                 
-               
-                
                 cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
-
-                    cell.dayCounter += 1
-                    self.trackersCounter[tracker.id] = cell.dayCounter
+                    cell.daysCounter.text = cell.updateDayCounterLabel(with: updatedTracker.dayCounter)
                     cell.backgroundViewDone.alpha = 0.3
                     cell.backgroundViewDone.isHidden = false
-                    cell.updateDayCounterLabel()
                 }
             }
         } else {
             let eventIndexSection = indexPath.section - visibleTrackersCategory.count
-            let event = irregularCategories[eventIndexSection].irregularEvents[indexPath.row]
+            let categoryIndex = eventIndexSection
+            let eventIndex = indexPath.row
+            let category = visibleIrregularCategories[categoryIndex]
+            var events = category.irregularEvents
+            let event = events[eventIndex]
             if today >= datePicker {
                 
+                let updatedEvent = IrregularEvent(id: event.id, name: event.name, category: event.category, emoji: event.emoji, color: event.color, dayCounter: event.dayCounter + 1)
+                events[eventIndex] = updatedEvent
+                let updateCategory = IrregularEventCategory(categoryName: category.categoryName, irregularEvents: events)
+                visibleIrregularCategories[categoryIndex] = updateCategory
                 completedEvents.insert(IrregularEventRecord(id: event.id, date: valueDatePicker))
                     
 
                 cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
-                    
-                    cell.dayCounter += 1
-                    self.eventCounter[event.id] = cell.dayCounter
+                    cell.daysCounter.text = cell.updateDayCounterLabel(with: updatedEvent.dayCounter)
                     cell.backgroundViewDone.alpha = 0.3
                     cell.backgroundViewDone.isHidden = false
-                    cell.updateDayCounterLabel()
                 }
             }
         }

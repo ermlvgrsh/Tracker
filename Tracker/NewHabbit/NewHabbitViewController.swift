@@ -12,6 +12,7 @@ final class NewHabbitViewController: UIViewController {
     var selectedEmoji: String?
     var selectedCategory: TrackerCategory?
     var selectedSchedule: [WeekDay]? = []
+    var dayCounter = 0
     weak var delegate: NewTrackerDelegate?
  
     
@@ -214,7 +215,7 @@ final class NewHabbitViewController: UIViewController {
               let category = selectedCategory,
               let schedule = selectedSchedule else { return }
         
-        let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji)
+        let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji, dayCounter: dayCounter)
 
         delegate?.didCreateTracker(newTracker: newTracker, with: category)
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)

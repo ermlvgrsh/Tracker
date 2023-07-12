@@ -8,12 +8,11 @@ protocol TrackerViewCellDelegate: AnyObject {
 class TrackersViewCell: UICollectionViewCell {
 
     static let identifier = "TrackerViewCell"
-    var dayCounter = 0
     private let isCompleted = false
     weak var delegate: TrackerViewCellDelegate? 
     var trackerID: UUID?
     var eventID: UUID?
-    
+    var dayCounter = 0
     let trackerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 167, height: 90))
         view.backgroundColor = .white
@@ -89,32 +88,30 @@ class TrackersViewCell: UICollectionViewCell {
         return view
     }()
     
-    func updateDayCounterLabel() {
+    func updateDayCounterLabel(with day: Int) -> String {
         let dayCounterText: String
-        switch dayCounter {
+        switch day {
         case 0:
             dayCounterText = "0 дней"
         case 1:
             dayCounterText = "1 день"
         case 2, 3, 4:
-            dayCounterText = "\(dayCounter) дня"
+            dayCounterText = "\(day) дня"
         case let count where count >= 5:
-            dayCounterText = "\(dayCounter) дней"
+            dayCounterText = "\(day) дней"
         default:
-            dayCounterText = "\(dayCounter) дней"
+            dayCounterText = "\(day) дней"
         }
-        daysCounter.text = dayCounterText
+        return dayCounterText
     }
 
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
-        updateDayCounterLabel()
         delegate.doneButtonDidTapped(for: self)
     }
     
     @objc func removeDayToHabbit() {
         guard let delegate = delegate else { return }
-        updateDayCounterLabel()
         delegate.doneButtonUntapped(for: self)
     }
     
@@ -188,13 +185,14 @@ class TrackersViewCell: UICollectionViewCell {
         ])
     }
     
-    func configureCell(with trackerName: String, color: UIColor, emoji: String) {
+    func configureCell(with trackerName: String, color: UIColor, emoji: String, dayCounter: Int) {
         trackerView.layer.backgroundColor = color.cgColor
         plusButton.tintColor = color
         self.trackerName.text = trackerName
         self.emoji.text = emoji
         self.backgroundViewDone.layer.backgroundColor = color.cgColor
-        updateDayCounterLabel()
+        self.dayCounter = dayCounter
+        self.daysCounter.text = updateDayCounterLabel(with: dayCounter)
     }
 }
 

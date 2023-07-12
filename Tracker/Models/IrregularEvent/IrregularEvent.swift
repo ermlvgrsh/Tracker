@@ -6,4 +6,5 @@ struct IrregularEvent {
     let category: IrregularEventCategory
     let emoji: String
     let color: UIColor
+    let dayCounter: Int
 }

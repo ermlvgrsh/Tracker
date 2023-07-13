@@ -1,8 +1,14 @@
 import UIKit
 
-
+protocol ScheduleViewControllerDelegate: AnyObject {
+    func didSetSchedule(for weekDays: [WeekDay])
+}
 
 final class ScheduleViewController: UIViewController {
+    
+    weak var delegate: ScheduleViewControllerDelegate?
+    let weekDays = ScheduleCell().weekDays.count
+    var selectedSchedule: [WeekDay?] = []
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -30,6 +36,7 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMinYCorner]
         tableView.layer.cornerRadius = 16
         tableView.backgroundColor = .white
+        tableView.rowHeight = 75
         tableView.isScrollEnabled = false
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
         tableView.separatorColor = .darkGray
@@ -38,7 +45,7 @@ final class ScheduleViewController: UIViewController {
         return tableView
     }()
     
-    private let doneButton: UIButton = {
+    lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.frame = CGRect(x: 0, y: 0, width: 335, height: 60)
         button.backgroundColor = .white
@@ -59,6 +66,7 @@ final class ScheduleViewController: UIViewController {
     }()
     
     @objc func doneButtonTapped() {
+        delegate?.didSetSchedule(for: selectedSchedule.compactMap{ $0 } )
         dismiss(animated: true)
     }
     
@@ -90,8 +98,7 @@ final class ScheduleViewController: UIViewController {
         scheduleTableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -149),
         
         doneButton.topAnchor.constraint(equalTo: scheduleTableView.bottomAnchor, constant: 39),
-        doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+        doneButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
         doneButton.widthAnchor.constraint(equalToConstant: 335),
         doneButton.heightAnchor.constraint(equalToConstant: 60)
         
@@ -107,7 +114,6 @@ final class ScheduleViewController: UIViewController {
 
 extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let weekDays = ScheduleCell().weekDays.count
         return weekDays
     }
     
@@ -116,10 +122,12 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCell.identifier, for: indexPath) as? ScheduleCell else { return UITableViewCell() }
         let weekDay = ScheduleCell().weekDays[indexPath.row]
         cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+        cell.delegate = self
         cell.configureCell(with: weekDay)
         return cell
         
     }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
@@ -127,5 +135,22 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.size.width, bottom: 0, right: 0)
         }
     }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        scheduleTableView.deselectRow(at: indexPath, animated: true)
+    }
 }
+
+extension ScheduleViewController: ScheduleCellDelegate {
+    func switchValueDidChanged(for cell: ScheduleCell, isOn: Bool) {
+        guard let indexPath = scheduleTableView.indexPath(for: cell) else { fatalError() }
+        let selectedDay = cell.weekDays[indexPath.row]
+        if isOn {
+            selectedSchedule.append(selectedDay)
+        } else {
+            if let index = selectedSchedule.firstIndex(of: selectedDay) {
+                selectedSchedule.remove(at: index)
+            }
+        }
+    }
+}
+

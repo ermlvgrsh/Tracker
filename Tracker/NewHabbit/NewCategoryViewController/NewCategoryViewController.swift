@@ -1,7 +1,18 @@
 import UIKit
 
+protocol NewCategoryDelegete: AnyObject {
+    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?)
+}
+protocol NewEventCategoryDelegate: AnyObject {
+    func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?)
+}
 
 final class NewCategoryViewController: UIViewController {
+    
+    weak var delegate: NewCategoryDelegete?
+    weak var eventDelegate: NewEventCategoryDelegate?
+    
+    var namedCategory: String?
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -24,7 +35,7 @@ final class NewCategoryViewController: UIViewController {
         return label
     }()
     
-    private let categoryTextField: UITextField = {
+    lazy var categoryTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите название категории"
         textField.textColor = .black
@@ -41,7 +52,19 @@ final class NewCategoryViewController: UIViewController {
      }()
     
     @objc func doneButtonTapped() {
-        print("")
+        guard let categoryName = categoryTextField.text else { return }
+        if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
+            var categories = CategoriesViewController().categories
+            let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
+            categories.append(newCategory)
+            delegate?.didSaveCategory(newCategory, namedCategory: namedCategory)
+        } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
+            var categories = EventCategoryViewController().eventCategories
+            let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
+            categories.append(newEvent)
+            eventDelegate?.didSaveEventCategory(newEvent, namedCategory: namedCategory)
+        }
+        dismiss(animated: true)
     }
     
     @objc func textFieldDidChanged(_ textfield: UITextField) {
@@ -53,7 +76,7 @@ final class NewCategoryViewController: UIViewController {
         }
     }
     
-    private let addCategory: UIButton = {
+    lazy var addCategory: UIButton = {
         let button = UIButton(type: .system)
         button.frame = CGRect(x: 0, y: 0, width: 335, height: 60)
         button.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
@@ -75,10 +98,11 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+
      }
     
     func setupUI() {
-        categoryTextField.becomeFirstResponder()
+        categoryTextField.delegate = self
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(categoryTextField)
@@ -97,7 +121,6 @@ final class NewCategoryViewController: UIViewController {
             
             categoryTextField.topAnchor.constraint(equalTo: newCategoryLabel.bottomAnchor, constant: 38),
             categoryTextField.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            categoryTextField.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
             categoryTextField.widthAnchor.constraint(equalToConstant: 343),
             categoryTextField.heightAnchor.constraint(equalToConstant: 75),
             
@@ -112,5 +135,12 @@ final class NewCategoryViewController: UIViewController {
 }
 
 extension NewCategoryViewController: UITextFieldDelegate {
-    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        namedCategory = textField.text
+    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        addDoneButtonToKeyboard()
+    }
 }
+
+

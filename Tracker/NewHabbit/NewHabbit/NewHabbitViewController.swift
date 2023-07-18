@@ -14,6 +14,7 @@ final class NewHabbitViewController: UIViewController {
     var selectedSchedule: [WeekDay]? = []
     var dayCounter = 0
     weak var delegate: NewTrackerDelegate?
+    var trackerService: TrackerService = TrackerService.shared
  
     
     var isShifted = false
@@ -218,6 +219,7 @@ final class NewHabbitViewController: UIViewController {
         let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji, dayCounter: dayCounter)
 
         delegate?.didCreateTracker(newTracker: newTracker, with: category)
+            //trackerService.addNewTracker(tracker: newTracker, categoryName: category.categoryName)
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     

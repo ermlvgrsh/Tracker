@@ -189,7 +189,7 @@ final class IrregularEventViewController: UIViewController {
           let emoji = selectedEmoji,
           let color = selectedColor else { return }
         
-        let newEvent = IrregularEvent(id: UUID(), name: name, category: category, emoji: emoji, color: color, dayCounter: dayCounter)
+        let newEvent = IrregularEvent(id: UUID(), name: name, emoji: emoji, color: color, dayCounter: dayCounter)
         delegate?.didCreateIrregularEvent(newEvent: newEvent, with: category)
         presentingViewController?.presentingViewController?.dismiss(animated: true)
     }

@@ -1,4 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="21G83" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="EventCategoryCoreData" representedClassName="EventCategoryCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="eventCategoryName" optional="YES" attributeType="String"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IrregularEventCoreData" inverseName="category" inverseEntity="IrregularEventCoreData"/>
+    </entity>
+    <entity name="EventRecordCoreData" representedClassName="EventRecordCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="eventDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="eventID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="toEvent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IrregularEventCoreData"/>
+    </entity>
+    <entity name="IrregularEventCoreData" representedClassName="IrregularEventCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="dayCounter" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="eventColor" optional="YES" attributeType="String"/>
+        <attribute name="eventEmoji" optional="YES" attributeType="String"/>
+        <attribute name="eventID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="eventName" optional="YES" attributeType="String"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EventCategoryCoreData" inverseName="events" inverseEntity="EventCategoryCoreData"/>
+    </entity>
+    <entity name="TrackerCategoryCoreData" representedClassName="TrackerCategoryCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="categoryName" optional="YES" attributeType="String"/>
+        <relationship name="trackers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackerCoreData" inverseName="category" inverseEntity="TrackerCoreData"/>
+    </entity>
+    <entity name="TrackerCoreData" representedClassName="TrackerCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="color" optional="YES" attributeType="String"/>
+        <attribute name="dayCounter" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="emoji" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="schedule" optional="YES" attributeType="Binary"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TrackerCategoryCoreData" inverseName="trackers" inverseEntity="TrackerCategoryCoreData"/>
+    </entity>
+    <entity name="TrackerRecordCoreData" representedClassName="TrackerRecordCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="trackerID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
 </model>

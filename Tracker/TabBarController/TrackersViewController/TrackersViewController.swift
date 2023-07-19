@@ -3,8 +3,8 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     var currentDate = Date()
-    
-    var valueDatePicker: Date = Date() {
+
+    var valueDatePicker: Date = Date()  {
         didSet {
             updateTrackers()
         }
@@ -294,6 +294,8 @@ final class TrackersViewController: UIViewController {
         eventService.filteredEvents = eventService.eventCategories
         if trackerService.filteredTrackers.isEmpty && eventService.filteredEvents.isEmpty {
             showErrors()
+            placeholderImage.isHidden = true
+            placeholderLabel.isHidden = true
         } else {
             hideErrors()
             configureCollectionView()
@@ -490,6 +492,9 @@ extension TrackersViewController: IrregularEventDelegate {
 extension TrackersViewController: TrackerViewCellDelegate {
 
 func doneButtonUntapped(for cell: TrackersViewCell) {
+
+    let calendar = Calendar.current
+    guard let valueDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: valueDatePicker)) else { return }
       guard let indexPath = collectionView.indexPath(for: cell) else { return }
       
     let isTrackerSection = indexPath.section < trackerService.filteredTrackers.count
@@ -504,7 +509,7 @@ func doneButtonUntapped(for cell: TrackersViewCell) {
               let updateTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, dayCounter: max(tracker.dayCounter - 1, 0))
               trackerService.updateTracker(tracker: updateTracker)
 
-              trackerService.deleteTrackerRecord(trackerRecord: TrackerRecord(id: updateTracker.id, date: valueDatePicker))
+              trackerService.deleteTrackerRecord(trackerRecord: TrackerRecord(id: updateTracker.id, date: valueDate))
               
               cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
                   cell.daysCounter.text = cell.updateDayCounterLabel(with: updateTracker.dayCounter)
@@ -520,7 +525,7 @@ func doneButtonUntapped(for cell: TrackersViewCell) {
           
           if eventService.completedEvents.contains(where: { $0.id == event.id && formattedDateToString(date: $0.date) == formattedDateToString(date: valueDatePicker)}) {
               let updateEvent = IrregularEvent(id: event.id, name: event.name, emoji: event.emoji, color: event.color, dayCounter: event.dayCounter - 1)
-              let deletedRecord = IrregularEventRecord(id: updateEvent.id, date: valueDatePicker)
+              let deletedRecord = IrregularEventRecord(id: updateEvent.id, date: valueDate)
               eventService.updateEvent(event: updateEvent)
               eventService.deleteEventRecord(eventRecord: deletedRecord)
               cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
@@ -533,6 +538,8 @@ func doneButtonUntapped(for cell: TrackersViewCell) {
   }
 
 func doneButtonDidTapped(for cell: TrackersViewCell) {
+    let calendar = Calendar.current
+    guard let valueDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: valueDatePicker)) else { return }
        guard let indexPath = collectionView.indexPath(for: cell) else { return }
        
        let today = formattedDateToString(date: currentDate)
@@ -550,7 +557,7 @@ func doneButtonDidTapped(for cell: TrackersViewCell) {
            if today >= datePicker {
                let updatedTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, dayCounter: tracker.dayCounter + 1)
                
-               let newRecord = TrackerRecord(id: updatedTracker.id, date: valueDatePicker)
+               let newRecord = TrackerRecord(id: updatedTracker.id, date: valueDate)
                trackerService.updateTracker(tracker: updatedTracker)
                trackerService.addTrackerRecord(trackerRecord: newRecord)
                
@@ -571,7 +578,7 @@ func doneButtonDidTapped(for cell: TrackersViewCell) {
                
                let updatedEvent = IrregularEvent(id: event.id, name: event.name, emoji: event.emoji, color: event.color, dayCounter: event.dayCounter + 1)
 
-               let newRecord = IrregularEventRecord(id: updatedEvent.id, date: valueDatePicker)
+               let newRecord = IrregularEventRecord(id: updatedEvent.id, date: valueDate)
                eventService.updateEvent(event: event)
                eventService.addEventRecord(eventRecord: newRecord)
 

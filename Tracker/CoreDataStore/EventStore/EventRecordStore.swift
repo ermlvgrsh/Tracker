@@ -12,8 +12,6 @@ final class EventRecordStore: Store {
         return eventRecords
     }
     
-    
-    
     private lazy var fetchRequest: NSFetchRequest<EventRecordCoreData> = {
         let request = EventRecordCoreData.fetchRequest()
         request.sortDescriptors = [

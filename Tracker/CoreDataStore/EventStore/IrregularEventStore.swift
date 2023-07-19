@@ -5,7 +5,7 @@ final class IrregularEventStore: Store {
     
     private lazy var fetchRequest: NSFetchRequest<IrregularEventCoreData> = {
         let fetchRequest = IrregularEventCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \IrregularEventCoreData.id, ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \IrregularEventCoreData.eventID, ascending: true)]
         return fetchRequest
     }()
     
@@ -22,10 +22,27 @@ final class IrregularEventStore: Store {
         save()
     }
     
+    lazy var resultsController: NSFetchedResultsController<IrregularEventCoreData> = {
+        let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        resultsController.delegate = self
+        return resultsController
+    }()
+    
+    override init(storeDelegate: StoreDelegate) {
+        super.init(storeDelegate: storeDelegate)
+        try? resultsController.performFetch()
+    }
+    
     func fetchEventByID(eventID: UUID) -> IrregularEventCoreData? {
         fetchRequest.predicate = NSPredicate(format: "eventID == %@", eventID as NSUUID)
         let results = try! context.fetch(fetchRequest)
         return results.first
+    }
+    
+    func updateEvent(event: IrregularEvent) {
+        guard let existingEvent = fetchEventByID(eventID: event.id) else { return }
+        existingEvent.dayCounter = Int32(event.dayCounter)
+        save()
     }
 }
 
@@ -38,5 +55,12 @@ extension IrregularEventCoreData {
               let color = eventColor else { return nil }
         let dayCounter = Int(dayCounter)
         return IrregularEvent(id: id, name: name, emoji: emoji, color: UIColorMarshalling.deserialazeColor(color), dayCounter: dayCounter)
+    }
+}
+
+extension IrregularEventStore: NSFetchedResultsControllerDelegate {
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        storeDelegate?.didChangeContent()
     }
 }

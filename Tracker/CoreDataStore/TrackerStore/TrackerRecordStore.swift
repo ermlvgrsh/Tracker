@@ -13,7 +13,10 @@ final class TrackerRecordStore: Store {
     
     private lazy var fetchRequest: NSFetchRequest<TrackerRecordCoreData> = {
         let fetchRequest = TrackerRecordCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.trackerID, ascending: true)]
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(keyPath: \TrackerRecordCoreData.id, ascending: true),
+            NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)
+        ]
         return fetchRequest
     }()
     
@@ -33,19 +36,27 @@ final class TrackerRecordStore: Store {
     
     func addRecord(trackerRecord: TrackerRecord) {
         let trackerRecordCoreData = TrackerRecordCoreData(context: context)
-        trackerRecordCoreData.trackerID = trackerRecord.id
+        trackerRecordCoreData.id = trackerRecord.id
         trackerRecordCoreData.date = trackerRecord.date
+     
         save()
     }
     
     func deleteRecord(trackerRecord: TrackerRecord) {
         let request = TrackerRecordCoreData.fetchRequest()
-        request.predicate = NSPredicate(format: "trackerID == %@ AND date == %@", argumentArray: [trackerRecord.id, trackerRecord.date])
-        guard let records = try? context.fetch(request) else { return }
-        for record in records {
-            context.delete(record)
+        request.predicate = NSPredicate(format: "id == %@ AND date == %@", argumentArray: [trackerRecord.id, trackerRecord.date])
+        do {
+            let records = try context.fetch(request)
+            guard let recordToDelete = records.first else {
+                print("NOT FOUND")
+                return
+            }
+            context.delete(recordToDelete)
+            save()
+        } catch {
+            print("UNEXPECTED ERROR \(error)")
         }
-        save()
+     
     }
 }
 
@@ -60,7 +71,7 @@ extension TrackerRecordStore: NSFetchedResultsControllerDelegate {
 extension TrackerRecordCoreData {
     
     func toTrackerRecord() -> TrackerRecord? {
-        guard let date = date, let trackerID = trackerID else { return nil }
-        return TrackerRecord(id: trackerID, date: date)
+        guard let date = date, let id = id else { return nil }
+        return TrackerRecord(id: id, date: date)
     }
 }

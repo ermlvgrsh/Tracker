@@ -22,6 +22,10 @@ final class IrregularCategoryStore: Store {
         return controller
     }()
     
+    var numberOfCategories: Int {
+        resultsController.fetchedObjects?.count ?? 0
+    }
+    
     override init(storeDelegate: StoreDelegate) {
         super.init(storeDelegate: storeDelegate)
         try? resultsController.performFetch()
@@ -54,8 +58,25 @@ final class IrregularCategoryStore: Store {
         save()
     }
     
+    func numberOfSections(section: Int) -> Int {
+        let categories = self.categories
+
+        guard section >= 0 && section < categories.count else {
+            print("Error: Invalid section index.")
+            return 0
+        }
+
+        return categories[section].irregularEvents.count
+    }
+
     func fetchName(categoryName: String) -> IrregularEventCategory? {
         return getByName(categoryName: categoryName)?.toEventCategory()
+    }
+    
+    func fetchCategory(at index: Int) -> String? {
+        guard let categoryCoreData = resultsController.fetchedObjects else { return nil}
+        guard index >= 0 && index < categoryCoreData.count else { return nil}
+        return categoryCoreData[index].eventCategoryName
     }
 }
 

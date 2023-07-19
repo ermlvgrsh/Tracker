@@ -8,7 +8,9 @@ final class TrackerService {
     private(set) var categories: [TrackerCategory] = []
     private(set) var completedTrackers: Set<TrackerRecord> = []
     
-    private lazy var trackerStore: TrackerStore = {
+    var filteredTrackers: [TrackerCategory] = []
+    
+    lazy var trackerStore: TrackerStore = {
         let trackerStore = TrackerStore(storeDelegate: self)
         return trackerStore
     }()
@@ -18,10 +20,19 @@ final class TrackerService {
         return trackerCategoryStore
     }()
     
-    private lazy var trackerRecordStore: TrackerRecordStore = {
+     lazy var trackerRecordStore: TrackerRecordStore = {
         let trackerRecordStore = TrackerRecordStore(storeDelegate: self)
         return trackerRecordStore
     }()
+
+    func fetchCategory(at index: Int) -> String? {
+        trackerCategoryStore.fetchCategory(at: index)
+    }
+    
+    func fetchTracker(at indexPath: IndexPath) -> Tracker? {
+        let trackerCore = trackerStore.resultsController.object(at: indexPath)
+        return trackerCore.toTracker(decoder: JSONDecoder())
+    }
     
     private init() {
         categories = trackerCategoryStore.categories
@@ -31,7 +42,6 @@ final class TrackerService {
     func updateTracker(tracker: Tracker) {
         trackerStore.updateTracker(tracker: tracker)
     }
-    
 
 
     func addNewTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
@@ -50,11 +60,26 @@ final class TrackerService {
             let currentTrackers = category.trackers.filter { tracker in
                 filter(tracker)
             }
-            if currentTrackers.count > 0 {
-                filteredCategories.append(TrackerCategory(categoryName: category.categoryName, trackers: currentTrackers))
+            if !currentTrackers.isEmpty { 
+                let filteredCategory = TrackerCategory(categoryName: category.categoryName, trackers: currentTrackers)
+                filteredCategories.append(filteredCategory)
             }
         }
+        filteredTrackers = filteredCategories
         return filteredCategories
+    }
+    
+    func filterTrackersByWeekDay(_ selectedDay: Int) -> [TrackerCategory] {
+        return filterTrackers { tracker in
+            guard let selectedDayEnum = WeekDay(rawValue: selectedDay) else { return false }
+            return tracker.schedule?.contains(selectedDayEnum) == true
+        }
+    }
+    
+    func filterTrackersByName(_ searchText: String) -> [TrackerCategory] {
+        return filterTrackers { tracker in
+            return tracker.name.localizedStandardContains(searchText)
+        }
     }
     
     func addTrackerRecord(trackerRecord: TrackerRecord) {

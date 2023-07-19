@@ -13,6 +13,17 @@ final class TrackerStore: Store {
         return fetchRequest
     }()
     
+    lazy var resultsController: NSFetchedResultsController<TrackerCoreData> = {
+        let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        resultsController.delegate = self
+        return resultsController
+    }()
+    
+    override init(storeDelegate: StoreDelegate) {
+        super.init(storeDelegate: storeDelegate)
+        try? resultsController.performFetch()
+    }
+    
     func addTracker(tracker: Tracker, category: TrackerCategoryCoreData?) {
         guard let category else { return }
         let trackerCoreData = TrackerCoreData(context: context)
@@ -55,4 +66,11 @@ extension TrackerCoreData {
         return Tracker(id: id, name: name, schedule: weekDay, color: UIColorMarshalling.deserialazeColor(color), emoji: emoji, dayCounter: Int(dayCounter))
     }
     
+}
+extension TrackerStore: NSFetchedResultsControllerDelegate {
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        storeDelegate?.didChangeContent()
+    }
+
 }

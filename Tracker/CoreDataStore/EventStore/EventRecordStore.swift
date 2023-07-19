@@ -16,7 +16,9 @@ final class EventRecordStore: Store {
     
     private lazy var fetchRequest: NSFetchRequest<EventRecordCoreData> = {
         let request = EventRecordCoreData.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \EventRecordCoreData.eventID, ascending: true)]
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \EventRecordCoreData.eventID, ascending: true),
+            NSSortDescriptor(keyPath: \EventRecordCoreData.eventDate, ascending: true)]
         return request
     }()
     
@@ -43,10 +45,17 @@ final class EventRecordStore: Store {
     
     func deleteRecord(record: IrregularEventRecord) {
         let request = EventRecordCoreData.fetchRequest()
-        request.predicate = NSPredicate(format: "eventID == %@ AND date == %@", argumentArray: [record.id, record.date])
-        guard let records = try? context.fetch(request) else { return }
-        for record in records {
-            context.delete(record)
+        request.predicate = NSPredicate(format: "eventID == %@ AND eventDate == %@", argumentArray: [record.id, record.date])
+        do {
+            let records = try context.fetch(request)
+            guard let recordToDelete = records.first else {
+                print("NOT FOUND")
+                return
+            }
+            context.delete(recordToDelete)
+            save()
+        } catch {
+            print("UNEXPECTED ERROR \(error)")
         }
         save()
     }

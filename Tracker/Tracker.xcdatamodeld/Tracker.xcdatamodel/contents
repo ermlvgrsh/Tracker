@@ -7,7 +7,6 @@
     <entity name="EventRecordCoreData" representedClassName="EventRecordCoreData" syncable="YES" codeGenerationType="class">
         <attribute name="eventDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="eventID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="toEvent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IrregularEventCoreData"/>
     </entity>
     <entity name="IrregularEventCoreData" representedClassName="IrregularEventCoreData" syncable="YES" codeGenerationType="class">
         <attribute name="dayCounter" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -32,6 +31,6 @@
     </entity>
     <entity name="TrackerRecordCoreData" representedClassName="TrackerRecordCoreData" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="trackerID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
 </model>

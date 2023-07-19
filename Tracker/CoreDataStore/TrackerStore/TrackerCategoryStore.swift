@@ -20,6 +20,10 @@ final class TrackerCategoryStore: Store {
         return fetchRequest
     }()
     
+    var numberOfCategories: Int {
+        resultsController.fetchedObjects?.count ?? 0
+    }
+    
     lazy var resultsController: NSFetchedResultsController<TrackerCategoryCoreData> = {
         let resultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
         resultsController.delegate = self
@@ -30,6 +34,24 @@ final class TrackerCategoryStore: Store {
         super.init(storeDelegate: storeDelegate)
         try? resultsController.performFetch()
     }
+    
+    func numberOfSections(section: Int) -> Int {
+        let categories = self.categories
+
+        guard section >= 0 && section < categories.count else {
+            print("Error: Invalid section index.")
+            return 0
+        }
+
+        return categories[section].trackers.count
+    }
+    
+    func fetchCategory(at index: Int) -> String? {
+        guard let categoryCoreData = resultsController.fetchedObjects else { return nil}
+        guard index >= 0 && index < categoryCoreData.count else { return nil}
+        return categoryCoreData[index].categoryName
+    }
+    
     
     func addCategory(trackerCategory: TrackerCategory) {
         let trackerCategoryCoreData = TrackerCategoryCoreData(context: context)

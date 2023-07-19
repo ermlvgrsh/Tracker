@@ -7,9 +7,9 @@ final class IrregularEventService {
     static let changeContentNotification = Notification.Name("ChangeContentNotification")
     
     private(set) var eventCategories: [IrregularEventCategory] = []
-    private(set) var completedTrackers: Set<IrregularEventRecord> = []
-    
-    private lazy var irregularEventStore: IrregularEventStore = {
+    private(set) var completedEvents: Set<IrregularEventRecord> = []
+    var filteredEvents: [IrregularEventCategory] = []
+    lazy var irregularEventStore: IrregularEventStore = {
        let eventStore = IrregularEventStore(storeDelegate: self)
         return eventStore
     }()
@@ -24,9 +24,10 @@ final class IrregularEventService {
         return eventRecord
     }()
     
+    
     private init() {
         eventCategories = eventCategoryStore.categories
-        completedTrackers = Set(eventRecordStore.records)
+        completedEvents = Set(eventRecordStore.records)
     }
     
     
@@ -36,10 +37,6 @@ final class IrregularEventService {
             eventCategoryStore.addCategory(eventCategory: eventCategory)
         }
         irregularEventStore.addEvent(event: event, category: eventCategoryStore.getByName(categoryName: eventCategory.categoryName))
-    }
-    
-    func updateCategory(eventCategory: IrregularEventCategory) {
-        eventCategoryStore.updateCategory(eventCategory: eventCategory)
     }
     
     func filterEvents(filter: (IrregularEvent) -> Bool) -> [IrregularEventCategory] {
@@ -52,7 +49,21 @@ final class IrregularEventService {
                 filteredCategories.append(IrregularEventCategory(categoryName: eventCategory.categoryName, irregularEvents: currentTrackers))
             }
         }
+        filteredEvents = filteredCategories
         return filteredCategories
+    }
+
+    func updateEvent(event: IrregularEvent) {
+        irregularEventStore.updateEvent(event: event)
+    }
+
+    func fetchEventCategory(at index: Int) -> String? {
+        eventCategoryStore.fetchCategory(at: index)
+    }
+    
+    func fetchIrregularEvent(at indexPath: IndexPath) -> IrregularEvent? {
+        let eventCore = irregularEventStore.resultsController.object(at: indexPath)
+        return eventCore.toEvent()
     }
     
     func addEventRecord(eventRecord: IrregularEventRecord) {
@@ -69,7 +80,7 @@ final class IrregularEventService {
 extension IrregularEventService: StoreDelegate {
     func didChangeContent() {
         eventCategories = eventCategoryStore.categories
-        completedTrackers = Set(eventRecordStore.records)
+        completedEvents = Set(eventRecordStore.records)
         NotificationCenter.default.post(name: IrregularEventService.changeContentNotification, object: nil)
     }
     

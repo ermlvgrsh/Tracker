@@ -24,8 +24,10 @@ final class TabBarController: UITabBarController {
         tabBar.layer.borderColor = UIColor.lightGray.cgColor
         guard let trackerImage = UIImage(named: "record.circle.fill"),
               let statisticImage = UIImage(named: "hare.fill") else { fatalError() }
+        let trackerService = TrackerService.shared
+        let eventService = IrregularEventService.shared
         viewControllers = [
-            createNavController(for: TrackersViewController(), title: "Трекеры", image: trackerImage),
+            createNavController(for: TrackersViewController(trackerService: trackerService, eventService: eventService), title: "Трекеры", image: trackerImage),
             createNavController(for: StatisticViewController(), title: "Статистика", image: statisticImage)
         ]
     }

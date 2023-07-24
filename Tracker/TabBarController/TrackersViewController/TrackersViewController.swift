@@ -293,7 +293,7 @@ final class TrackersViewController: UIViewController {
         trackerService.filteredTrackers = trackerService.filterTrackersByWeekDay(selectedDay)
         eventService.filteredEvents = eventService.eventCategories
         if trackerService.filteredTrackers.isEmpty && eventService.filteredEvents.isEmpty {
-            showErrors()
+            //showErrors()
             placeholderImage.isHidden = true
             placeholderLabel.isHidden = true
         } else {

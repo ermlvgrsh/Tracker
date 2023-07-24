@@ -5,11 +5,19 @@ protocol EventCategoriesDelegate: AnyObject {
 
 final class EventCategoryViewController: UIViewController {
     var eventCategories = [IrregularEventCategory]()
-    
+    var viewModel: TrackerCategoryViewModel
     weak var delegate: EventCategoriesDelegate?
     
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
     
+    init(viewModel: TrackerCategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = false
@@ -89,7 +97,7 @@ final class EventCategoryViewController: UIViewController {
     }()
     
     @objc func createEventCategory() {
-        let newCategoryVC = NewCategoryViewController()
+        let newCategoryVC = NewCategoryViewController(viewModel: viewModel)
         newCategoryVC.eventDelegate = self
         present(newCategoryVC, animated: true)
     }

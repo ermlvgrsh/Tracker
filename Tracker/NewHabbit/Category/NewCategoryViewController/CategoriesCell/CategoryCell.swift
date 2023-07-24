@@ -45,6 +45,7 @@ class CategoryCell: UITableViewCell {
         
     }
     
+    
     func setUI() {
         contentView.addSubview(categoryLabel)
         contentView.addSubview(checkmarkImage)

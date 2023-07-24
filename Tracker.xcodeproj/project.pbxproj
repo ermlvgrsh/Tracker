@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		370B8EA22A6C1189006B9C37 /* OnboardingPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370B8EA12A6C1189006B9C37 /* OnboardingPageController.swift */; };
+		370B8EC72A6C32C4006B9C37 /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370B8EC62A6C32C4006B9C37 /* OnboardingModel.swift */; };
+		370B8EC92A6C47B3006B9C37 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370B8EC82A6C47B3006B9C37 /* OnboardingViewController.swift */; };
+		370B8ECD2A6CB8AF006B9C37 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370B8ECC2A6CB8AF006B9C37 /* Observable.swift */; };
+		370B8ED02A6CBB50006B9C37 /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370B8ECF2A6CBB50006B9C37 /* CategoryViewModel.swift */; };
 		370D0D0B2A542E960074F515 /* IrregularEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D0A2A542E960074F515 /* IrregularEvent.swift */; };
 		370D0D0D2A542F870074F515 /* IrregularEventCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D0C2A542F870074F515 /* IrregularEventCategory.swift */; };
 		370D0D112A542FBD0074F515 /* IrregularEventRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D0D102A542FBD0074F515 /* IrregularEventRecord.swift */; };
@@ -55,6 +60,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		370B8EA12A6C1189006B9C37 /* OnboardingPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageController.swift; sourceTree = "<group>"; };
+		370B8EC62A6C32C4006B9C37 /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
+		370B8EC82A6C47B3006B9C37 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		370B8ECC2A6CB8AF006B9C37 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
+		370B8ECF2A6CBB50006B9C37 /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
 		370D0D0A2A542E960074F515 /* IrregularEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEvent.swift; sourceTree = "<group>"; };
 		370D0D0C2A542F870074F515 /* IrregularEventCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEventCategory.swift; sourceTree = "<group>"; };
 		370D0D102A542FBD0074F515 /* IrregularEventRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IrregularEventRecord.swift; sourceTree = "<group>"; };
@@ -115,6 +125,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		370B8EA02A6C114F006B9C37 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				370B8EA12A6C1189006B9C37 /* OnboardingPageController.swift */,
+				370B8EC82A6C47B3006B9C37 /* OnboardingViewController.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		370B8EC52A6C32AE006B9C37 /* OnboardingModel */ = {
+			isa = PBXGroup;
+			children = (
+				370B8EC62A6C32C4006B9C37 /* OnboardingModel.swift */,
+			);
+			path = OnboardingModel;
+			sourceTree = "<group>";
+		};
+		370B8ECE2A6CBAE9006B9C37 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				37A6F88C2A100B3B00C8F41D /* NewCategoryViewController */,
+				37A6F8842A100A7F00C8F41D /* CategoriesViewController */,
+				370B8ECF2A6CBB50006B9C37 /* CategoryViewModel.swift */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
 		370D0D0E2A542F8F0074F515 /* Trackers */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				37129C702A3DF1A3003022A6 /* TextField.swift */,
+				370B8ECC2A6CB8AF006B9C37 /* Observable.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -163,11 +201,10 @@
 		376C4D6E29ED960000B87CA3 /* NewHabbit */ = {
 			isa = PBXGroup;
 			children = (
+				370B8ECE2A6CBAE9006B9C37 /* Category */,
 				37A6F8952A100DBE00C8F41D /* SupplementaryView */,
 				37A6F8982A100E0000C8F41D /* Models */,
 				37B202B22A1FE3DA00358E87 /* CollectionViewCells */,
-				37A6F8842A100A7F00C8F41D /* CategoriesViewController */,
-				37A6F88C2A100B3B00C8F41D /* NewCategoryViewController */,
 				37AFAF0A2A62C91600299876 /* NewHabbit */,
 				37A6F8852A100A9400C8F41D /* ScheduleVIewController */,
 			);
@@ -329,6 +366,7 @@
 		37EC3A9E2A135A4F00681250 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				370B8EC52A6C32AE006B9C37 /* OnboardingModel */,
 				370D0D0F2A542FA10074F515 /* IrregularEvent */,
 				370D0D0E2A542F8F0074F515 /* Trackers */,
 			);
@@ -398,6 +436,7 @@
 		37F59B7129DB082000341B05 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				370B8EA02A6C114F006B9C37 /* Onboarding */,
 				37AFAF232A631CB200299876 /* Services */,
 				37AFAF0B2A62D90F00299876 /* CoreDataStore */,
 				37129C6F2A3DF18D003022A6 /* Extensions */,
@@ -490,10 +529,12 @@
 				37A6F89A2A100E0A00C8F41D /* Emojis.swift in Sources */,
 				37A6F8972A100DE000C8F41D /* SupplementaryView.swift in Sources */,
 				376C4D7029ED964B00B87CA3 /* NewHabbitCells.swift in Sources */,
+				370B8ED02A6CBB50006B9C37 /* CategoryViewModel.swift in Sources */,
 				37775A7929E9CDEA00507D37 /* TrackerCreatorViewController.swift in Sources */,
 				37EC3AA62A135E1F00681250 /* TrackerRecord.swift in Sources */,
 				37AFAF112A62D93E00299876 /* TrackerRecordStore.swift in Sources */,
 				37A6F8892A100ABD00C8F41D /* CategoriesViewController.swift in Sources */,
+				370B8EC92A6C47B3006B9C37 /* OnboardingViewController.swift in Sources */,
 				37AFAF0D2A62D92200299876 /* TrackerStore.swift in Sources */,
 				370D0D0B2A542E960074F515 /* IrregularEvent.swift in Sources */,
 				37AFAF1D2A62DD6F00299876 /* StroreDelegate.swift in Sources */,
@@ -508,9 +549,11 @@
 				37AFAF0F2A62D93000299876 /* TrackerCategoryStore.swift in Sources */,
 				37EC3AA42A135C6700681250 /* TrackerCategory.swift in Sources */,
 				37775A7529E980CA00507D37 /* TrackersViewCell.swift in Sources */,
+				370B8ECD2A6CB8AF006B9C37 /* Observable.swift in Sources */,
 				37F22BCF29E77EAB00C547BE /* StatisticViewController.swift in Sources */,
 				37A6F8942A100D8700C8F41D /* ColorCell.swift in Sources */,
 				370D0D1A2A5618BB0074F515 /* EventCategoryViewController.swift in Sources */,
+				370B8EA22A6C1189006B9C37 /* OnboardingPageController.swift in Sources */,
 				37EC3AA02A135A7100681250 /* Tracker.swift in Sources */,
 				37AFAF172A62D98F00299876 /* IrregularCategoryStore.swift in Sources */,
 				37AFAF252A635D8A00299876 /* IrregularEventService.swift in Sources */,
@@ -522,6 +565,7 @@
 				37EDC4842A3F559B009581BD /* TrackerSupplementaryView.swift in Sources */,
 				37AFAF222A631CA300299876 /* TrackerService.swift in Sources */,
 				37129C712A3DF1A3003022A6 /* TextField.swift in Sources */,
+				370B8EC72A6C32C4006B9C37 /* OnboardingModel.swift in Sources */,
 				37A6F88E2A100B4F00C8F41D /* NewCategoryViewController.swift in Sources */,
 				370D0D0D2A542F870074F515 /* IrregularEventCategory.swift in Sources */,
 				37AFAF1B2A62DD1200299876 /* Store.swift in Sources */,

@@ -15,12 +15,20 @@ final class NewHabbitViewController: UIViewController {
     var dayCounter = 0
     weak var delegate: NewTrackerDelegate?
     var trackerService: TrackerService = TrackerService.shared
- 
+    var viewModel: TrackerCategoryViewModel
     
     var isShifted = false
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
     
+    init(viewModel: TrackerCategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
      
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -95,7 +103,8 @@ final class NewHabbitViewController: UIViewController {
         view.isHidden = true
         return view
     }()
-   
+
+    
     @objc func deleteHabbitName() {
         habbitNameTextField.text = ""
         limitCharacterLabel.isHidden = true
@@ -213,13 +222,12 @@ final class NewHabbitViewController: UIViewController {
         guard let name = selectedName,
               let emoji = selectedEmoji,
               let color = selectedColor,
-              let category = selectedCategory,
+              let category = viewModel.selectedCategory,
               let schedule = selectedSchedule else { return }
         
         let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji, dayCounter: dayCounter)
 
         delegate?.didCreateTracker(newTracker: newTracker, with: category)
-            //trackerService.addNewTracker(tracker: newTracker, categoryName: category.categoryName)
         presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -282,8 +290,9 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0: let category = CategoriesViewController()
+        case 0: let category = CategoriesViewController(viewModel: viewModel)
             category.delegate = self
+            viewModel.bindCategory()
             self.present(category, animated: true)
         case 1: let schedule = ScheduleViewController()
             schedule.delegate = self
@@ -566,7 +575,7 @@ extension NewHabbitViewController: CategoriesDelegate {
     func didSelectCategory(_ selectedCategory: TrackerCategory) {
         self.selectedCategory = selectedCategory
         guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
-        cell.subLabel.text = selectedCategory.categoryName
+        cell.subLabel.text = viewModel.currenNewCategoryName
         cell.moveLabel()
     }
 }

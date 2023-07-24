@@ -4,7 +4,16 @@ final class TrackerCreatorViewController: UIViewController {
     
     weak var delegate: NewTrackerDelegate?
     weak var irregularDelegate: IrregularEventDelegate?
+    var viewModel: TrackerCategoryViewModel
     
+    init(viewModel: TrackerCategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     private let createTrackerLabel: UILabel = {
         let createTrackerLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 149, height: 22))
         createTrackerLabel.font = .systemFont(ofSize: 16, weight: .medium)
@@ -77,12 +86,12 @@ final class TrackerCreatorViewController: UIViewController {
     }()
     
     @objc func irregularEventButtonPressed() {
-       let irregularView = IrregularEventViewController()
+       let irregularView = IrregularEventViewController(viewModel: viewModel)
         irregularView.delegate = irregularDelegate
         self.present(irregularView, animated: true)
     }
     @objc func habbitButtonPressed() {
-        let newHabbitView = NewHabbitViewController()
+        let newHabbitView = NewHabbitViewController(viewModel: viewModel )
         newHabbitView.delegate = delegate 
         self.present(newHabbitView, animated: true)
     }

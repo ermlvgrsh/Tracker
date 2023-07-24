@@ -13,7 +13,7 @@ final class TrackersViewController: UIViewController {
     var trackers: [Tracker] = []
     var visibleTrackersCategory: [TrackerCategory] = []
     var completedTrackers: Set<TrackerRecord> = []
-    
+    var viewModel: TrackerCategoryViewModel
     var visibleIrregularCategories: [IrregularEventCategory] = []
     var completedEvents: Set<IrregularEventRecord> = []
     private let trackerService: TrackerService
@@ -22,8 +22,9 @@ final class TrackersViewController: UIViewController {
     private var datePickerView: UIView?
     private var addButtonView: UIView?
     
-    init(trackerService: TrackerService, eventService: IrregularEventService) {
+    init(trackerService: TrackerService, eventService: IrregularEventService, viewModel: TrackerCategoryViewModel) {
         self.trackerService = trackerService
+        self.viewModel = viewModel
         self.eventService = eventService
         super.init(nibName: nil, bundle: nil)
     }
@@ -126,7 +127,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc func addTracker() {
-        let trackerCreator = TrackerCreatorViewController()
+        let trackerCreator = TrackerCreatorViewController(viewModel: viewModel)
         trackerCreator.delegate = self
         trackerCreator.irregularDelegate = self
         self.present(trackerCreator, animated: true)

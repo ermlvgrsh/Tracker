@@ -13,7 +13,6 @@ final class TrackersViewController: UIViewController {
     var trackers: [Tracker] = []
     var visibleTrackersCategory: [TrackerCategory] = []
     var completedTrackers: Set<TrackerRecord> = []
-    var viewModel: TrackerCategoryViewModel
     var visibleIrregularCategories: [IrregularEventCategory] = []
     var completedEvents: Set<IrregularEventRecord> = []
     private let trackerService: TrackerService
@@ -22,9 +21,8 @@ final class TrackersViewController: UIViewController {
     private var datePickerView: UIView?
     private var addButtonView: UIView?
     
-    init(trackerService: TrackerService, eventService: IrregularEventService, viewModel: TrackerCategoryViewModel) {
+    init(trackerService: TrackerService, eventService: IrregularEventService) {
         self.trackerService = trackerService
-        self.viewModel = viewModel
         self.eventService = eventService
         super.init(nibName: nil, bundle: nil)
     }
@@ -127,7 +125,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc func addTracker() {
-        let trackerCreator = TrackerCreatorViewController(viewModel: viewModel)
+        let trackerCreator = TrackerCreatorViewController()
         trackerCreator.delegate = self
         trackerCreator.irregularDelegate = self
         self.present(trackerCreator, animated: true)
@@ -242,7 +240,8 @@ final class TrackersViewController: UIViewController {
             placeholderLabel.heightAnchor.constraint(equalToConstant: 18),
             
             searchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 136),
-            searchBar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             searchBar.widthAnchor.constraint(equalToConstant: 343),
             searchBar.heightAnchor.constraint(equalToConstant: 36),
             
@@ -580,7 +579,7 @@ func doneButtonDidTapped(for cell: TrackersViewCell) {
                let updatedEvent = IrregularEvent(id: event.id, name: event.name, emoji: event.emoji, color: event.color, dayCounter: event.dayCounter + 1)
 
                let newRecord = IrregularEventRecord(id: updatedEvent.id, date: valueDate)
-               eventService.updateEvent(event: event)
+               eventService.updateEvent(event: updatedEvent)
                eventService.addEventRecord(eventRecord: newRecord)
 
                cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {

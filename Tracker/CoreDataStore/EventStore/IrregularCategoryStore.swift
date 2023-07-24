@@ -31,9 +31,9 @@ final class IrregularCategoryStore: Store {
         try? resultsController.performFetch()
     }
     
-    func addCategory(eventCategory: IrregularEventCategory) {
+    func addCategory(eventCategory: String) {
         let eventCategoryCoreData = EventCategoryCoreData(context: context)
-        eventCategoryCoreData.eventCategoryName = eventCategory.categoryName
+        eventCategoryCoreData.eventCategoryName = eventCategory
         eventCategoryCoreData.events = []
         save()
     }

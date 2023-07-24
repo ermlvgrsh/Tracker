@@ -26,9 +26,8 @@ final class TabBarController: UITabBarController {
               let statisticImage = UIImage(named: "hare.fill") else { fatalError() }
         let trackerService = TrackerService.shared
         let eventService = IrregularEventService.shared
-        let viewModel = TrackerCategoryViewModel()
         viewControllers = [
-            createNavController(for: TrackersViewController(trackerService: trackerService, eventService: eventService, viewModel: viewModel), title: "Трекеры", image: trackerImage),
+            createNavController(for: TrackersViewController(trackerService: trackerService, eventService: eventService), title: "Трекеры", image: trackerImage),
             createNavController(for: StatisticViewController(), title: "Статистика", image: statisticImage)
         ]
     }

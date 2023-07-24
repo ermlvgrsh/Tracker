@@ -10,17 +10,11 @@ final class CategoriesViewController: UIViewController {
     var categories = [TrackerCategory]()
     
     weak var delegate: CategoriesDelegate?
-    private let viewModel: TrackerCategoryViewModel
+    private let viewModel = TrackerCategoryViewModel()
+    private let eventViewModel = EventViewModel()
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
     
-    init(viewModel: TrackerCategoryViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -102,21 +96,21 @@ final class CategoriesViewController: UIViewController {
     
 
     @objc func createCategory() {
-        let newCategoryVC = NewCategoryViewController(viewModel: viewModel)
-        newCategoryVC.delegate = self
+        let newCategoryVC = NewCategoryViewController(viewModel: viewModel, eventViewModel: eventViewModel)
         present(newCategoryVC, animated: true)
     }
     
 
     private func bindCategoryViewModel() {
         viewModel.$categories.bind { [weak self] trackerCategory in
-            self?.categoryTableView.isHidden = false
-            self?.checkContent()
             self?.categoryTableView.reloadData()
         }
         viewModel.$isPlaceholderHidden.bind { [weak self] isHidden in
             self?.placeholderImage.isHidden = isHidden
             self?.placeholderLabel.isHidden = isHidden
+        }
+        viewModel.$isTableViewHidden.bind { [weak self] isHidden in
+            self?.categoryTableView.isHidden = isHidden
         }
         viewModel.$selectedCategory.bind { [weak self] selectedCategory in
             guard let selectedCategory = selectedCategory else { return }
@@ -131,7 +125,6 @@ final class CategoriesViewController: UIViewController {
         setupUI()
         bindCategoryViewModel()
     }
-
     
     func setupTableView() {
         categoryTableView.delegate = self
@@ -147,8 +140,6 @@ final class CategoriesViewController: UIViewController {
         scrollView.addSubview(placeholderLabel)
         scrollView.addSubview(categoryTableView)
         scrollView.addSubview(addCategory)
-        categoryTableViewHeightConstraint = categoryTableView.heightAnchor.constraint(equalToConstant: 0)
-        categoryTableViewHeightConstraint?.isActive = true
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -172,6 +163,7 @@ final class CategoriesViewController: UIViewController {
             categoryTableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
             categoryTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             categoryTableView.widthAnchor.constraint(equalToConstant: 343),
+            categoryTableView.bottomAnchor.constraint(equalTo: addCategory.topAnchor, constant: -26),
             
             addCategory.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 276),
             addCategory.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
@@ -179,23 +171,9 @@ final class CategoriesViewController: UIViewController {
             addCategory.heightAnchor.constraint(equalToConstant: 60),
         ])
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
-
+        categoryTableView.layoutIfNeeded()
     }
-    func checkContent() {
-        categoryTableViewHeightConstraint = categoryTableView.heightAnchor.constraint(equalToConstant: 0)
-        if !viewModel.categories.isEmpty {
-                setupTableView()
-                categoryTableViewHeightConstraint?.constant = categoryTableView.contentSize.height
-                categoryTableViewHeightConstraint?.isActive = true
-            }
-        }
-}
 
-extension CategoriesViewController: NewCategoryDelegete {
-    func didSaveCategory() {
-        setupTableView()
-        categoryTableViewHeightConstraint?.constant = categoryTableView.contentSize.height
-    }
 }
 
 extension CategoriesViewController: UITableViewDelegate {

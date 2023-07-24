@@ -10,11 +10,13 @@ final class TrackerCategoryViewModel {
     private(set) var selectedCategory: TrackerCategory?
     
     @Observable
-    private(set) var currenNewCategoryName: String = ""
+    private(set) var currentNewCategoryName: String = ""
     
     @Observable
     private(set) var isPlaceholderHidden = true
     
+    @Observable
+    private(set) var isTableViewHidden = true
     
     func bindCategory() {
         categories = trackerService.categories
@@ -34,13 +36,14 @@ final class TrackerCategoryViewModel {
         categories.append(category)
         isCategoryEmpry()
         guard let currentNewCategoryName = newCategoryName else { return }
-        self.currenNewCategoryName = currentNewCategoryName
+        self.currentNewCategoryName = currentNewCategoryName
         didCreateTrackerCategory()
     }
     
+    
     func didCreateTrackerCategory() {
-        if !currenNewCategoryName.isEmpty {
-            trackerService.addCategory(categoryName: currenNewCategoryName)
+        if !currentNewCategoryName.isEmpty {
+            trackerService.addCategory(categoryName: currentNewCategoryName)
         }
     }
     
@@ -49,6 +52,7 @@ final class TrackerCategoryViewModel {
             isPlaceholderHidden = false
             return
         } else {
+            isTableViewHidden = false
             isPlaceholderHidden = true
         }
     }

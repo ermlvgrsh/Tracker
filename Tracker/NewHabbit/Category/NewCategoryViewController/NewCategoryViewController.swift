@@ -1,21 +1,20 @@
 import UIKit
 
-protocol NewCategoryDelegete: AnyObject {
-    func didSaveCategory()
-}
+
 protocol NewEventCategoryDelegate: AnyObject {
     func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?)
 }
 
 final class NewCategoryViewController: UIViewController {
     
-    weak var delegate: NewCategoryDelegete?
     weak var eventDelegate: NewEventCategoryDelegate?
     private let viewModel: TrackerCategoryViewModel
+    private let eventViewModel: EventViewModel
     var namedCategory: String?
     
-    init(viewModel: TrackerCategoryViewModel) {
+    init(viewModel: TrackerCategoryViewModel, eventViewModel: EventViewModel) {
         self.viewModel = viewModel
+        self.eventViewModel = eventViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,12 +66,10 @@ final class NewCategoryViewController: UIViewController {
          if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
              let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
              viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
-             delegate?.didSaveCategory()
          } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
-             var categories = EventCategoryViewController(viewModel: viewModel).eventCategories
+  
              let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
-             categories.append(newEvent)
-             eventDelegate?.didSaveEventCategory(newEvent, namedCategory: namedCategory)
+             eventViewModel.didSaveEventCategory(eventCategory: newEvent, newEventCategory: newEvent.categoryName)
          }
          dismiss(animated: true)
      }

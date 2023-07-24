@@ -15,16 +15,6 @@ final class IrregularEventViewController: UIViewController {
     var dayCounter = 0
     var isShifted: Bool = false
     
-    var viewModel: TrackerCategoryViewModel
-    
-    init(viewModel: TrackerCategoryViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
    private let irregularEventLabel: UILabel = {
        let label = UILabel()
@@ -444,7 +434,7 @@ extension IrregularEventViewController: UITableViewDataSource, UITableViewDelega
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let categories = EventCategoryViewController(viewModel: viewModel)
+        let categories = EventCategoryViewController()
         categories.delegate = self
         self.present(categories, animated: true)
         categoryTableView.deselectRow(at: indexPath, animated: true)

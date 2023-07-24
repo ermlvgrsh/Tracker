@@ -5,7 +5,7 @@ final class IrregularEventService {
     
     static let shared = IrregularEventService()
     static let changeContentNotification = Notification.Name("ChangeContentNotification")
-    
+    @Observable
     private(set) var eventCategories: [IrregularEventCategory] = []
     private(set) var completedEvents: Set<IrregularEventRecord> = []
     var filteredEvents: [IrregularEventCategory] = []
@@ -29,12 +29,14 @@ final class IrregularEventService {
         eventCategories = eventCategoryStore.categories
         completedEvents = Set(eventRecordStore.records)
     }
-    
+    func addCategory(categoryName: String) {
+        eventCategoryStore.addCategory(eventCategory: categoryName)
+    }
     
     func addNewEvent(event: IrregularEvent, eventCategory: IrregularEventCategory) {
         let category: IrregularEventCategory? = eventCategoryStore.fetchName(categoryName: eventCategory.categoryName)
         if category == nil {
-            eventCategoryStore.addCategory(eventCategory: eventCategory)
+            eventCategoryStore.addCategory(eventCategory: eventCategory.categoryName)
         }
         irregularEventStore.addEvent(event: event, category: eventCategoryStore.getByName(categoryName: eventCategory.categoryName))
     }

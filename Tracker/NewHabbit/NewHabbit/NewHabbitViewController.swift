@@ -15,21 +15,12 @@ final class NewHabbitViewController: UIViewController {
     var dayCounter = 0
     weak var delegate: NewTrackerDelegate?
     var trackerService: TrackerService = TrackerService.shared
-    var viewModel: TrackerCategoryViewModel
+    var viewModel = TrackerCategoryViewModel()
     
     var isShifted = false
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
-    
-    init(viewModel: TrackerCategoryViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-     
+
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -290,7 +281,7 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0: let category = CategoriesViewController(viewModel: viewModel)
+        case 0: let category = CategoriesViewController()
             category.delegate = self
             viewModel.bindCategory()
             self.present(category, animated: true)
@@ -575,7 +566,7 @@ extension NewHabbitViewController: CategoriesDelegate {
     func didSelectCategory(_ selectedCategory: TrackerCategory) {
         self.selectedCategory = selectedCategory
         guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
-        cell.subLabel.text = viewModel.currenNewCategoryName
+        cell.subLabel.text = viewModel.currentNewCategoryName
         cell.moveLabel()
     }
 }

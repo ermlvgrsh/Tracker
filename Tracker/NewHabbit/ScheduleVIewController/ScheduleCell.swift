@@ -42,19 +42,19 @@ class ScheduleCell: UITableViewCell {
     func configureCell(with weekDay: WeekDay) {
         switch weekDay {
         case .Monday:
-            self.titleLabel.text = "Понедельник"
+            self.titleLabel.text = "monday".localized
         case .Tuesday:
-            self.titleLabel.text = "Вторник"
+            self.titleLabel.text = "tuesday".localized
         case .Wednesday:
-            self.titleLabel.text = "Среда"
+            self.titleLabel.text = "wednesday".localized
         case .Thursday:
-            self.titleLabel.text = "Четверг"
+            self.titleLabel.text = "thursday".localized
         case .Friday:
-            self.titleLabel.text = "Пятница"
+            self.titleLabel.text = "friday".localized
         case .Saturday:
-            self.titleLabel.text = "Суббота"
+            self.titleLabel.text = "saturday".localized
         case .Sunday:
-            self.titleLabel.text = "Воскресенье"
+            self.titleLabel.text = "sunday".localized
         }
         
     }

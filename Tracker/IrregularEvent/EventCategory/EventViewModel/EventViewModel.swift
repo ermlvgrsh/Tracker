@@ -1,7 +1,5 @@
 import Foundation
 
-
-
 final class EventViewModel {
     
     private let eventService = IrregularEventService.shared

@@ -87,23 +87,6 @@ class TrackersViewCell: UICollectionViewCell {
         view.isHidden = true
         return view
     }()
-    
-    func updateDayCounterLabel(with day: Int) -> String {
-        let dayCounterText: String
-        switch day {
-        case 0:
-            dayCounterText = "0 дней"
-        case 1:
-            dayCounterText = "1 день"
-        case 2, 3, 4:
-            dayCounterText = "\(day) дня"
-        case let count where count >= 5:
-            dayCounterText = "\(day) дней"
-        default:
-            dayCounterText = "\(day) дней"
-        }
-        return dayCounterText
-    }
 
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
@@ -192,7 +175,7 @@ class TrackersViewCell: UICollectionViewCell {
         self.emoji.text = emoji
         self.backgroundViewDone.layer.backgroundColor = color.cgColor
         self.dayCounter = dayCounter
-        self.daysCounter.text = updateDayCounterLabel(with: dayCounter)
+        self.daysCounter.text = dayCounter.dayToString()
     }
 }
 

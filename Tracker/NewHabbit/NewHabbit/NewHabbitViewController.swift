@@ -37,7 +37,7 @@ final class NewHabbitViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         habbitLabel.attributedText =
-        NSMutableAttributedString(string: "Новая привычка",
+        NSMutableAttributedString(string: "new_habbit".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         habbitLabel.translatesAutoresizingMaskIntoConstraints = false
         return habbitLabel
@@ -45,7 +45,7 @@ final class NewHabbitViewController: UIViewController {
     
     private let habbitNameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = "tracker_name".localized
         textField.textColor = .black
         textField.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3).cgColor
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -67,7 +67,7 @@ final class NewHabbitViewController: UIViewController {
         label.textColor = UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1)
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.08
-        label.attributedText = NSMutableAttributedString(string: "Ограничение 38 символов", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.attributedText = NSMutableAttributedString(string: "limit".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isHidden = true
@@ -105,7 +105,7 @@ final class NewHabbitViewController: UIViewController {
         deleteButton.isHidden = true
     }
     
-    let tableViewInstets = ["Категория", "Расписание"]
+    let tableViewInstets = ["category".localized, "schedule".localized]
     
     lazy var createHabbitButton: UIButton = {
         let createHabbitButton = UIButton(type: .system)
@@ -117,7 +117,7 @@ final class NewHabbitViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Создать",
+        let titleAtributedString = NSAttributedString(string: "create".localized,
                                                       attributes: titleAttribute)
         createHabbitButton.tintColor = .white
         createHabbitButton.setAttributedTitle(titleAtributedString, for: .normal)
@@ -138,7 +138,7 @@ final class NewHabbitViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Отменить",
+        let titleAtributedString = NSAttributedString(string: "cancel".localized,
                                                       attributes: titleAttribute)
         cancelButton.tintColor = .red
         cancelButton.setAttributedTitle(titleAtributedString, for: .normal)
@@ -213,7 +213,7 @@ final class NewHabbitViewController: UIViewController {
         guard let name = selectedName,
               let emoji = selectedEmoji,
               let color = selectedColor,
-              let category = viewModel.selectedCategory,
+              let category = selectedCategory,
               let schedule = selectedSchedule else { return }
         
         let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji, dayCounter: dayCounter)
@@ -330,7 +330,7 @@ extension NewHabbitViewController: UICollectionViewDataSource {
             guard let colorView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? ColorSupplementaryView else {
                 return UICollectionReusableView() }
             
-            colorView.titleLabel.text = "Цвет"
+            colorView.titleLabel.text = "color".localized
             return colorView
         }
         guard let emojiView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? EmojiSupplementaryView else { return UICollectionReusableView() }
@@ -566,7 +566,7 @@ extension NewHabbitViewController: CategoriesDelegate {
     func didSelectCategory(_ selectedCategory: TrackerCategory) {
         self.selectedCategory = selectedCategory
         guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
-        cell.subLabel.text = viewModel.currentNewCategoryName
+        cell.subLabel.text = selectedCategory.categoryName
         cell.moveLabel()
     }
 }

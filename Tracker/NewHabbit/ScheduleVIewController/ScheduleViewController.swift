@@ -25,7 +25,7 @@ final class ScheduleViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         habbitLabel.attributedText =
-        NSMutableAttributedString(string: "Расписание",
+        NSMutableAttributedString(string: "schedule".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         habbitLabel.translatesAutoresizingMaskIntoConstraints = false
         return habbitLabel
@@ -56,7 +56,7 @@ final class ScheduleViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Готово",
+        let titleAtributedString = NSAttributedString(string: "done".localized,
                                                       attributes: titleAttribute)
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)

@@ -7,6 +7,8 @@ final class TrackerService {
     
     @Observable
     private(set) var categories: [TrackerCategory] = []
+    
+    @Observable
     private(set) var completedTrackers: Set<TrackerRecord> = []
     
     var filteredTrackers: [TrackerCategory] = []

@@ -17,15 +17,38 @@ final class TrackersViewController: UIViewController {
     var completedEvents: Set<IrregularEventRecord> = []
     private let trackerService: TrackerService
     private let eventService: IrregularEventService
-    private var datePicker: UIDatePicker?
-    private var datePickerView: UIView?
-    private var addButtonView: UIView?
+    
+    
+    private lazy var datePicker: UIDatePicker = {
+       let datePicker = UIDatePicker()
+        datePicker.locale = dateFormatter.locale
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.datePickerMode = .date
+        datePicker.addTarget(self, action: #selector(datePickerValueDidChanged), for: .valueChanged)
+        return datePicker
+    }()
+
+    private lazy var addButton: UIBarButtonItem = {
+       let button = UIBarButtonItem(image: UIImage(named: "plus"),
+                                    style: .plain,
+                                    target: self,
+                                    action: #selector(addTracker))
+        button.tintColor = .black
+        return button
+    }()
     
     init(trackerService: TrackerService, eventService: IrregularEventService) {
         self.trackerService = trackerService
         self.eventService = eventService
         super.init(nibName: nil, bundle: nil)
     }
+    
+    private lazy var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+        return dateFormatter
+    }()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -65,7 +88,7 @@ final class TrackersViewController: UIViewController {
         paragraphStyle.lineHeightMultiple = 1.26
         paragraphStyle.alignment = .center
         label.attributedText =
-        NSMutableAttributedString(string: "Ничего не найдено", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        NSMutableAttributedString(string: "nothing_found".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isHidden = true
         return label
@@ -82,26 +105,26 @@ final class TrackersViewController: UIViewController {
         paragraphStyle.lineHeightMultiple = 1.26
         paragraphStyle.alignment = .center
         label.attributedText =
-        NSMutableAttributedString(string: "Что будем отслеживать?", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        NSMutableAttributedString(string: "what_to_track".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let trackerLabel: UILabel = {
         let trackerLabel = UILabel()
-        trackerLabel.text = "Трекеры"
+        trackerLabel.text = "trackers".localized
         trackerLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         trackerLabel.tintColor = .black
         trackerLabel.translatesAutoresizingMaskIntoConstraints = false
         return trackerLabel
     }()
     
-    lazy var searchBar: UISearchTextField = {
+   private lazy var searchBar: UISearchTextField = {
         let searchBar = UISearchTextField()
-        searchBar.placeholder = "Поиск"
+        searchBar.placeholder = "search".localized
         searchBar.layer.masksToBounds = true
         let cancelButton = UIButton(type: .system)
-        cancelButton.setTitle("Отмена", for: .normal)
+        cancelButton.setTitle("cancel".localized, for: .normal)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         searchBar.rightView = cancelButton
         searchBar.rightViewMode = .whileEditing
@@ -137,67 +160,17 @@ final class TrackersViewController: UIViewController {
         collectionView.delegate = self
     }
     
-    private func configureAddButton() -> UIBarButtonItem? {
-        let addButton = UIButton(type: .custom)
-        addButton.setImage(UIImage(named: "plus"), for: .normal)
-        addButton.addTarget(self, action: #selector(addTracker), for: .touchUpInside)
-        addButton.tintColor = .black
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-        
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-        addButtonView = view
-        addButtonView?.translatesAutoresizingMaskIntoConstraints = false
-        addButtonView?.addSubview(addButton)
-        guard let addButtonView = addButtonView else { return nil }
-        NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: addButtonView.topAnchor),
-            addButton.leadingAnchor.constraint(equalTo: addButtonView.leadingAnchor),
-            addButton.trailingAnchor.constraint(equalTo: addButtonView.trailingAnchor),
-            addButton.bottomAnchor.constraint(equalTo: addButtonView.bottomAnchor),
-        ])
-        let buttonItem = UIBarButtonItem(customView: addButtonView)
-        return buttonItem
-    }
-    
-    private func configureDatePicker() -> UIBarButtonItem? {
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
-        datePicker.preferredDatePickerStyle = .compact
-        datePicker.addTarget(self, action: #selector(datePickerValueDidChanged), for: .valueChanged)
-        self.datePicker = datePicker
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 77, height: 34))
-        datePickerView = view
-        guard let datePickerView = datePickerView else { return nil }
-        datePickerView.translatesAutoresizingMaskIntoConstraints = false
-        datePickerView.addSubview(datePicker)
-        NSLayoutConstraint.activate([
-            datePicker.topAnchor.constraint(equalTo: datePickerView.topAnchor),
-            datePicker.leadingAnchor.constraint(equalTo: datePickerView.leadingAnchor),
-            datePicker.trailingAnchor.constraint(equalTo: datePickerView.trailingAnchor),
-            datePicker.bottomAnchor.constraint(equalTo: datePickerView.bottomAnchor),
-        ])
-        
-        let dateItem = UIBarButtonItem(customView: datePickerView)
-        return dateItem
-    }
+    private lazy var datePickerToolItem: UIBarButtonItem = {
+       let toolItem = UIBarButtonItem(customView: datePicker)
+        return toolItem
+    }()
     
     private func constraintsForTrackerView() {
         view.backgroundColor = .white
         searchBar.delegate = self
         
-        let buttonItem = configureAddButton()
-        let dateItem = configureDatePicker()
-        
-        navigationItem.leftBarButtonItem = buttonItem
-        navigationItem.rightBarButtonItem = dateItem
-        
-        guard let datePickerView = datePickerView,
-              let addButtonView = addButtonView else { return }
-        
-        view.addSubview(datePickerView)
-        view.addSubview(addButtonView)
+        navigationItem.leftBarButtonItem = addButton
+        navigationItem.rightBarButtonItem = datePickerToolItem
         view.addSubview(collectionView)
         view.addSubview(placeholderImage)
         view.addSubview(placeholderLabel)
@@ -207,16 +180,6 @@ final class TrackersViewController: UIViewController {
         view.addSubview(errorLabel)
         
         NSLayoutConstraint.activate([
-            
-            datePickerView.topAnchor.constraint(equalTo: view.topAnchor, constant: 91),
-            datePickerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 282),
-            datePickerView.heightAnchor.constraint(equalToConstant: 34),
-            datePickerView.widthAnchor.constraint(equalToConstant: 77),
-            
-            addButtonView.topAnchor.constraint(equalTo: view.topAnchor, constant: 57),
-            addButtonView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
-            addButtonView.heightAnchor.constraint(equalToConstant: 18),
-            addButtonView.widthAnchor.constraint(equalToConstant: 18),
             
             trackerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
             trackerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
@@ -293,9 +256,8 @@ final class TrackersViewController: UIViewController {
         trackerService.filteredTrackers = trackerService.filterTrackersByWeekDay(selectedDay)
         eventService.filteredEvents = eventService.eventCategories
         if trackerService.filteredTrackers.isEmpty && eventService.filteredEvents.isEmpty {
-            //showErrors()
-            placeholderImage.isHidden = true
-            placeholderLabel.isHidden = true
+            placeholderImage.isHidden = false
+            placeholderLabel.isHidden = false
         } else {
             hideErrors()
             configureCollectionView()
@@ -512,7 +474,7 @@ func doneButtonUntapped(for cell: TrackersViewCell) {
               trackerService.deleteTrackerRecord(trackerRecord: TrackerRecord(id: updateTracker.id, date: valueDate))
               
               cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
-                  cell.daysCounter.text = cell.updateDayCounterLabel(with: updateTracker.dayCounter)
+                  cell.daysCounter.text = updateTracker.dayCounter.dayToString()
                   cell.backgroundViewDone.isHidden = true
               }
           }
@@ -529,7 +491,7 @@ func doneButtonUntapped(for cell: TrackersViewCell) {
               eventService.updateEvent(event: updateEvent)
               eventService.deleteEventRecord(eventRecord: deletedRecord)
               cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
-                  cell.daysCounter.text = cell.updateDayCounterLabel(with: updateEvent.dayCounter)
+                  cell.daysCounter.text = updateEvent.dayCounter.dayToString()
                   cell.backgroundViewDone.isHidden = true
                  
               }
@@ -562,7 +524,7 @@ func doneButtonDidTapped(for cell: TrackersViewCell) {
                trackerService.addTrackerRecord(trackerRecord: newRecord)
                
                cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
-                   cell.daysCounter.text = cell.updateDayCounterLabel(with: updatedTracker.dayCounter)
+                   cell.daysCounter.text = updatedTracker.dayCounter.dayToString()
                    cell.backgroundViewDone.alpha = 0.3
                    cell.backgroundViewDone.isHidden = false
                }
@@ -583,7 +545,7 @@ func doneButtonDidTapped(for cell: TrackersViewCell) {
                eventService.addEventRecord(eventRecord: newRecord)
 
                cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
-                   cell.daysCounter.text = cell.updateDayCounterLabel(with: updatedEvent.dayCounter)
+                   cell.daysCounter.text = updatedEvent.dayCounter.dayToString()
                    cell.backgroundViewDone.alpha = 0.3
                    cell.backgroundViewDone.isHidden = false
                }

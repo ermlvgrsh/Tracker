@@ -27,8 +27,8 @@ final class TabBarController: UITabBarController {
         let trackerService = TrackerService.shared
         let eventService = IrregularEventService.shared
         viewControllers = [
-            createNavController(for: TrackersViewController(trackerService: trackerService, eventService: eventService), title: "Трекеры", image: trackerImage),
-            createNavController(for: StatisticViewController(), title: "Статистика", image: statisticImage)
+            createNavController(for: TrackersViewController(trackerService: trackerService, eventService: eventService), title: "trackers".localized, image: trackerImage),
+            createNavController(for: StatisticViewController(), title: "statistics".localized, image: statisticImage)
         ]
     }
     

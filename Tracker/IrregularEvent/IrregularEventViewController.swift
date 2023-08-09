@@ -24,7 +24,7 @@ final class IrregularEventViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         label.attributedText =
-        NSMutableAttributedString(string: "Новое нерегулярное событие",
+       NSMutableAttributedString(string: "new_event".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -40,7 +40,7 @@ final class IrregularEventViewController: UIViewController {
     
     private let irregularNameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = "tracker_name".localized
         textField.textColor = .black
         textField.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3).cgColor
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -53,7 +53,7 @@ final class IrregularEventViewController: UIViewController {
         return textField
     }()
     
-    let categoryViewInset = ["Категория"]
+    let categoryViewInset = ["category".localized]
     
     private let textLimitLabel: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
@@ -62,7 +62,7 @@ final class IrregularEventViewController: UIViewController {
         label.textColor = UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1)
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.08
-        label.attributedText = NSMutableAttributedString(string: "Ограничение 38 символов", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.attributedText = NSMutableAttributedString(string: "limit".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isHidden = true
@@ -96,7 +96,7 @@ final class IrregularEventViewController: UIViewController {
         let titleAttribute: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 17)
         ]
-        let titleAtributedString = NSAttributedString(string: "Создать",
+        let titleAtributedString = NSAttributedString(string: "create".localized,
                                                       attributes: titleAttribute)
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)
@@ -115,7 +115,7 @@ final class IrregularEventViewController: UIViewController {
         let titleAttribute: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 17)
         ]
-        let titleAtributedString = NSAttributedString(string: "Отменить",
+        let titleAtributedString = NSAttributedString(string: "cancel".localized,
                                                       attributes: titleAttribute)
         button.setAttributedTitle(titleAtributedString, for: .normal)
         button.addTarget(self, action: #selector(cancelButtonDidTapped), for: .touchUpInside)
@@ -496,7 +496,7 @@ extension IrregularEventViewController: UICollectionViewDataSource {
             guard let colorView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? ColorSupplementaryView else {
                 return UICollectionReusableView() }
             
-            colorView.titleLabel.text = "Цвет"
+            colorView.titleLabel.text = "color".localized
             return colorView
         }
         guard let emojiView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? EmojiSupplementaryView else { return UICollectionReusableView() }

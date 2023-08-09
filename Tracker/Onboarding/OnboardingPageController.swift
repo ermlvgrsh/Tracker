@@ -5,8 +5,8 @@ final class OnboardingPageViewController: UIPageViewController {
     
     
     private var pages: [OnboardingModel] = [
-    OnboardingModel(text: "Отслеживайте только\nто, что хотите", image: "onboard1"),
-    OnboardingModel(text: "Даже если это\nне литры воды и йога", image: "onboard2")
+        OnboardingModel(text: "track_everything".localized, image: "onboard1"),
+        OnboardingModel(text: "not_only_water".localized, image: "onboard2")
     ]
     
     lazy var pageControl: UIPageControl = {
@@ -21,7 +21,7 @@ final class OnboardingPageViewController: UIPageViewController {
     private lazy var entryButton: UIButton = {
        let button = UIButton()
         button.backgroundColor = .black
-        button.setTitle("Вот это технологии", for: .normal)
+        button.setTitle("technologies".localized, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.layer.cornerRadius = 16

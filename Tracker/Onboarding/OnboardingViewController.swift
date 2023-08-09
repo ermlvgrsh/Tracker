@@ -17,7 +17,7 @@ final class OnboardingViewController: UIViewController {
     
     private lazy var textLabel: UILabel = {
        let label = UILabel()
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         label.textColor = .black

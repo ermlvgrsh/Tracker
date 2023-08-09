@@ -36,7 +36,7 @@ final class NewCategoryViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         label.attributedText =
-        NSMutableAttributedString(string: "Новая категория",
+        NSMutableAttributedString(string: "new_category".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -44,7 +44,7 @@ final class NewCategoryViewController: UIViewController {
     
     lazy var categoryTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
+        textField.placeholder = "enter_category_name".localized
         textField.textColor = .black
         textField.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3).cgColor
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -89,7 +89,7 @@ final class NewCategoryViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Готово",
+        let titleAtributedString = NSAttributedString(string: "done".localized,
                                                       attributes: titleAttribute)
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)

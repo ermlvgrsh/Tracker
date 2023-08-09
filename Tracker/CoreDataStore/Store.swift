@@ -25,10 +25,8 @@ struct StoreUpdate {
         self.storeDelegate = storeDelegate
         super.init()
     }
-     
-     
     
-    internal func save() {
+     internal func save() {
         do {
             try context.save()
         } catch {

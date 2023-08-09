@@ -31,7 +31,7 @@ final class CategoriesViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         label.attributedText =
-        NSMutableAttributedString(string: "Категория",
+        NSMutableAttributedString(string: "category".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -48,7 +48,7 @@ final class CategoriesViewController: UIViewController {
         paragraphStyle.lineHeightMultiple = 1.26
         paragraphStyle.alignment = .center
         label.attributedText =
-        NSMutableAttributedString(string: "Привычки и события можно  объединить по смыслу", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        NSMutableAttributedString(string: "category_placeholder".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.isHidden = false
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -85,7 +85,7 @@ final class CategoriesViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Добавить категорию",
+        let titleAtributedString = NSAttributedString(string: "add_category".localized,
                                                       attributes: titleAttribute)
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)
@@ -185,7 +185,7 @@ extension CategoriesViewController: UITableViewDelegate {
         guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
         let selectedCategories = viewModel.categories[indexPath.row]
         categoryCell.checkmarkImage.isHidden = false
-        delegate?.didSelectCategory(selectedCategories)
+        viewModel.didSelectTrackerCategory(category: selectedCategories)
         dismiss(animated: true)
     }
 }

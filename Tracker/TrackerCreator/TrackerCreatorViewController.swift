@@ -13,7 +13,7 @@ final class TrackerCreatorViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         createTrackerLabel.attributedText =
-        NSMutableAttributedString(string: "Создание трекера",
+        NSMutableAttributedString(string: "create_tracker".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         createTrackerLabel.translatesAutoresizingMaskIntoConstraints = false
         return createTrackerLabel
@@ -48,7 +48,7 @@ final class TrackerCreatorViewController: UIViewController {
         let titleAttribute: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
-        let titleAtributedString = NSAttributedString(string: "Привычка",
+       let titleAtributedString = NSAttributedString(string: "habbit".localized,
                                                       attributes: titleAttribute)
         habbitButton.setAttributedTitle(titleAtributedString, for: .normal)
         habbitButton.translatesAutoresizingMaskIntoConstraints = false
@@ -67,7 +67,7 @@ final class TrackerCreatorViewController: UIViewController {
         let titleAttribute: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
-        let titleAttributedString = NSAttributedString(string: "Нерегулярное событие",
+        let titleAttributedString = NSAttributedString(string: "irregular_event".localized,
                                                        attributes: titleAttribute)
         irregularEventButton.setAttributedTitle(titleAttributedString, for: .normal)
         irregularEventButton.translatesAutoresizingMaskIntoConstraints = false

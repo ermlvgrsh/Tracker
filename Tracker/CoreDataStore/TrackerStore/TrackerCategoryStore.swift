@@ -70,17 +70,14 @@ final class TrackerCategoryStore: Store {
     func fetchByName(categoryName: String) -> TrackerCategory? {
         return getByName(categoryName: categoryName)?.toTrackerCategory(decoder: decoder)
     }
-    
 }
 
 
 
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
-    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         storeDelegate?.didChangeContent()
     }
-
 }
 
 extension TrackerCategoryCoreData {

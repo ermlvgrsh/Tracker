@@ -16,9 +16,12 @@
 "limit" = "Ограничение 38 символов";
 "color" = "Цвет";
 "create" = "Создать";
+"save" = "Сохранить";
+"category_placeholder" = "Привычки и события можно  объединить по смыслу";
 "add_category" = "Добавить категорию";
 "delete" = "Удалить";
 "edit" = "Редактировать";
+"edit_habbit" = "Редактирование привычки";
 "new_category" = "Новая категория";
 "enter_category_name" = "Введите название категории";
 "done" = "Готово";
@@ -35,16 +38,28 @@
 "tue" = "Вт";
 "wed" = "Ср";
 "thu" = "Чт";
-"fri" = "Пт";
+"fr" = "Пт";
 "sat" = "Сб";
 "sun" = "Вс";
 "everyday" = "Каждый день";
 "day" = "день";
 "days_1-4" = "дня";
 "days_5+" = "дней";
+"nothing_to_found" = "Ничего не найдено";
 "placeholder_statistic" = "Анализировать пока нечего";
 "best_period_view" = "Лучший период";
 "best_days_view" = "Идеальные дни";
+"filters" = "Фильтры";
+"pinned" = "Закрепленные";
+"pin" = "Закрепить";
+"unpin" = "Открепить";
+"edit_habit" = "Редактирование привычки";
+"confirm_delete_tracker" = "Уверены что хотите удалить трекер?";
+"edit_habit" = "Редактирование привычки";
+"all_trackers" = "Все трекеры";
+"trackers_for_today" = "Трекеры на сегодня";
+"complete_trackers" = "Завершенные";
+"incompleted_trackers" = "Незавершенные";
 "completed_trackers" = "Трекеров завершено";
 "average_value" = "Среднее значение";
 

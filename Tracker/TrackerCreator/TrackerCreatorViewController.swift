@@ -3,7 +3,6 @@ import UIKit
 final class TrackerCreatorViewController: UIViewController {
     
     weak var delegate: NewTrackerDelegate?
-    weak var irregularDelegate: IrregularEventDelegate?
     
     private let createTrackerLabel: UILabel = {
         let createTrackerLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 149, height: 22))
@@ -77,13 +76,19 @@ final class TrackerCreatorViewController: UIViewController {
     }()
     
     @objc func irregularEventButtonPressed() {
-       let irregularView = IrregularEventViewController()
-        irregularView.delegate = irregularDelegate
+       let irregularView = NewHabbitViewController()
+        irregularView.delegate = delegate
+        let eventFlowInfo = TrackerInfo(categoryName: nil, type: .event, daysCounter: nil, trackerInfo: nil)
+        irregularView.selectedTrackerType = .event
+        irregularView.selectedFlow = TrackerFlowView(flow: .create, trackerInfo: eventFlowInfo)
         self.present(irregularView, animated: true)
     }
     @objc func habbitButtonPressed() {
         let newHabbitView = NewHabbitViewController()
-        newHabbitView.delegate = delegate 
+        newHabbitView.delegate = delegate
+        let trackerFlowInfo = TrackerInfo(categoryName: nil, type: .habbit, daysCounter: nil, trackerInfo: nil)
+        newHabbitView.selectedTrackerType = .habbit
+        newHabbitView.selectedFlow = TrackerFlowView(flow: .create, trackerInfo: trackerFlowInfo)
         self.present(newHabbitView, animated: true)
     }
     

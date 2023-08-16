@@ -71,6 +71,9 @@ final class IrregularEventService {
     func addEventRecord(eventRecord: IrregularEventRecord) {
         eventRecordStore.addRecord(record: eventRecord)
     }
+    func removeEvent(event: IrregularEvent) {
+        irregularEventStore.removeEvent(event: event)
+    }
     
     func deleteEventRecord(eventRecord: IrregularEventRecord) {
         eventRecordStore.deleteRecord(record: eventRecord)

@@ -14,8 +14,8 @@ final class StatisticViewController: UIViewController {
     private lazy var placeholderLabel: UILabel = {
        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.backgroundColor = .white
-        label.tintColor = .black
+        label.backgroundColor = .systemBackground
+        label.tintColor = .label
         label.textAlignment = .center
         label.text = "placeholder_statistic".localized
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -25,8 +25,8 @@ final class StatisticViewController: UIViewController {
     private lazy var statisticsLabel: UILabel = {
        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        label.backgroundColor = .white
-        label.tintColor = .black
+        label.backgroundColor = .systemBackground
+        label.tintColor = .label
         label.textAlignment = .left
         label.text = "statistic".localized
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -137,7 +137,7 @@ final class StatisticViewController: UIViewController {
     
     
     private func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(placeholderImage)
         view.addSubview(placeholderLabel)
         view.addSubview(statisticsLabel)

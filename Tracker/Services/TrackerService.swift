@@ -4,14 +4,12 @@ final class TrackerService {
     
     static let shared = TrackerService()
     static let changeContentNotification = Notification.Name(rawValue: "ChangeContentNotification")
-    
+    private let encoder = JSONEncoder()
     @Observable
     private(set) var categories: [TrackerCategory] = []
     
     @Observable
     private(set) var completedTrackers: Set<TrackerRecord> = []
-    
-    var filteredTrackers: [TrackerCategory] = []
     
     lazy var trackerStore: TrackerStore = {
         let trackerStore = TrackerStore(storeDelegate: self)
@@ -47,19 +45,72 @@ final class TrackerService {
     }
     
     func updateTracker(tracker: Tracker) {
-        trackerStore.updateTracker(tracker: tracker)
-    }
-
-
-    func addNewTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
-        let category: TrackerCategory? = trackerCategoryStore.fetchByName(categoryName: trackerCategory.categoryName)
-        if category == nil {
-            trackerCategoryStore.addCategory(trackerCategory: trackerCategory.categoryName)
+        trackerStore.updateTracker(trackerID: tracker.id) { trackerCD in
+            trackerCD.dayCounter = Int32(tracker.dayCounter)
         }
-        trackerStore.addTracker(tracker: tracker, category: trackerCategoryStore.getByName(categoryName: trackerCategory.categoryName))
     }
     
+    func pinTracker(tracker: Tracker) {
+        trackerStore.updateTracker(trackerID: tracker.id) { trackerCD in
+            trackerCD.isPinned = true
+        }
+    }
+
+    func unpinTracker(tracker: Tracker) {
+        trackerStore.updateTracker(trackerID: tracker.id) { trackerCD in
+            trackerCD.isPinned = false
+        }
+    }
     
+    func getTracker(trackerID: UUID) -> Tracker? {
+        let trackerCategories = filterTrackers { tracker in tracker.id == trackerID }
+        if trackerCategories.isEmpty {
+            return nil
+        }
+        return trackerCategories.first?.trackers.first ?? nil
+    }
+    
+    func getTrackerInfo(trackerID: UUID) -> TrackerInfo? {
+        let categories = filterTrackers { tracker in tracker.id == trackerID }
+        guard categories.isEmpty == false ,
+              let selectedCategory = categories.first,
+              let selectedTracker = selectedCategory.trackers.first else { return nil }
+        
+        let selectedTrackerType = selectedTracker.schedule == WeekDay.allCases ? TrackerType.event : TrackerType.habbit
+        let daysCompleted = completedTrackers.filter { $0.id == selectedTracker.id }.count
+        return TrackerInfo(categoryName: selectedCategory.categoryName,
+                           type: selectedTrackerType,
+                           daysCounter: daysCompleted,
+                           trackerInfo: selectedTracker)
+    }
+    
+    func addNewTracker(tracker: Tracker, trackerCategory: String) {
+        let category: TrackerCategory? = trackerCategoryStore.fetchByName(categoryName: trackerCategory)
+        if category == nil {
+            trackerCategoryStore.addCategory(trackerCategory: trackerCategory)
+        }
+        trackerStore.addTracker(tracker: tracker, category: trackerCategoryStore.getByName(categoryName: trackerCategory))
+    }
+    
+    func updateCurrentTracker(tracker: Tracker, categoryName: String) {
+        let category: TrackerCategory? = trackerCategoryStore.fetchByName(categoryName: categoryName)
+        if category == nil {
+            trackerCategoryStore.addCategory(trackerCategory: categoryName)
+        }
+        trackerStore.updateTracker(trackerID: tracker.id) { trackerCD in
+            trackerCD.name = tracker.name
+            trackerCD.category = trackerCategoryStore.getByName(categoryName: categoryName)
+            trackerCD.emoji = tracker.emoji
+            trackerCD.color = UIColorMarshalling.serializeColor(tracker.color)
+            if let schedule = tracker.schedule {
+                trackerCD.schedule = try? encoder.encode(schedule)
+            }
+        }
+    }
+    
+    func getCategoryByName(name: String) -> TrackerCategory? {
+        trackerCategoryStore.fetchByName(categoryName: name)
+    }
     
     func filterTrackers(filter: (Tracker) -> Bool) -> [TrackerCategory] {
         var filteredCategories: [TrackerCategory] = []
@@ -72,7 +123,6 @@ final class TrackerService {
                 filteredCategories.append(filteredCategory)
             }
         }
-        filteredTrackers = filteredCategories
         return filteredCategories
     }
     
@@ -87,6 +137,10 @@ final class TrackerService {
         return filterTrackers { tracker in
             return tracker.name.localizedStandardContains(searchText)
         }
+    }
+    
+    func removeTracker(tracker: Tracker) {
+        trackerStore.removeTracker(tracker: tracker)
     }
     
     func addTrackerRecord(trackerRecord: TrackerRecord) {

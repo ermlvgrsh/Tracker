@@ -6,10 +6,11 @@ protocol TrackerViewCellDelegate: AnyObject {
 }
 
 class TrackersViewCell: UICollectionViewCell {
-
+    
     static let identifier = "TrackerViewCell"
     private let isCompleted = false
-    weak var delegate: TrackerViewCellDelegate? 
+    weak var delegate: TrackerViewCellDelegate?
+    let darkMode = DarkMode()
     var trackerID: UUID?
     var eventID: UUID?
     var dayCounter = 0
@@ -49,10 +50,10 @@ class TrackersViewCell: UICollectionViewCell {
     }()
     
     let daysCounter: UILabel = {
-       let label = UILabel(frame: CGRect(x: 0, y: 0, width: 101, height: 18))
-        label.backgroundColor = .white
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 101, height: 18))
+        label.backgroundColor = .systemBackground
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.textColor = UIColor(red: 0.102, green: 0.106, blue: 0.133, alpha: 1)
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "0 дней"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -67,6 +68,13 @@ class TrackersViewCell: UICollectionViewCell {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.masksToBounds = true
         return button
+    }()
+    
+    lazy var pinnedImage: UIImageView = {
+        let iv = UIImageView(image: UIImage(named: "ic 24x24"))
+         iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.isHidden = true
+        return iv
     }()
 
     lazy var doneButton: UIButton = {
@@ -117,7 +125,7 @@ class TrackersViewCell: UICollectionViewCell {
         trackerView.addSubview(trackerName)
         trackerView.addSubview(emojiBackgroundView)
         emojiBackgroundView.addSubview(emoji)
-        
+        contentView.addSubview(pinnedImage)
         
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor),
@@ -138,6 +146,10 @@ class TrackersViewCell: UICollectionViewCell {
             emoji.trailingAnchor.constraint(equalTo: emojiBackgroundView.trailingAnchor),
             emoji.bottomAnchor.constraint(equalTo: emojiBackgroundView.bottomAnchor),
 
+            pinnedImage.topAnchor.constraint(equalTo: trackerView.topAnchor, constant: 12),
+            pinnedImage.trailingAnchor.constraint(equalTo: trackerView.trailingAnchor, constant: -4),
+            pinnedImage.widthAnchor.constraint(equalToConstant: 24),
+            pinnedImage.heightAnchor.constraint(equalTo: pinnedImage.widthAnchor),
             
             trackerName.topAnchor.constraint(equalTo: trackerView.topAnchor, constant: 44),
             trackerName.leadingAnchor.constraint(equalTo: trackerView.leadingAnchor, constant: 12),
@@ -168,14 +180,13 @@ class TrackersViewCell: UICollectionViewCell {
         ])
     }
     
-    func configureCell(with trackerName: String, color: UIColor, emoji: String, dayCounter: Int) {
-        trackerView.layer.backgroundColor = color.cgColor
-        plusButton.tintColor = color
-        self.trackerName.text = trackerName
-        self.emoji.text = emoji
-        self.backgroundViewDone.layer.backgroundColor = color.cgColor
-        self.dayCounter = dayCounter
-        self.daysCounter.text = dayCounter.dayToString()
+    func bindCell(tracker: TrackerView) {
+        trackerView.layer.backgroundColor = tracker.color.cgColor
+        plusButton.tintColor = tracker.color
+        self.trackerName.text = tracker.trackerName
+        self.emoji.text = tracker.emoji
+        self.backgroundViewDone.layer.backgroundColor = tracker.color.cgColor
+        self.daysCounter.text = tracker.dayCounter
     }
 }
 

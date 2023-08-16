@@ -11,7 +11,6 @@ final class CategoriesViewController: UIViewController {
     
     weak var delegate: CategoriesDelegate?
     private let viewModel = TrackerCategoryViewModel()
-    private let eventViewModel = EventViewModel()
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
     
     
@@ -96,7 +95,7 @@ final class CategoriesViewController: UIViewController {
     
 
     @objc func createCategory() {
-        let newCategoryVC = NewCategoryViewController(viewModel: viewModel, eventViewModel: eventViewModel)
+        let newCategoryVC = NewCategoryViewController(viewModel: viewModel)
         present(newCategoryVC, animated: true)
     }
     

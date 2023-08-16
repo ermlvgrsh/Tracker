@@ -1,20 +1,12 @@
 import UIKit
 
-
-protocol NewEventCategoryDelegate: AnyObject {
-    func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?)
-}
-
 final class NewCategoryViewController: UIViewController {
-    
-    weak var eventDelegate: NewEventCategoryDelegate?
+
     private let viewModel: TrackerCategoryViewModel
-    private let eventViewModel: EventViewModel
     var namedCategory: String?
     
-    init(viewModel: TrackerCategoryViewModel, eventViewModel: EventViewModel) {
+    init(viewModel: TrackerCategoryViewModel) {
         self.viewModel = viewModel
-        self.eventViewModel = eventViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -66,10 +58,6 @@ final class NewCategoryViewController: UIViewController {
          if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
              let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
              viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
-         } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
-  
-             let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
-             eventViewModel.didSaveEventCategory(eventCategory: newEvent, newEventCategory: newEvent.categoryName)
          }
          dismiss(animated: true)
      }
@@ -154,5 +142,3 @@ extension NewCategoryViewController: UITextFieldDelegate {
         addDoneButtonToKeyboard()
     }
 }
-
-

@@ -3,6 +3,7 @@
 "technologies" = "What a technology";
 "what_to_track" = "What are we going to track?";
 "cancel" = "Cancel";
+"confirm_delete_tracker" = "Are you sure you want to delete the tracker?";
 "filters" = "Filters";
 "create_tracker" = "Tracker Creation";
 "habbit" = "Habbit";
@@ -16,7 +17,6 @@
 "category" = "Category";
 "schedule" = "Schedule";
 "color" = "Color";
-"create" = "Create";
 "category_placeholder" = "It is possible to combine habits and events\nin a meaningful way";
 "add_category" = "Add category";
 "delete" = "Delete";
@@ -37,7 +37,7 @@
 "tue" = "Tue";
 "wed" = "Wed";
 "thu" = "Thu";
-"fri" = "Fri";
+"fr" = "Fri";
 "sat" = "Sat";
 "sun" = "Sun";
 "everyday" = "Everyday";
@@ -47,6 +47,18 @@
 "nothing_found" = "Nothing found";
 "placeholder_statistic" = "Nothing to analyze yet";
 "best_period_view" = "Best period";
+"filters" = "Filteres";
+"pinned" = "Pinned";
+"pin" = "Pin";
+"unpin" = "Unpin";
+"edit" = "Edit";
+"edit_habbit" = "Edit";
+"confirm_delete_tracker" = "Are you sure you want to delete the tracker?";
+"all_trackers" = "All trackers";
+"trackers_for_today" = "Trackers for today";
+"completed_trackers" = "Completed";
+"edit_habit" = "Edit";
+"incompleted_trackers" = "Incompleted";
 "best_days_view" = "Ideal days";
 "completed_trackers" = "Trackers completed";
 "average_value" = "Average value";

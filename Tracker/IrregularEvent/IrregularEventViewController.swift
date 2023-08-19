@@ -15,6 +15,7 @@ final class IrregularEventViewController: UIViewController {
     var dayCounter = 0
     var isShifted: Bool = false
     
+    
    private let irregularEventLabel: UILabel = {
        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)

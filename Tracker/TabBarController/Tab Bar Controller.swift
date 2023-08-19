@@ -31,4 +31,5 @@ final class TabBarController: UITabBarController {
             createNavController(for: StatisticViewController(), title: "Статистика", image: statisticImage)
         ]
     }
+    
 }

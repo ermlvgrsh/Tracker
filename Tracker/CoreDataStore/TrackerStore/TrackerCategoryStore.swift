@@ -53,9 +53,9 @@ final class TrackerCategoryStore: Store {
     }
     
     
-    func addCategory(trackerCategory: TrackerCategory) {
+    func addCategory(trackerCategory: String) {
         let trackerCategoryCoreData = TrackerCategoryCoreData(context: context)
-        trackerCategoryCoreData.categoryName = trackerCategory.categoryName
+        trackerCategoryCoreData.categoryName = trackerCategory
         trackerCategoryCoreData.trackers = []
         save()
     }

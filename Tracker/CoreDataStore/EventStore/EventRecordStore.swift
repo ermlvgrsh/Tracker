@@ -16,7 +16,8 @@ final class EventRecordStore: Store {
         let request = EventRecordCoreData.fetchRequest()
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \EventRecordCoreData.eventID, ascending: true),
-            NSSortDescriptor(keyPath: \EventRecordCoreData.eventDate, ascending: true)]
+            NSSortDescriptor(keyPath: \EventRecordCoreData.eventDate, ascending: true)
+        ]
         return request
     }()
     

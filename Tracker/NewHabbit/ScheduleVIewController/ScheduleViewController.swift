@@ -66,7 +66,7 @@ final class ScheduleViewController: UIViewController {
     }()
     
     @objc func doneButtonTapped() {
-        delegate?.didSetSchedule(for: selectedSchedule.compactMap{ $0 } )
+        delegate?.didSetSchedule(for: selectedSchedule.compactMap{ $0 })
         dismiss(animated: true)
     }
     
@@ -104,6 +104,7 @@ final class ScheduleViewController: UIViewController {
         
         ])
     }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -120,7 +121,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ScheduleCell.identifier, for: indexPath) as? ScheduleCell else { return UITableViewCell() }
-        let weekDay = ScheduleCell().weekDays[indexPath.row]
+        let weekDay = cell.weekDays[indexPath.row]
         cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
         cell.delegate = self
         cell.configureCell(with: weekDay)

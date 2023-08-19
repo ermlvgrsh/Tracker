@@ -5,11 +5,10 @@ protocol EventCategoriesDelegate: AnyObject {
 
 final class EventCategoryViewController: UIViewController {
     var eventCategories = [IrregularEventCategory]()
-    
+    var eventViewModel = EventViewModel()
+    var viewModel = TrackerCategoryViewModel()
     weak var delegate: EventCategoriesDelegate?
-    
-    private var categoryTableViewHeightConstraint: NSLayoutConstraint?
-    
+
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = false
@@ -88,28 +87,33 @@ final class EventCategoryViewController: UIViewController {
         return button
     }()
     
+    func bindEventCategoryViewModel() {
+        eventViewModel.$eventCategories.bind {[weak self] eventCategory in
+            self?.categoryTableView.reloadData()
+        }
+        eventViewModel.$isPlaceholderHidden.bind { [weak self] isHidden in
+            self?.placeholderImage.isHidden = isHidden
+            self?.placeholderLabel.isHidden = isHidden
+        }
+        eventViewModel.$isTableViewHidden.bind { [weak self] isHidden in
+            self?.categoryTableView.isHidden = isHidden
+        }
+        eventViewModel.$selectedEventCategory.bind { [weak self] eventCategory in
+            guard let selectedCategory = eventCategory else { return }
+            self?.delegate?.didSelectCategory(selectedCategory)
+        }
+        eventViewModel.bindCategory()
+    }
+    
     @objc func createEventCategory() {
-        let newCategoryVC = NewCategoryViewController()
-        newCategoryVC.eventDelegate = self
+        let newCategoryVC = NewCategoryViewController(viewModel: viewModel, eventViewModel: eventViewModel)
         present(newCategoryVC, animated: true)
     }
-    
-    func checkingTableView() {
-        if !eventCategories.isEmpty {
-            placeholderImage.isHidden = true
-            placeholderLabel.isHidden = true
-            categoryTableView.isHidden = false
-        }
-    }
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        checkingTableView()
+        bindEventCategoryViewModel()
     }
     
     func setupTableView() {
@@ -126,8 +130,6 @@ final class EventCategoryViewController: UIViewController {
         scrollView.addSubview(placeholderLabel)
         scrollView.addSubview(categoryTableView)
         scrollView.addSubview(addCategory)
-        categoryTableViewHeightConstraint = categoryTableView.heightAnchor.constraint(equalToConstant: 0)
-        categoryTableViewHeightConstraint?.isActive = true
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -151,6 +153,7 @@ final class EventCategoryViewController: UIViewController {
             categoryTableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
             categoryTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             categoryTableView.widthAnchor.constraint(equalToConstant: 343),
+            categoryTableView.bottomAnchor.constraint(equalTo: addCategory.topAnchor, constant: -26),
             
             addCategory.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 276),
             addCategory.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
@@ -161,17 +164,6 @@ final class EventCategoryViewController: UIViewController {
     }
 }
 
-extension EventCategoryViewController: NewEventCategoryDelegate {
-    func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?) {
-        placeholderImage.isHidden = true
-        placeholderLabel.isHidden = true
-        categoryTableView.isHidden = false
-        eventCategories.append(category)
-        categoryTableView.reloadData()
-        categoryTableView.layoutIfNeeded()
-        categoryTableViewHeightConstraint?.constant = categoryTableView.contentSize.height
-    }
-}
 
 extension EventCategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -180,7 +172,7 @@ extension EventCategoryViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
-        let selectedCategories = eventCategories[indexPath.row]
+        let selectedCategories = eventViewModel.eventCategories[indexPath.row]
         categoryCell.checkmarkImage.isHidden = false
         delegate?.didSelectCategory(selectedCategories)
         dismiss(animated: true)
@@ -189,7 +181,7 @@ extension EventCategoryViewController: UITableViewDelegate {
 
 extension EventCategoryViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         return eventCategories.count
+        return eventViewModel.eventCategories.count
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -202,7 +194,7 @@ extension EventCategoryViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let category = eventCategories[indexPath.row]
+        let category = eventViewModel.eventCategories[indexPath.row]
         guard let categoryCell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { return UITableViewCell() }
         let categoryName = category.categoryName
         categoryCell.categoryLabel.text = categoryName

@@ -10,8 +10,11 @@ final class CategoriesViewController: UIViewController {
     var categories = [TrackerCategory]()
     
     weak var delegate: CategoriesDelegate?
-    
+    private let viewModel = TrackerCategoryViewModel()
+    private let eventViewModel = EventViewModel()
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
+    
+    
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -91,28 +94,36 @@ final class CategoriesViewController: UIViewController {
         return button
     }()
     
+
     @objc func createCategory() {
-        let newCategoryVC = NewCategoryViewController()
-        newCategoryVC.delegate = self
+        let newCategoryVC = NewCategoryViewController(viewModel: viewModel, eventViewModel: eventViewModel)
         present(newCategoryVC, animated: true)
     }
     
-    func checkingTableView() {
-        if !categories.isEmpty {
-            placeholderImage.isHidden = true
-            placeholderLabel.isHidden = true
-            categoryTableView.isHidden = false
+
+    private func bindCategoryViewModel() {
+        viewModel.$categories.bind { [weak self] trackerCategory in
+            self?.categoryTableView.reloadData()
         }
+        viewModel.$isPlaceholderHidden.bind { [weak self] isHidden in
+            self?.placeholderImage.isHidden = isHidden
+            self?.placeholderLabel.isHidden = isHidden
+        }
+        viewModel.$isTableViewHidden.bind { [weak self] isHidden in
+            self?.categoryTableView.isHidden = isHidden
+        }
+        viewModel.$selectedCategory.bind { [weak self] selectedCategory in
+            guard let selectedCategory = selectedCategory else { return }
+            self?.delegate?.didSelectCategory(selectedCategory)
+        }
+        
+        viewModel.bindCategory()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        checkingTableView()
+        bindCategoryViewModel()
     }
     
     func setupTableView() {
@@ -129,8 +140,6 @@ final class CategoriesViewController: UIViewController {
         scrollView.addSubview(placeholderLabel)
         scrollView.addSubview(categoryTableView)
         scrollView.addSubview(addCategory)
-        categoryTableViewHeightConstraint = categoryTableView.heightAnchor.constraint(equalToConstant: 0)
-        categoryTableViewHeightConstraint?.isActive = true
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -154,6 +163,7 @@ final class CategoriesViewController: UIViewController {
             categoryTableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
             categoryTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             categoryTableView.widthAnchor.constraint(equalToConstant: 343),
+            categoryTableView.bottomAnchor.constraint(equalTo: addCategory.topAnchor, constant: -26),
             
             addCategory.topAnchor.constraint(equalTo: placeholderImage.bottomAnchor, constant: 276),
             addCategory.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
@@ -161,19 +171,9 @@ final class CategoriesViewController: UIViewController {
             addCategory.heightAnchor.constraint(equalToConstant: 60),
         ])
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
-    }
-}
-
-extension CategoriesViewController: NewCategoryDelegete {
-    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?) {
-        placeholderImage.isHidden = true
-        placeholderLabel.isHidden = true
-        categoryTableView.isHidden = false
-        categories.append(category)
-        categoryTableView.reloadData()
         categoryTableView.layoutIfNeeded()
-        categoryTableViewHeightConstraint?.constant = categoryTableView.contentSize.height
     }
+
 }
 
 extension CategoriesViewController: UITableViewDelegate {
@@ -183,7 +183,7 @@ extension CategoriesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
-        let selectedCategories = categories[indexPath.row]
+        let selectedCategories = viewModel.categories[indexPath.row]
         categoryCell.checkmarkImage.isHidden = false
         delegate?.didSelectCategory(selectedCategories)
         dismiss(animated: true)
@@ -192,7 +192,7 @@ extension CategoriesViewController: UITableViewDelegate {
 
 extension CategoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         return categories.count
+        return viewModel.categories.count
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -205,7 +205,7 @@ extension CategoriesViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let category = categories[indexPath.row]
+        let category = viewModel.categories[indexPath.row]
         guard let categoryCell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { return UITableViewCell() }
         let categoryName = category.categoryName
         categoryCell.categoryLabel.text = categoryName

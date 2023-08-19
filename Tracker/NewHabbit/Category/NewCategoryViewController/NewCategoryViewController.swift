@@ -1,19 +1,26 @@
 import UIKit
 
-protocol NewCategoryDelegete: AnyObject {
-    func didSaveCategory(_ category: TrackerCategory, namedCategory: String?)
-}
+
 protocol NewEventCategoryDelegate: AnyObject {
     func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?)
 }
 
 final class NewCategoryViewController: UIViewController {
     
-    weak var delegate: NewCategoryDelegete?
     weak var eventDelegate: NewEventCategoryDelegate?
-    
+    private let viewModel: TrackerCategoryViewModel
+    private let eventViewModel: EventViewModel
     var namedCategory: String?
     
+    init(viewModel: TrackerCategoryViewModel, eventViewModel: EventViewModel) {
+        self.viewModel = viewModel
+        self.eventViewModel = eventViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = false
@@ -50,31 +57,27 @@ final class NewCategoryViewController: UIViewController {
         textField.addTarget(self, action: #selector(textFieldDidChanged(_:)), for: .editingChanged)
         return textField
      }()
+
+    
+
     
     @objc func doneButtonTapped() {
-        guard let categoryName = categoryTextField.text else { return }
-        if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
-            var categories = CategoriesViewController().categories
-            let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
-            categories.append(newCategory)
-            delegate?.didSaveCategory(newCategory, namedCategory: namedCategory)
-        } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
-            var categories = EventCategoryViewController().eventCategories
-            let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
-            categories.append(newEvent)
-            eventDelegate?.didSaveEventCategory(newEvent, namedCategory: namedCategory)
-        }
-        dismiss(animated: true)
-    }
+         guard let categoryName = categoryTextField.text else { return }
+         if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
+             let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
+             viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
+         } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
+  
+             let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
+             eventViewModel.didSaveEventCategory(eventCategory: newEvent, newEventCategory: newEvent.categoryName)
+         }
+         dismiss(animated: true)
+     }
     
     @objc func textFieldDidChanged(_ textfield: UITextField) {
-        if textfield.text?.isEmpty == false {
-            addCategory.layer.backgroundColor = UIColor(red: 0.102, green: 0.106, blue: 0.133, alpha: 1).cgColor
-        } else {
-            addCategory.backgroundColor = .white
-            addCategory.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
-        }
+        isTextFieldEmpty()
     }
+    
     
     lazy var addCategory: UIButton = {
         let button = UIButton(type: .system)
@@ -100,6 +103,15 @@ final class NewCategoryViewController: UIViewController {
         setupUI()
 
      }
+    
+    func isTextFieldEmpty() {
+        if categoryTextField.text?.isEmpty == false {
+            addCategory.layer.backgroundColor = UIColor(red: 0.102, green: 0.106, blue: 0.133, alpha: 1).cgColor
+        } else {
+            addCategory.backgroundColor = .white
+            addCategory.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
+        }
+    }
     
     func setupUI() {
         categoryTextField.delegate = self

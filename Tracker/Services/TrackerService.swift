@@ -5,6 +5,7 @@ final class TrackerService {
     static let shared = TrackerService()
     static let changeContentNotification = Notification.Name(rawValue: "ChangeContentNotification")
     
+    @Observable
     private(set) var categories: [TrackerCategory] = []
     private(set) var completedTrackers: Set<TrackerRecord> = []
     
@@ -34,6 +35,10 @@ final class TrackerService {
         return trackerCore.toTracker(decoder: JSONDecoder())
     }
     
+    func addCategory(categoryName: String) {
+        trackerCategoryStore.addCategory(trackerCategory: categoryName)
+    }
+    
     private init() {
         categories = trackerCategoryStore.categories
         completedTrackers = Set(trackerRecordStore.records)
@@ -47,7 +52,7 @@ final class TrackerService {
     func addNewTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
         let category: TrackerCategory? = trackerCategoryStore.fetchByName(categoryName: trackerCategory.categoryName)
         if category == nil {
-            trackerCategoryStore.addCategory(trackerCategory: trackerCategory)
+            trackerCategoryStore.addCategory(trackerCategory: trackerCategory.categoryName)
         }
         trackerStore.addTracker(tracker: tracker, category: trackerCategoryStore.getByName(categoryName: trackerCategory.categoryName))
     }

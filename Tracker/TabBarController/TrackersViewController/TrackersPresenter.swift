@@ -6,8 +6,8 @@ final class TrackerPresenter {
     private weak var trackersView: TrackerViewProtocol? = nil
     let currentDate: Date = Date()
     var valueDatePicker: Date = Date()
-    let trackerService = TrackerService.shared
-    let analyticsService = AnalyticsService.shared
+    private let trackerService = TrackerService.shared
+    private let analyticsService = AnalyticsService.shared
     
     
     init(trackerView: TrackerViewProtocol) {
@@ -55,17 +55,18 @@ final class TrackerPresenter {
     
     func updateDatePicker(date: Date) {
         valueDatePicker = date
+        
     }
     
     func pinTracker(trackerID: UUID) {
         guard let tracker = trackerService.getTracker(trackerID: trackerID),
-              tracker.isPinned == false else { return }
+              !tracker.isPinned else { return }
         trackerService.pinTracker(tracker: tracker)
     }
     
     func unPinTracker(trackerID: UUID) {
         guard let tracker = trackerService.getTracker(trackerID: trackerID),
-              tracker.isPinned == true else { return }
+              tracker.isPinned else { return }
         trackerService.unpinTracker(tracker: tracker)
     }
     
@@ -82,24 +83,36 @@ final class TrackerPresenter {
         return dateFormatter.string(from: date)
     }
     
-    func trackerDidTappedDone(trackerID: UUID) {
-        //TODO: ANALYTICS
+    func handleTapOnTracker(for cell: TrackersViewCell, tracker: Tracker) {
+        analyticsService.sendTrackerTapEvent()
         
         let calendar = Calendar.current
         guard let valueDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: valueDatePicker)) else { return }
         let today = formattedDateToString(date: currentDate)
         let datePicker = formattedDateToString(date: valueDatePicker)
-        guard today >= datePicker else { return }
-        let doneTracker = TrackerRecord(id: trackerID, date: valueDate)
-        
         let isAlreadyMarked = trackerService.completedTrackers.contains { record in
-            record.id == trackerID && valueDate == record.date
+            record.id == tracker.id && valueDate == record.date
         }
-        if isAlreadyMarked {
-            trackerService.addTrackerRecord(trackerRecord: doneTracker)
+        if !isAlreadyMarked {
+            guard today >= datePicker else { return }
+            let updatedTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, isPinned: tracker.isPinned, dayCounter: tracker.dayCounter + 1)
+            trackerService.addTrackerRecord(trackerRecord: TrackerRecord(id: tracker.id, date: valueDate))
+            trackerService.updateTracker(tracker: updatedTracker)
+            cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
+                cell.daysCounter.text = updatedTracker.dayCounter.dayToString()
+                cell.backgroundViewDone.alpha = 0.3
+                cell.backgroundViewDone.isHidden = false
+            }
         } else {
-            trackerService.deleteTrackerRecord(trackerRecord: doneTracker)
+            let updateTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, isPinned: tracker.isPinned, dayCounter: max(tracker.dayCounter - 1, 0))
+            trackerService.updateTracker(tracker: updateTracker)
+            trackerService.deleteTrackerRecord(trackerRecord: TrackerRecord(id: tracker.id, date: valueDate))
+            cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
+                cell.daysCounter.text = updateTracker.dayCounter.dayToString()
+                cell.backgroundViewDone.isHidden = true
+            }
         }
+        
     }
     
     func onBindTrackerCell(cell: TrackersViewCell, tracker: Tracker) {
@@ -141,4 +154,32 @@ final class TrackerPresenter {
         return result
     }
     
+    func updateStateButton(for cell: TrackersViewCell, tracker: Tracker?) {
+        
+        let datePicker = formattedDateToString(date: valueDatePicker)
+        
+        let isTrackerCompleted: Bool
+        
+        if let tracker = tracker {
+            isTrackerCompleted = isTrackerCompletedOnDate(tracker: tracker, date: datePicker)
+            
+        } else {
+            isTrackerCompleted = false
+        }
+        
+        if isTrackerCompleted {
+            cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
+                cell.backgroundViewDone.alpha = 0.3
+                cell.backgroundViewDone.isHidden = false
+            }
+        } else {
+            cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
+                cell.backgroundViewDone.isHidden = true
+            }
+        }
+    }
+    
+    private func isTrackerCompletedOnDate(tracker: Tracker, date: String) -> Bool {
+        return trackerService.completedTrackers.contains {$0.id == tracker.id && formattedDateToString(date: $0.date) == date }
+    }
 }

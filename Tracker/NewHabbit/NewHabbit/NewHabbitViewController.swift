@@ -28,7 +28,7 @@ final class NewHabbitViewController: UIViewController {
     var scheduleCell: NewHabbitCell?
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
-
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +52,7 @@ final class NewHabbitViewController: UIViewController {
     }()
     
     private let editLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.backgroundColor = .white
         label.textAlignment = .center
@@ -66,7 +66,7 @@ final class NewHabbitViewController: UIViewController {
     }()
     
     private let counterLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -74,7 +74,7 @@ final class NewHabbitViewController: UIViewController {
     }()
     
     private let counterStackView: UIStackView = {
-       let stackView = UIStackView()
+        let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fill
         stackView.spacing = 24
@@ -97,10 +97,10 @@ final class NewHabbitViewController: UIViewController {
         
         return textField
     }()
-
+    
     
     private let limitCharacterLabel: UILabel = {
-       let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
         label.font = .systemFont(ofSize: 17, weight: .regular)
         label.backgroundColor = .white
         label.textColor = UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1)
@@ -133,7 +133,7 @@ final class NewHabbitViewController: UIViewController {
         view.isHidden = true
         return view
     }()
-
+    
     
     @objc func deleteHabbitName() {
         habbitNameTextField.text = ""
@@ -182,16 +182,16 @@ final class NewHabbitViewController: UIViewController {
     
     private let centralTableView: UITableView = {
         let tableView = UITableView()
-         tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
-         tableView.layer.cornerRadius = 16
-         tableView.backgroundColor = .white
-         tableView.isScrollEnabled = false
-         tableView.translatesAutoresizingMaskIntoConstraints = false
-         tableView.register(NewHabbitCell.self, forCellReuseIdentifier: NewHabbitCell.identifier)
-         tableView.separatorStyle = .singleLine
-         tableView.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-         tableView.clipsToBounds = true
-         return tableView
+        tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
+        tableView.layer.cornerRadius = 16
+        tableView.backgroundColor = .white
+        tableView.isScrollEnabled = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(NewHabbitCell.self, forCellReuseIdentifier: NewHabbitCell.identifier)
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        tableView.clipsToBounds = true
+        return tableView
     }()
     
     lazy var emojiCollectionView: UICollectionView = {
@@ -230,14 +230,14 @@ final class NewHabbitViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
- 
-     }
-
-
+        
+    }
+    
+    
     @objc func cancelButtonTapped() {
         self.dismiss(animated: true)
     }
@@ -263,7 +263,7 @@ final class NewHabbitViewController: UIViewController {
     
     @objc func createHabbitButtonTapped() {
         guard let category = selectedCategory,
-        let selectedType = selectedTrackerType else { return }
+              let selectedType = selectedTrackerType else { return }
         if selectedFlow?.flow == .edit {
             if let inititalTrackerInfo = selectedFlow?.trackerInfo {
                 guard let tracker = setupNewHabbit(selectedType: selectedType) else { return }
@@ -274,7 +274,7 @@ final class NewHabbitViewController: UIViewController {
                 delegate?.didUpdateTracker(tracker: tracker, with: category)
                 dismiss(animated: true)
             }
-
+            
         } else {
             if let newTracker = setupNewHabbit(selectedType: selectedType) {
                 delegate?.didCreateTracker(newTracker: newTracker, with: category)
@@ -290,12 +290,12 @@ final class NewHabbitViewController: UIViewController {
     private func configureCounter() {
         scrollView.addSubview(counterStackView)
         counterStackView.addArrangedSubview(counterLabel)
-
+        
         NSLayoutConstraint.activate([
             counterLabel.topAnchor.constraint(equalTo: habbitLabel.topAnchor, constant: 38),
             counterStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
         ])
-   }
+    }
     
     func setTableView() {
         centralTableView.delegate = self
@@ -332,8 +332,8 @@ extension NewHabbitViewController {
             configureCounter()
         }
     }
-
-
+    
+    
     
     private func configureEditFlow() {
         createHabbitButton.setTitle("save".localized, for: .normal)
@@ -389,13 +389,13 @@ extension NewHabbitViewController {
         } else {
             createHabbitButton.isEnabled = false
         }
- 
+        
     }
     
     private func updateCurrentTracker(initialTracker: TrackerInfo, name: String, color: UIColor, categoryName: String) {
         guard let initialTracker = initialTracker.trackerInfo,
-        let selectedColor = selectedColor,
-        let selectedEmoji = selectedEmoji else { return }
+              let selectedColor = selectedColor,
+              let selectedEmoji = selectedEmoji else { return }
         let tracker = Tracker(id: initialTracker.id,
                               name: name,
                               schedule: selectedFlow?.trackerInfo.type == .event ? WeekDay.allCases : initialTracker.schedule,
@@ -431,7 +431,7 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configureCell(with: text, and: image)
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
         if indexPath.row == lastRowIndex {
@@ -440,7 +440,7 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0: let category = CategoriesViewController()
+        case 0: let category = CategoriesViewController(viewModel: viewModel)
             category.delegate = self
             viewModel.bindCategory()
             self.present(category, animated: true)
@@ -516,7 +516,7 @@ extension NewHabbitViewController: UICollectionViewDelegate {
             selectedEmojiIndexPath = indexPath
             selectedEmoji = selectedEmojiCell.titleLabel.text
             
-
+            
         case colorCollectionView:
             if let previousSelected = selectedColorIndexPath {
                 if let previousSelectedColorCell = collectionView.cellForItem(at: previousSelected) as? ColorCell {
@@ -558,7 +558,7 @@ extension NewHabbitViewController: UICollectionViewDelegateFlowLayout {
             return colorCell.calculateColorCell(collectionView: colorCollectionView)
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let indexPath = IndexPath(row: 0, section: section)
         let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
@@ -579,7 +579,7 @@ extension NewHabbitViewController: UITextFieldDelegate {
         let newHabbitName = (habbitName as NSString).replacingCharacters(in: range, with: string)
         let limitCharacter = 38
         let amount: CGFloat = 38
-      
+        
         if newHabbitName.count > 0 {
             showDeleteButton()
         }
@@ -663,7 +663,7 @@ extension NewHabbitViewController {
         } else {
             createConstraintsForCreateMode()
         }
-
+        
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
         colorCollectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     }
@@ -680,60 +680,60 @@ extension NewHabbitViewController {
     
     private func createConstraintsForHabbit() {
         NSLayoutConstraint.activate([
-        centralTableView.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 24),
-        centralTableView.centerXAnchor.constraint(equalTo: habbitNameTextField.centerXAnchor),
-        centralTableView.heightAnchor.constraint(equalToConstant: 150),
-        centralTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            centralTableView.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 24),
+            centralTableView.centerXAnchor.constraint(equalTo: habbitNameTextField.centerXAnchor),
+            centralTableView.heightAnchor.constraint(equalToConstant: 150),
+            centralTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
     }
     
     private func createCommonConstraints() {
         NSLayoutConstraint.activate([
-        scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        
-        habbitLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 38),
-        habbitLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-        habbitLabel.heightAnchor.constraint(equalToConstant: 22),
-        
-        deleteButtonContainerView.leadingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor, constant: -41),
-        deleteButtonContainerView.trailingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor),
-        deleteButtonContainerView.topAnchor.constraint(equalTo: habbitNameTextField.topAnchor),
-        deleteButtonContainerView.bottomAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor),
-        deleteButtonContainerView.widthAnchor.constraint(equalToConstant: 41),
-        
-        deleteButton.centerYAnchor.constraint(equalTo: habbitNameTextField.centerYAnchor),
-        deleteButton.trailingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor, constant: -12),
-        deleteButton.widthAnchor.constraint(equalToConstant: 17),
-        deleteButton.heightAnchor.constraint(equalToConstant: 17),
-        
-        limitCharacterLabel.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 8),
-        limitCharacterLabel.centerXAnchor.constraint(equalTo: habbitLabel.centerXAnchor),
-        limitCharacterLabel.widthAnchor.constraint(equalToConstant: 286),
-        limitCharacterLabel.heightAnchor.constraint(equalTo: habbitLabel.heightAnchor),
-        
-        emojiCollectionView.topAnchor.constraint(equalTo: centralTableView.bottomAnchor, constant: 32),
-        emojiCollectionView.centerXAnchor.constraint(equalTo: centralTableView.centerXAnchor),
-        emojiCollectionView.heightAnchor.constraint(equalToConstant: 220),
-        emojiCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-        
-        colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 47),
-        colorCollectionView.centerXAnchor.constraint(equalTo: emojiCollectionView.centerXAnchor),
-        colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
-        colorCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-        
-        lowStackView.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 46),
-        lowStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-        lowStackView.heightAnchor.constraint(equalToConstant: 60),
-        lowStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-        
-        createHabbitButton.heightAnchor.constraint(equalToConstant: 60),
-        createHabbitButton.widthAnchor.constraint(equalToConstant: 161),
-        
-        cancelButton.widthAnchor.constraint(equalToConstant: 161),
-        cancelButton.heightAnchor.constraint(equalToConstant: 60)
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            habbitLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 38),
+            habbitLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            habbitLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            deleteButtonContainerView.leadingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor, constant: -41),
+            deleteButtonContainerView.trailingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor),
+            deleteButtonContainerView.topAnchor.constraint(equalTo: habbitNameTextField.topAnchor),
+            deleteButtonContainerView.bottomAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor),
+            deleteButtonContainerView.widthAnchor.constraint(equalToConstant: 41),
+            
+            deleteButton.centerYAnchor.constraint(equalTo: habbitNameTextField.centerYAnchor),
+            deleteButton.trailingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor, constant: -12),
+            deleteButton.widthAnchor.constraint(equalToConstant: 17),
+            deleteButton.heightAnchor.constraint(equalToConstant: 17),
+            
+            limitCharacterLabel.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 8),
+            limitCharacterLabel.centerXAnchor.constraint(equalTo: habbitLabel.centerXAnchor),
+            limitCharacterLabel.widthAnchor.constraint(equalToConstant: 286),
+            limitCharacterLabel.heightAnchor.constraint(equalTo: habbitLabel.heightAnchor),
+            
+            emojiCollectionView.topAnchor.constraint(equalTo: centralTableView.bottomAnchor, constant: 32),
+            emojiCollectionView.centerXAnchor.constraint(equalTo: centralTableView.centerXAnchor),
+            emojiCollectionView.heightAnchor.constraint(equalToConstant: 220),
+            emojiCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 47),
+            colorCollectionView.centerXAnchor.constraint(equalTo: emojiCollectionView.centerXAnchor),
+            colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
+            colorCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            lowStackView.topAnchor.constraint(equalTo: colorCollectionView.bottomAnchor, constant: 46),
+            lowStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            lowStackView.heightAnchor.constraint(equalToConstant: 60),
+            lowStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            
+            createHabbitButton.heightAnchor.constraint(equalToConstant: 60),
+            createHabbitButton.widthAnchor.constraint(equalToConstant: 161),
+            
+            cancelButton.widthAnchor.constraint(equalToConstant: 161),
+            cancelButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -770,25 +770,25 @@ extension NewHabbitViewController {
         }
     }
     
-   private func isTrackerComplete() -> Bool {
+    private func isTrackerComplete() -> Bool {
         guard let name = selectedName,
               let category = selectedCategory,
               !name.isEmpty,
               !category.categoryName.isEmpty,
               selectedEmoji != nil,
               selectedColor != nil else { return false }
-       if let selectedTrackerType = selectedTrackerType, selectedTrackerType == .event {
-           return true
-       }
-       if let selectedSchedule = selectedSchedule, !selectedSchedule.isEmpty {
-           return true
-       }
-       return false
+        if let selectedTrackerType = selectedTrackerType, selectedTrackerType == .event {
+            return true
+        }
+        if let selectedSchedule = selectedSchedule, !selectedSchedule.isEmpty {
+            return true
+        }
+        return false
     }
 }
 
 extension NewHabbitViewController: CategoriesDelegate {
-
+    
     func didSelectCategory(_ selectedCategory: TrackerCategory) {
         self.selectedCategory = selectedCategory
         guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }

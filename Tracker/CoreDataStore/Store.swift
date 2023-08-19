@@ -12,7 +12,7 @@ struct StoreUpdate {
     let movedIndexes: Set<Move>
 }
 
- class Store: NSObject {
+class Store: NSObject {
     
     weak var storeDelegate: StoreDelegate? = nil
     
@@ -26,7 +26,7 @@ struct StoreUpdate {
         super.init()
     }
     
-     internal func save() {
+    internal func save() {
         do {
             try context.save()
         } catch {

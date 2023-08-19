@@ -37,22 +37,21 @@ class ColorCell: UICollectionViewCell {
         view.isHidden = true
         return view
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
     }
-   
+    
     func setupCell() {
         contentView.addSubview(colorBackgroundView)
         contentView.addSubview(colorView)
         
         NSLayoutConstraint.activate([
-            colorView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            colorView.centerYAnchor.constraint(equalTo: centerYAnchor),
-
-            colorView.heightAnchor.constraint(equalToConstant: 40),
-            colorView.widthAnchor.constraint(equalToConstant: 40),
+            colorView.topAnchor.constraint(equalTo: topAnchor),
+            colorView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            colorView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            colorView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
             colorBackgroundView.centerXAnchor.constraint(equalTo: centerXAnchor),
             colorBackgroundView.centerYAnchor.constraint(equalTo: centerYAnchor),

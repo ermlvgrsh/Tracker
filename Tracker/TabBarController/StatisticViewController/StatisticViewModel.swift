@@ -1,5 +1,16 @@
+protocol StatisticViewModelProtocol {
+    var isPlaceholderHidden: Bool { get }
+    var bestPeriodValue: Int { get }
+    var bestDaysValue: Int { get }
+    var completedTrackerValue: Int { get }
+    var averageValue: Int { get }
+    
+    func viewDidLoad()
+    func observeCompletedTrackers()
+    func isShowingStatistic()
+}
 
-final class StatisticViewModel {
+final class StatisticViewModel: StatisticViewModelProtocol {
     
     private let trackerService = TrackerService.shared
     
@@ -44,6 +55,4 @@ final class StatisticViewModel {
             isPlaceholderHidden = true
         }
     }
-    
-    
 }

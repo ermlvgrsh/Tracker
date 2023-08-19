@@ -1,11 +1,11 @@
 import UIKit
 
 final class NewCategoryViewController: UIViewController {
-
-    private let viewModel: TrackerCategoryViewModel
+    
+    private let viewModel: TrackerCategoryViewModelProtocol
     var namedCategory: String?
     
-    init(viewModel: TrackerCategoryViewModel) {
+    init(viewModel: TrackerCategoryViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,19 +48,19 @@ final class NewCategoryViewController: UIViewController {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addTarget(self, action: #selector(textFieldDidChanged(_:)), for: .editingChanged)
         return textField
-     }()
-
+    }()
     
-
+    
+    
     
     @objc func doneButtonTapped() {
-         guard let categoryName = categoryTextField.text else { return }
-         if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
-             let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
-             viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
-         }
-         dismiss(animated: true)
-     }
+        guard let categoryName = categoryTextField.text else { return }
+        if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
+            let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
+            viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
+        }
+        dismiss(animated: true)
+    }
     
     @objc func textFieldDidChanged(_ textfield: UITextField) {
         isTextFieldEmpty()
@@ -89,8 +89,8 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-
-     }
+        
+    }
     
     func isTextFieldEmpty() {
         if categoryTextField.text?.isEmpty == false {
@@ -114,7 +114,7 @@ final class NewCategoryViewController: UIViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        
+            
             newCategoryLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             newCategoryLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 38),
             newCategoryLabel.heightAnchor.constraint(equalToConstant: 22),
@@ -129,7 +129,7 @@ final class NewCategoryViewController: UIViewController {
             
             addCategory.widthAnchor.constraint(equalToConstant: 335),
             addCategory.heightAnchor.constraint(equalToConstant: 60)
-        
+            
         ])
     }
 }

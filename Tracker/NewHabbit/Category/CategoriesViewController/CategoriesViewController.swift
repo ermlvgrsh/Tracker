@@ -10,9 +10,17 @@ final class CategoriesViewController: UIViewController {
     var categories = [TrackerCategory]()
     
     weak var delegate: CategoriesDelegate?
-    private let viewModel = TrackerCategoryViewModel()
+    private let viewModel: TrackerCategoryViewModel
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
     
+    init(viewModel: TrackerCategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     
     private let scrollView: UIScrollView = {
@@ -93,13 +101,13 @@ final class CategoriesViewController: UIViewController {
         return button
     }()
     
-
+    
     @objc func createCategory() {
         let newCategoryVC = NewCategoryViewController(viewModel: viewModel)
         present(newCategoryVC, animated: true)
     }
     
-
+    
     private func bindCategoryViewModel() {
         viewModel.$categories.bind { [weak self] trackerCategory in
             self?.categoryTableView.reloadData()
@@ -144,7 +152,7 @@ final class CategoriesViewController: UIViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
+            
             titleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 38),
             titleLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             titleLabel.widthAnchor.constraint(equalToConstant: 84),
@@ -172,7 +180,7 @@ final class CategoriesViewController: UIViewController {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
         categoryTableView.layoutIfNeeded()
     }
-
+    
 }
 
 extension CategoriesViewController: UITableViewDelegate {
@@ -200,6 +208,7 @@ extension CategoriesViewController: UITableViewDataSource {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.size.width, bottom: 0, right: 0)
+            (cell as? CategoryCell)?.roundCorners(corners: [.bottomRight, .bottomLeft], radius: 16)
         }
     }
     

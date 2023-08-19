@@ -29,7 +29,7 @@ class ScheduleCell: UITableViewCell {
         let isOn = switcher.isOn
         delegate?.switchValueDidChanged(for: self, isOn: isOn)
     }
-
+    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
@@ -78,7 +78,7 @@ class ScheduleCell: UITableViewCell {
             titleLabel.widthAnchor.constraint(equalToConstant: 271),
             titleLabel.heightAnchor.constraint(equalToConstant: 22),
             
-
+            
             switcher.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             switcher.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -22),
             switcher.widthAnchor.constraint(equalToConstant: 51),

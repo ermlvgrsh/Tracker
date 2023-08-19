@@ -1,18 +1,18 @@
 import UIKit
 
 
-class FilterTrackerViewCell: UITableViewCell {
+final class FilterTrackerViewCell: UITableViewCell {
     
     static let identifer = "FilterCell"
     
     let doneImageView: UIImageView = {
-       let iv = UIImageView(image: UIImage(named: "checkmark"))
+        let iv = UIImageView(image: UIImage(named: "checkmark"))
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.isHidden = true
         return iv
     }()
     
-    let filterLabel: UILabel = {
+    private let filterLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         label.textColor = .black
@@ -34,7 +34,7 @@ class FilterTrackerViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupUI() {
+    private func setupUI() {
         addSubview(filterLabel)
         addSubview(doneImageView)
         
@@ -48,7 +48,7 @@ class FilterTrackerViewCell: UITableViewCell {
             doneImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             doneImageView.widthAnchor.constraint(equalToConstant: 14),
             doneImageView.heightAnchor.constraint(equalToConstant: 14)
-        
+            
         ])
     }
 }

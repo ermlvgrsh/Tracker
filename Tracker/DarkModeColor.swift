@@ -9,4 +9,5 @@ final class DarkMode {
         let isDarkMode = traits.userInterfaceStyle == .dark
         return isDarkMode ? UIColor.white : UIColor.black
     }
+    
 }

@@ -37,12 +37,12 @@ final class TrackerCategoryStore: Store {
     
     func numberOfSections(section: Int) -> Int {
         let categories = self.categories
-
+        
         guard section >= 0 && section < categories.count else {
             print("Error: Invalid section index.")
             return 0
         }
-
+        
         return categories[section].trackers.count
     }
     
@@ -81,7 +81,7 @@ extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
 }
 
 extension TrackerCategoryCoreData {
-   
+    
     func toTrackerCategory(decoder: JSONDecoder) -> TrackerCategory? {
         guard let name = categoryName, let trackersCoreData = trackers else { return nil }
         let trackers = trackersCoreData.map { trackersCoreData in

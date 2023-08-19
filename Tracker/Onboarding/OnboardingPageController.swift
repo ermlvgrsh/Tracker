@@ -10,7 +10,7 @@ final class OnboardingPageViewController: UIPageViewController {
     ]
     
     lazy var pageControl: UIPageControl = {
-       let pc = UIPageControl()
+        let pc = UIPageControl()
         pc.currentPageIndicatorTintColor = .black
         pc.pageIndicatorTintColor = .black.withAlphaComponent(0.3)
         pc.numberOfPages = pages.count
@@ -19,7 +19,7 @@ final class OnboardingPageViewController: UIPageViewController {
     }()
     
     private lazy var entryButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.backgroundColor = .black
         button.setTitle("technologies".localized, for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -52,8 +52,8 @@ final class OnboardingPageViewController: UIPageViewController {
     
     
     @objc func buttonClicked() {
-       let tabBar = TabBarController()
-       tabBar.modalPresentationStyle = .fullScreen
+        let tabBar = TabBarController()
+        tabBar.modalPresentationStyle = .fullScreen
         present(tabBar, animated: true)
     }
     
@@ -72,7 +72,7 @@ final class OnboardingPageViewController: UIPageViewController {
         view.addSubview(entryButton)
         
         NSLayoutConstraint.activate([
-        
+            
             entryButton.heightAnchor.constraint(equalToConstant: 60),
             entryButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             entryButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),

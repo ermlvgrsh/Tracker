@@ -2,19 +2,20 @@ import UIKit
 protocol TrackerViewCellDelegate: AnyObject {
     func doneButtonDidTapped(for cell: TrackersViewCell)
     func doneButtonUntapped(for cell: TrackersViewCell)
- 
+    func handlePinAction(for tracker: Tracker)
+    func handleUnpinAction(for tracker: Tracker)
+    func handleEditAction(for tracker: Tracker)
+    func handleDeleteAction(for tracker: Tracker)
 }
 
-class TrackersViewCell: UICollectionViewCell {
+final class TrackersViewCell: UICollectionViewCell {
     
     static let identifier = "TrackerViewCell"
-    private let isCompleted = false
     weak var delegate: TrackerViewCellDelegate?
     let darkMode = DarkMode()
-    var trackerID: UUID?
-    var eventID: UUID?
-    var dayCounter = 0
-    let trackerView: UIView = {
+    var tracker: Tracker?
+    
+    private let trackerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 167, height: 90))
         view.backgroundColor = .white
         view.layer.masksToBounds = true
@@ -23,7 +24,7 @@ class TrackersViewCell: UICollectionViewCell {
         return view
     }()
     
-    let emoji: UILabel = {
+    private let emoji: UILabel = {
         let emoji = UILabel(frame: CGRect(x: 0, y: 0, width: 16, height: 20))
         emoji.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         emoji.textAlignment = .center
@@ -31,7 +32,7 @@ class TrackersViewCell: UICollectionViewCell {
         return emoji
     }()
     
-    let emojiBackgroundView: UIView = {
+    private let emojiBackgroundView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
         view.layer.masksToBounds = true
         view.layer.cornerRadius = 12
@@ -40,7 +41,7 @@ class TrackersViewCell: UICollectionViewCell {
         return view
     }()
     
-    let trackerName: UILabel = {
+    private let trackerName: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 143, height: 34))
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         label.textColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1)
@@ -72,11 +73,11 @@ class TrackersViewCell: UICollectionViewCell {
     
     lazy var pinnedImage: UIImageView = {
         let iv = UIImageView(image: UIImage(named: "ic 24x24"))
-         iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.translatesAutoresizingMaskIntoConstraints = false
         iv.isHidden = true
         return iv
     }()
-
+    
     lazy var doneButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "Done"), for: .normal)
@@ -88,14 +89,19 @@ class TrackersViewCell: UICollectionViewCell {
     }()
     
     let backgroundViewDone: UIView = {
-       let view = UIView(frame: CGRect(x: 0, y: 0, width: 34, height: 34))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 34, height: 34))
         view.layer.masksToBounds = true
         view.layer.cornerRadius = 17
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
         return view
     }()
-
+    
+    private func setupContextMenu() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        trackerView.addInteraction(interaction)
+    }
+    
     @objc func addDayToHabbit() {
         guard let delegate = delegate else { return }
         delegate.doneButtonDidTapped(for: self)
@@ -109,12 +115,14 @@ class TrackersViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super .init(frame: frame)
         constraintsForCell()
+        setupContextMenu()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    func constraintsForCell() {
+    
+    private func constraintsForCell() {
         contentView.addSubview(trackerView)
         contentView.addSubview(daysCounter)
         contentView.addSubview(plusButton)
@@ -145,7 +153,7 @@ class TrackersViewCell: UICollectionViewCell {
             emoji.leadingAnchor.constraint(equalTo: emojiBackgroundView.leadingAnchor),
             emoji.trailingAnchor.constraint(equalTo: emojiBackgroundView.trailingAnchor),
             emoji.bottomAnchor.constraint(equalTo: emojiBackgroundView.bottomAnchor),
-
+            
             pinnedImage.topAnchor.constraint(equalTo: trackerView.topAnchor, constant: 12),
             pinnedImage.trailingAnchor.constraint(equalTo: trackerView.trailingAnchor, constant: -4),
             pinnedImage.widthAnchor.constraint(equalToConstant: 24),
@@ -206,3 +214,37 @@ extension TrackersViewCell {
     }
 }
 
+extension TrackersViewCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+            guard let self = self, let tracker = self.tracker else { return nil }
+            
+            let pinOrUnpinAction: UIAction
+            if tracker.isPinned {
+                pinOrUnpinAction = UIAction(title: "unpin".localized) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.handleUnpinAction(for: tracker)
+                }
+            } else {
+                pinOrUnpinAction = UIAction(title: "pin".localized) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.handlePinAction(for: tracker)
+                }
+            }
+            
+            let editAction = UIAction(title: "edit".localized) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.handleEditAction(for: tracker)
+            }
+            
+            let removeAction = UIAction(title: "delete".localized, attributes: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.handleDeleteAction(for: tracker)
+            }
+            
+            return UIMenu(children: [pinOrUnpinAction, editAction, removeAction])
+        }
+        return configuration
+    }
+    
+}

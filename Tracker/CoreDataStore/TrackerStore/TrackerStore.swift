@@ -89,5 +89,5 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         storeDelegate?.didChangeContent()
     }
-
+    
 }

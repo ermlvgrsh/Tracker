@@ -21,7 +21,7 @@ final class StatisticView: UIView {
     }()
     
     private lazy var counterLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         label.textColor = .label
         label.textAlignment = .left
@@ -29,7 +29,7 @@ final class StatisticView: UIView {
     }()
     
     private lazy var descriptionLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
         label.textColor = .label
         label.textAlignment = .left

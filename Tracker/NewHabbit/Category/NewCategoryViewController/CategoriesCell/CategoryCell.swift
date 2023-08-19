@@ -2,7 +2,7 @@ import UIKit
 
 class CategoryCell: UITableViewCell {
     
-   static let identifier = "CategoryCell"
+    static let identifier = "CategoryCell"
     
     var isChecked: Bool = false {
         didSet {
@@ -23,7 +23,7 @@ class CategoryCell: UITableViewCell {
     }()
     
     let checkmarkImage: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.image = UIImage(named: "checkmark")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.isHidden = true
@@ -41,7 +41,7 @@ class CategoryCell: UITableViewCell {
     
     
     @objc func cellTapped() {
-    isChecked = !isChecked
+        isChecked = !isChecked
         
     }
     
@@ -59,9 +59,20 @@ class CategoryCell: UITableViewCell {
             checkmarkImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -36),
             checkmarkImage.widthAnchor.constraint(equalToConstant: 14),
             checkmarkImage.heightAnchor.constraint(equalToConstant: 14),
-        
+            
         ])
     }
+    
+    func roundCorners(corners: UIRectCorner, radius: CGFloat) {
+        let maskPath = UIBezierPath(roundedRect: bounds,
+                                    byRoundingCorners: corners,
+                                    cornerRadii: CGSize(width: radius, height: radius))
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = bounds
+        maskLayer.path = maskPath.cgPath
+        layer.mask = maskLayer
+    }
+    
 }
 
-    
+

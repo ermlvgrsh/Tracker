@@ -81,30 +81,30 @@ final class ScheduleViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             
-        scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-        scheduleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 50),
-        scheduleLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-        scheduleLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -712),
-        scheduleLabel.widthAnchor.constraint(equalToConstant: 97),
-        scheduleLabel.heightAnchor.constraint(equalToConstant: 22),
-        
-        scheduleTableView.topAnchor.constraint(equalTo: scheduleLabel.bottomAnchor, constant: 30),
-        scheduleTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-        scheduleTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-        scheduleTableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -149),
-        
-        doneButton.topAnchor.constraint(equalTo: scheduleTableView.bottomAnchor, constant: 39),
-        doneButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-        doneButton.widthAnchor.constraint(equalToConstant: 335),
-        doneButton.heightAnchor.constraint(equalToConstant: 60)
-        
+            scheduleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 50),
+            scheduleLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            scheduleLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -712),
+            scheduleLabel.widthAnchor.constraint(equalToConstant: 97),
+            scheduleLabel.heightAnchor.constraint(equalToConstant: 22),
+            
+            scheduleTableView.topAnchor.constraint(equalTo: scheduleLabel.bottomAnchor, constant: 30),
+            scheduleTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            scheduleTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            scheduleTableView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -149),
+            
+            doneButton.topAnchor.constraint(equalTo: scheduleTableView.bottomAnchor, constant: 39),
+            doneButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            doneButton.widthAnchor.constraint(equalToConstant: 335),
+            doneButton.heightAnchor.constraint(equalToConstant: 60)
+            
         ])
     }
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -130,7 +130,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-
+        
         let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
         if indexPath.row == lastRowIndex {
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.size.width, bottom: 0, right: 0)

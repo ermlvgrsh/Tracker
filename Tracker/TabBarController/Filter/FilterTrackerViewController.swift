@@ -1,7 +1,7 @@
 import UIKit
 
 final class FilterTrackerViewController: UIViewController {
-   
+    
     private lazy var filterTableView: UITableView = {
         let tableView = UITableView()
         tableView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
@@ -35,14 +35,18 @@ final class FilterTrackerViewController: UIViewController {
         return label
     }()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureTableView()
+        setupUI()
+    }
     
-    func configureTableView() {
+    private func configureTableView() {
         filterTableView.delegate = self
         filterTableView.dataSource = self
     }
     
-    
-    func setupUI() {
+    private func setupUI() {
         view.addSubview(titleLabel)
         view.addSubview(filterTableView)
         view.backgroundColor = .white
@@ -57,14 +61,8 @@ final class FilterTrackerViewController: UIViewController {
             filterTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             filterTableView.heightAnchor.constraint(equalToConstant: 300),
             filterTableView.widthAnchor.constraint(equalToConstant: 343)
-        
+            
         ])
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureTableView()
-        setupUI()
     }
 }
 
@@ -78,7 +76,7 @@ extension FilterTrackerViewController: UITableViewDelegate {
                                                bottom: 0,
                                                right: 0)
         }
-     }
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedCell = tableView.cellForRow(at: indexPath) as? FilterTrackerViewCell {

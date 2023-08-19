@@ -21,11 +21,11 @@ final class TrackerService {
         return trackerCategoryStore
     }()
     
-     lazy var trackerRecordStore: TrackerRecordStore = {
+    lazy var trackerRecordStore: TrackerRecordStore = {
         let trackerRecordStore = TrackerRecordStore(storeDelegate: self)
         return trackerRecordStore
     }()
-
+    
     func fetchCategory(at index: Int) -> String? {
         trackerCategoryStore.fetchCategory(at: index)
     }
@@ -55,7 +55,7 @@ final class TrackerService {
             trackerCD.isPinned = true
         }
     }
-
+    
     func unpinTracker(tracker: Tracker) {
         trackerStore.updateTracker(trackerID: tracker.id) { trackerCD in
             trackerCD.isPinned = false
@@ -64,15 +64,12 @@ final class TrackerService {
     
     func getTracker(trackerID: UUID) -> Tracker? {
         let trackerCategories = filterTrackers { tracker in tracker.id == trackerID }
-        if trackerCategories.isEmpty {
-            return nil
-        }
         return trackerCategories.first?.trackers.first ?? nil
     }
     
     func getTrackerInfo(trackerID: UUID) -> TrackerInfo? {
         let categories = filterTrackers { tracker in tracker.id == trackerID }
-        guard categories.isEmpty == false ,
+        guard !categories.isEmpty ,
               let selectedCategory = categories.first,
               let selectedTracker = selectedCategory.trackers.first else { return nil }
         
@@ -88,8 +85,9 @@ final class TrackerService {
         let category: TrackerCategory? = trackerCategoryStore.fetchByName(categoryName: trackerCategory)
         if category == nil {
             trackerCategoryStore.addCategory(trackerCategory: trackerCategory)
+        } else {
+            trackerStore.addTracker(tracker: tracker, category: trackerCategoryStore.getByName(categoryName: trackerCategory))
         }
-        trackerStore.addTracker(tracker: tracker, category: trackerCategoryStore.getByName(categoryName: trackerCategory))
     }
     
     func updateCurrentTracker(tracker: Tracker, categoryName: String) {
@@ -150,7 +148,7 @@ final class TrackerService {
     func deleteTrackerRecord(trackerRecord: TrackerRecord) {
         trackerRecordStore.deleteRecord(trackerRecord: trackerRecord)
     }
- }
+}
 
 extension TrackerService: StoreDelegate {
     func didChangeContent() {

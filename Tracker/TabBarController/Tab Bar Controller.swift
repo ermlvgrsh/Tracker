@@ -25,11 +25,11 @@ final class TabBarController: UITabBarController {
         guard let trackerImage = UIImage(named: "record.circle.fill"),
               let statisticImage = UIImage(named: "hare.fill") else { fatalError() }
         let trackerService = TrackerService.shared
+        let statisticViewModel = StatisticViewModel()
         viewControllers = [
             createNavController(for: TrackersViewController(trackerService: trackerService), title: "trackers".localized, image: trackerImage),
-            createNavController(for: StatisticViewController(), title: "statistic".localized, image: statisticImage)
+            createNavController(for: StatisticViewController(viewModel: statisticViewModel), title: "statistic".localized, image: statisticImage)
         ]
     }
-    
 }
 

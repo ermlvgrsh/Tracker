@@ -1,46 +1,44 @@
 import UIKit
 
 protocol TrackerViewProtocol: AnyObject {
+    var presenter: TrackerPresenter? { get }
     func showPlaceholer()
     func showNoFoundPlaceholder()
     func showCurrentTrackers(categories: [TrackerCategory])
     func bindTrackerViewCell(cell: TrackersViewCell, trackerView: TrackerView)
-    func editTracker(trackerDetails: TrackerFlowView
-    )
+    func editTracker(trackerDetails: TrackerFlowView)
 }
 
 
 final class TrackersViewController: UIViewController {
     
     var currentDate = Date()
-
-    var valueDatePicker: Date = Date()  {
-        didSet {
-            
-        }
-    }
+    
+    var valueDatePicker: Date = Date()
     private var searchText: String = ""
-    private var presenter: TrackerPresenter?
+    var presenter: TrackerPresenter?
     private let analyticService = AnalyticsService.shared
-    var cateigories: [TrackerCategory] = []
-    var visibleTrackersCategory: [TrackerCategory] = []
-    var completedTrackers: Set<TrackerRecord> = []
+    private var visibleTrackersCategory: [TrackerCategory] = []
     private let trackerService: TrackerService
     let darkMode = DarkMode()
+    
     private lazy var datePicker: UIDatePicker = {
-       let datePicker = UIDatePicker()
+        let datePicker = UIDatePicker()
         datePicker.locale = dateFormatter.locale
         datePicker.preferredDatePickerStyle = .compact
         datePicker.datePickerMode = .date
+        datePicker.layer.cornerRadius = 8
+        datePicker.overrideUserInterfaceStyle = .light
+        datePicker.layer.backgroundColor = UIColor(red: 0.942, green: 0.942, blue: 0.942, alpha: 1).cgColor
         datePicker.addTarget(self, action: #selector(datePickerValueDidChanged), for: .valueChanged)
         return datePicker
     }()
-
+    
     private lazy var addButton: UIBarButtonItem = {
-       let button = UIBarButtonItem(image: UIImage(named: "plus"),
-                                    style: .plain,
-                                    target: self,
-                                    action: #selector(addTracker))
+        let button = UIBarButtonItem(image: UIImage(named: "plus"),
+                                     style: .plain,
+                                     target: self,
+                                     action: #selector(addTracker))
         button.tintColor = darkMode.tintAddButtonColor
         return button
     }()
@@ -92,7 +90,7 @@ final class TrackersViewController: UIViewController {
     }()
     
     @objc func filterButtonTapped() {
-       let filterTrackerVC = FilterTrackerViewController()
+        let filterTrackerVC = FilterTrackerViewController()
         analyticService.sendTrackerFilterEvent()
         present(filterTrackerVC, animated: true)
     }
@@ -113,7 +111,8 @@ final class TrackersViewController: UIViewController {
     private let errorLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        label.backgroundColor = .label
+        label.backgroundColor = .systemBackground
+        label.textColor = .label
         label.numberOfLines = 0
         label.textAlignment = .center
         var paragraphStyle = NSMutableParagraphStyle()
@@ -152,7 +151,7 @@ final class TrackersViewController: UIViewController {
         return trackerLabel
     }()
     
-   private lazy var searchBar: UISearchTextField = {
+    private lazy var searchBar: UISearchTextField = {
         let searchBar = UISearchTextField()
         searchBar.placeholder = "search".localized
         searchBar.layer.masksToBounds = true
@@ -162,7 +161,7 @@ final class TrackersViewController: UIViewController {
         searchBar.rightView = cancelButton
         searchBar.rightViewMode = .whileEditing
         searchBar.translatesAutoresizingMaskIntoConstraints = false
-       searchBar.backgroundColor = .systemBackground
+        searchBar.backgroundColor = .systemBackground
         searchBar.layer.backgroundColor = UIColor(red: 0.463, green: 0.463, blue: 0.502, alpha: 0.12).cgColor
         searchBar.layer.cornerRadius = 8
         return searchBar
@@ -200,7 +199,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private lazy var datePickerToolItem: UIBarButtonItem = {
-       let toolItem = UIBarButtonItem(customView: datePicker)
+        let toolItem = UIBarButtonItem(customView: datePicker)
         return toolItem
     }()
     
@@ -210,6 +209,7 @@ final class TrackersViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = addButton
         navigationItem.rightBarButtonItem = datePickerToolItem
+        
         view.addSubview(collectionView)
         view.addSubview(placeholderImage)
         view.addSubview(placeholderLabel)
@@ -219,13 +219,14 @@ final class TrackersViewController: UIViewController {
         view.addSubview(errorLabel)
         view.addSubview(filterButton)
         
+        
         NSLayoutConstraint.activate([
             
             trackerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
             trackerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
             trackerLabel.widthAnchor.constraint(equalToConstant: 254),
             trackerLabel.heightAnchor.constraint(equalToConstant: 41),
-
+            
             
             collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 34),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -287,7 +288,7 @@ final class TrackersViewController: UIViewController {
         filterButton.isHidden = false
         collectionView.reloadData()
     }
-
+    
     
     private func formattedDateToString(date: Date) -> String {
         let dateFormatter = DateFormatter()
@@ -297,11 +298,10 @@ final class TrackersViewController: UIViewController {
     
     @objc func datePickerValueDidChanged(_ sender: UIDatePicker) {
         presenter?.updateDatePicker(date: sender.date)
+        applyConditionAndShowTrackers()
     }
     
-    private func isTrackerCompletedOnDate(tracker: Tracker, date: String) -> Bool {
-        return trackerService.completedTrackers.contains {$0.id == tracker.id && formattedDateToString(date: $0.date) == date }
-    }
+    
     
     private func showDeleteTrackerAlert(tracker: Tracker?) {
         let alertController = UIAlertController(title: "confirm_delete_tracker".localized, message: nil, preferredStyle: .actionSheet)
@@ -318,32 +318,8 @@ final class TrackersViewController: UIViewController {
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
     }
-
-  private func updateStateButton(for cell: TrackersViewCell, tracker: Tracker?) {
-        
-        let datePicker = formattedDateToString(date: valueDatePicker)
-        
-        let isTrackerCompleted: Bool
-        
-        if let tracker = tracker {
-            isTrackerCompleted = isTrackerCompletedOnDate(tracker: tracker, date: datePicker)
-            
-        } else {
-            isTrackerCompleted = false
-        }
-        
-        if isTrackerCompleted {
-            cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
-
-                cell.backgroundViewDone.alpha = 0.3
-                cell.backgroundViewDone.isHidden = false
-            }
-        } else {
-            cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
-                cell.backgroundViewDone.isHidden = true
-            }
-        }
-    }
+    
+    
 }
 
 extension TrackersViewController: TrackerViewProtocol {
@@ -377,7 +353,7 @@ extension TrackersViewController: TrackerViewProtocol {
         cell.delegate = self
     }
     
-
+    
     func editTracker(trackerDetails: TrackerFlowView) {
         let newHabbitVC = NewHabbitViewController()
         newHabbitVC.selectedFlow = trackerDetails
@@ -404,8 +380,8 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         let visibleTracker = visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
         presenter?.onBindTrackerCell(cell: cell, tracker: visibleTracker)
-        updateStateButton(for: cell, tracker: visibleTracker)
-        
+        presenter?.updateStateButton(for: cell, tracker: visibleTracker)
+        cell.tracker = visibleTracker
         return cell
     }
     
@@ -437,40 +413,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         let height = width * 0.8
         return CGSize(width: width, height: height)
         
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
-            guard let self else { return nil }
-            
-            let currentTracker = self.visibleTrackersCategory[indexPath.section].trackers[indexPath.row]
-            let pinOrUnpinAction: UIAction
-            if currentTracker.isPinned {
-                pinOrUnpinAction = UIAction(title: "unpin".localized) { [weak self] _ in
-                    guard let self else { return }
-                    self.presenter?.unPinTracker(trackerID: currentTracker.id)
-                    self.applyConditionAndShowTrackers()
-                }
-            } else {
-                pinOrUnpinAction = UIAction(title: "pin".localized) {
-                    [weak self] _ in
-                    guard let self else { return }
-                    self.presenter?.pinTracker(trackerID: currentTracker.id)
-                    self.applyConditionAndShowTrackers()
-                }
-            }
-            let editAction = UIAction(title: "edit".localized) {
-                [weak self] _ in
-                guard let self else { return }
-                self.presenter?.editTracker(trackerID: currentTracker.id)
-            }
-            let removeAction = UIAction(title: "delete".localized, attributes: .destructive) {
-                [weak self] _ in
-                self?.showDeleteTrackerAlert(tracker: currentTracker)
-                
-            }
-            return UIMenu(children: [pinOrUnpinAction, editAction, removeAction])
-        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -516,11 +458,28 @@ extension TrackersViewController: NewTrackerDelegate {
 }
 
 extension TrackersViewController: TrackerViewCellDelegate {
+    func handlePinAction(for tracker: Tracker) {
+        presenter?.pinTracker(trackerID: tracker.id)
+        applyConditionAndShowTrackers()
+    }
+    
+    func handleUnpinAction(for tracker: Tracker) {
+        presenter?.unPinTracker(trackerID: tracker.id)
+        applyConditionAndShowTrackers()
+    }
+    
+    func handleEditAction(for tracker: Tracker) {
+        presenter?.editTracker(trackerID: tracker.id)
+    }
+    
+    func handleDeleteAction(for tracker: Tracker) {
+        showDeleteTrackerAlert(tracker: tracker)
+        
+    }
+    
     
     func doneButtonUntapped(for cell: TrackersViewCell) {
         
-        let calendar = Calendar.current
-        guard let valueDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: valueDatePicker)) else { return }
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         
         let trackerIndex = indexPath.row
@@ -529,27 +488,13 @@ extension TrackersViewController: TrackerViewCellDelegate {
         let trackers = category.trackers
         let tracker = trackers[trackerIndex]
         
-        if trackerService.completedTrackers.contains(where: { $0.id == tracker.id && formattedDateToString(date:  $0.date) == formattedDateToString(date: valueDatePicker) }) {
-            let updateTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, isPinned: false, dayCounter: max(tracker.dayCounter - 1, 0))
-            trackerService.updateTracker(tracker: updateTracker)
-            analyticService.sendTrackerTapEvent()
-            trackerService.deleteTrackerRecord(trackerRecord: TrackerRecord(id: updateTracker.id, date: valueDate))
-            
-            cell.animateButtonWithTransition(previousButton: cell.doneButton, to: cell.plusButton) {
-                cell.daysCounter.text = updateTracker.dayCounter.dayToString()
-                cell.backgroundViewDone.isHidden = true
-            }
-        }
+        presenter?.handleTapOnTracker(for: cell, tracker: tracker)
+        
     }
     
     func doneButtonDidTapped(for cell: TrackersViewCell) {
-        let calendar = Calendar.current
-        guard let valueDate = calendar.date(from: calendar.dateComponents([.year, .month, .day], from: valueDatePicker)) else { return }
+        
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        
-        let today = formattedDateToString(date: currentDate)
-        let datePicker = formattedDateToString(date: valueDatePicker)
-        
         let trackerIndex = indexPath.row
         let categoryIndex = indexPath.section
         
@@ -557,19 +502,6 @@ extension TrackersViewController: TrackerViewCellDelegate {
         let trackers = category.trackers
         let tracker = trackers[trackerIndex]
         
-        if today >= datePicker {
-            let updatedTracker = Tracker(id: tracker.id, name: tracker.name, schedule: tracker.schedule, color: tracker.color, emoji: tracker.emoji, isPinned: tracker.isPinned, dayCounter: tracker.dayCounter + 1)
-            
-            let newRecord = TrackerRecord(id: updatedTracker.id, date: valueDate)
-            trackerService.updateTracker(tracker: updatedTracker)
-            trackerService.addTrackerRecord(trackerRecord: newRecord)
-            analyticService.sendTrackerTapEvent()
-            
-            cell.animateButtonWithTransition(previousButton: cell.plusButton, to: cell.doneButton) {
-                cell.daysCounter.text = updatedTracker.dayCounter.dayToString()
-                cell.backgroundViewDone.alpha = 0.3
-                cell.backgroundViewDone.isHidden = false
-            }
-        }
+        presenter?.handleTapOnTracker(for: cell, tracker: tracker)
     }
 }

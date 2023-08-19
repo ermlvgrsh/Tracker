@@ -18,12 +18,10 @@ class TrackerSupplementaryView: UICollectionReusableView {
         addSubview(categoryLabel)
         
         NSLayoutConstraint.activate([
-            
             categoryLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
             categoryLabel.topAnchor.constraint(equalTo: topAnchor),
+            categoryLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -198),
             categoryLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
-            categoryLabel.widthAnchor.constraint(equalToConstant: 149),
-            categoryLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     

@@ -10,7 +10,7 @@ class EmojiCell: UICollectionViewCell {
     }()
     
     let emojiBackgroundView: UIView = {
-       let view = UIView(frame: CGRect(x: 0, y: 0, width: 52, height: 52))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 52, height: 52))
         view.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 1).cgColor
         view.layer.masksToBounds = true
         view.isHidden = true
@@ -31,7 +31,8 @@ class EmojiCell: UICollectionViewCell {
             emojiBackgroundView.heightAnchor.constraint(equalToConstant: 52),
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
     
@@ -54,7 +55,7 @@ extension EmojiCell {
         
         let availableWidth = collectionView.bounds.width - (horizontalPadding * 2) - (interItemSpacing * (itemsPerRow - 1))
         let widthPerItem = availableWidth / itemsPerRow
-
+        
         let aspectRatio: CGFloat = 1.0 
         let heightPerItem = widthPerItem * aspectRatio
         

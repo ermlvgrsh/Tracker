@@ -12,4 +12,8 @@ struct Emojis {
     static var count: Int {
         emojis.count
     }
+    
+    static func findEmojiIndex(emoji: String) -> Int? {
+        return emojis.firstIndex(of: emoji)
+    }
 }

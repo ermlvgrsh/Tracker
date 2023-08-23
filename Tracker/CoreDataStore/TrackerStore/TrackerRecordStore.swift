@@ -5,9 +5,9 @@ final class TrackerRecordStore: Store {
     
     var records: [TrackerRecord] {
         guard let trackerRecordsCoreData = resultsController.fetchedObjects else { return [] }
-       let trackerRecords = trackerRecordsCoreData.map { trackerRecordCoreData in
-           trackerRecordCoreData.toTrackerRecord()
-       }.compactMap{ $0 }
+        let trackerRecords = trackerRecordsCoreData.map { trackerRecordCoreData in
+            trackerRecordCoreData.toTrackerRecord()
+        }.compactMap{ $0 }
         return trackerRecords
     }
     
@@ -38,7 +38,7 @@ final class TrackerRecordStore: Store {
         let trackerRecordCoreData = TrackerRecordCoreData(context: context)
         trackerRecordCoreData.id = trackerRecord.id
         trackerRecordCoreData.date = trackerRecord.date
-     
+        
         save()
     }
     
@@ -56,7 +56,7 @@ final class TrackerRecordStore: Store {
         } catch {
             print("UNEXPECTED ERROR \(error)")
         }
-     
+        
     }
 }
 

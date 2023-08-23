@@ -16,19 +16,19 @@ extension WeekDay {
     func shortName() -> String {
         switch self {
         case .Monday:
-            return "Пн"
+            return "mn".localized
         case .Tuesday:
-            return "Вт"
+            return "tue".localized
         case .Wednesday:
-            return "Ср"
+            return "wed".localized
         case .Thursday:
-            return "Чт"
+            return "thu".localized
         case .Friday:
-            return "Пт"
+            return "fr".localized
         case .Saturday:
-            return "Сб"
+            return "sat".localized
         case .Sunday:
-            return "Вс"
+            return "sun".localized
         }
     }
 }

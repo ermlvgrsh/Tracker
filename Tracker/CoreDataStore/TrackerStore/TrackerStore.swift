@@ -39,9 +39,21 @@ final class TrackerStore: Store {
         save()
     }
     
-    func updateTracker(tracker: Tracker) {
-        guard let existingTracker = fetchTrackerByID(tracker.id) else { return }
-        existingTracker.dayCounter = Int32(tracker.dayCounter)
+    func updateTracker(trackerID: UUID, update: (TrackerCoreData) -> Void) {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", trackerID as CVarArg)
+        request.fetchLimit = 1
+        guard let tracker = try? context.fetch(request).first else { return }
+        update(tracker)
+        save()
+    }
+    func removeTracker(tracker: Tracker) {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        guard let trackers = try? context.fetch(request) else { return }
+        for tracker in trackers {
+            context.delete(tracker)
+        }
         save()
     }
     
@@ -63,7 +75,12 @@ extension TrackerCoreData {
         if let schedule = schedule {
             weekDay = try? decoder.decode([WeekDay].self, from: schedule)
         }
-        return Tracker(id: id, name: name, schedule: weekDay, color: UIColorMarshalling.deserialazeColor(color), emoji: emoji, dayCounter: Int(dayCounter))
+        return Tracker(id: id, name: name,
+                       schedule: weekDay,
+                       color: UIColorMarshalling.deserialazeColor(color),
+                       emoji: emoji,
+                       isPinned: isPinned,
+                       dayCounter: Int(dayCounter))
     }
     
 }
@@ -72,5 +89,5 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         storeDelegate?.didChangeContent()
     }
-
+    
 }

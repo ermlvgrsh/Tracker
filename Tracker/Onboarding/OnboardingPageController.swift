@@ -5,12 +5,12 @@ final class OnboardingPageViewController: UIPageViewController {
     
     
     private var pages: [OnboardingModel] = [
-    OnboardingModel(text: "Отслеживайте только\nто, что хотите", image: "onboard1"),
-    OnboardingModel(text: "Даже если это\nне литры воды и йога", image: "onboard2")
+        OnboardingModel(text: "track_everything".localized, image: "onboard1"),
+        OnboardingModel(text: "not_only_water".localized, image: "onboard2")
     ]
     
     lazy var pageControl: UIPageControl = {
-       let pc = UIPageControl()
+        let pc = UIPageControl()
         pc.currentPageIndicatorTintColor = .black
         pc.pageIndicatorTintColor = .black.withAlphaComponent(0.3)
         pc.numberOfPages = pages.count
@@ -19,9 +19,9 @@ final class OnboardingPageViewController: UIPageViewController {
     }()
     
     private lazy var entryButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.backgroundColor = .black
-        button.setTitle("Вот это технологии", for: .normal)
+        button.setTitle("technologies".localized, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.layer.cornerRadius = 16
@@ -52,8 +52,8 @@ final class OnboardingPageViewController: UIPageViewController {
     
     
     @objc func buttonClicked() {
-       let tabBar = TabBarController()
-       tabBar.modalPresentationStyle = .fullScreen
+        let tabBar = TabBarController()
+        tabBar.modalPresentationStyle = .fullScreen
         present(tabBar, animated: true)
     }
     
@@ -72,7 +72,7 @@ final class OnboardingPageViewController: UIPageViewController {
         view.addSubview(entryButton)
         
         NSLayoutConstraint.activate([
-        
+            
             entryButton.heightAnchor.constraint(equalToConstant: 60),
             entryButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             entryButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),

@@ -3,7 +3,6 @@ import UIKit
 final class TrackerCreatorViewController: UIViewController {
     
     weak var delegate: NewTrackerDelegate?
-    weak var irregularDelegate: IrregularEventDelegate?
     
     private let createTrackerLabel: UILabel = {
         let createTrackerLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 149, height: 22))
@@ -13,14 +12,14 @@ final class TrackerCreatorViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         createTrackerLabel.attributedText =
-        NSMutableAttributedString(string: "Создание трекера",
+        NSMutableAttributedString(string: "create_tracker".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         createTrackerLabel.translatesAutoresizingMaskIntoConstraints = false
         return createTrackerLabel
     }()
     
     private lazy var centerStackView: UIStackView = {
-       let stackView = UIStackView(arrangedSubviews: [habbitButton, irregularEventButton])
+        let stackView = UIStackView(arrangedSubviews: [habbitButton, irregularEventButton])
         stackView.axis = .vertical
         stackView.spacing = 16
         stackView.alignment = .center
@@ -38,7 +37,7 @@ final class TrackerCreatorViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-   lazy var habbitButton: UIButton = {
+    lazy var habbitButton: UIButton = {
         let habbitButton = UIButton(type: .system)
         habbitButton.backgroundColor = .black
         habbitButton.setTitleColor(.white, for: .normal)
@@ -48,7 +47,7 @@ final class TrackerCreatorViewController: UIViewController {
         let titleAttribute: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
-        let titleAtributedString = NSAttributedString(string: "Привычка",
+        let titleAtributedString = NSAttributedString(string: "habbit".localized,
                                                       attributes: titleAttribute)
         habbitButton.setAttributedTitle(titleAtributedString, for: .normal)
         habbitButton.translatesAutoresizingMaskIntoConstraints = false
@@ -67,7 +66,7 @@ final class TrackerCreatorViewController: UIViewController {
         let titleAttribute: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 16, weight: .medium)
         ]
-        let titleAttributedString = NSAttributedString(string: "Нерегулярное событие",
+        let titleAttributedString = NSAttributedString(string: "irregular_event".localized,
                                                        attributes: titleAttribute)
         irregularEventButton.setAttributedTitle(titleAttributedString, for: .normal)
         irregularEventButton.translatesAutoresizingMaskIntoConstraints = false
@@ -77,13 +76,19 @@ final class TrackerCreatorViewController: UIViewController {
     }()
     
     @objc func irregularEventButtonPressed() {
-       let irregularView = IrregularEventViewController()
-        irregularView.delegate = irregularDelegate
+        let irregularView = NewHabbitViewController()
+        irregularView.delegate = delegate
+        let eventFlowInfo = TrackerInfo(categoryName: nil, type: .event, daysCounter: nil, trackerInfo: nil)
+        irregularView.selectedTrackerType = .event
+        irregularView.selectedFlow = TrackerFlowView(flow: .create, trackerInfo: eventFlowInfo)
         self.present(irregularView, animated: true)
     }
     @objc func habbitButtonPressed() {
         let newHabbitView = NewHabbitViewController()
-        newHabbitView.delegate = delegate 
+        newHabbitView.delegate = delegate
+        let trackerFlowInfo = TrackerInfo(categoryName: nil, type: .habbit, daysCounter: nil, trackerInfo: nil)
+        newHabbitView.selectedTrackerType = .habbit
+        newHabbitView.selectedFlow = TrackerFlowView(flow: .create, trackerInfo: trackerFlowInfo)
         self.present(newHabbitView, animated: true)
     }
     
@@ -100,11 +105,14 @@ final class TrackerCreatorViewController: UIViewController {
             mainStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             mainStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             
-            habbitButton.widthAnchor.constraint(equalToConstant: 335),
+            
+            habbitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            habbitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             habbitButton.heightAnchor.constraint(equalToConstant: 60),
             
-            irregularEventButton.widthAnchor.constraint(equalToConstant: 335),
             irregularEventButton.heightAnchor.constraint(equalToConstant: 60),
+            irregularEventButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            irregularEventButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
     

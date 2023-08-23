@@ -32,6 +32,15 @@ final class IrregularEventStore: Store {
         super.init(storeDelegate: storeDelegate)
         try? resultsController.performFetch()
     }
+    func removeEvent(event: IrregularEvent) {
+        let request = IrregularEventCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", event.id as CVarArg)
+        guard let events = try? context.fetch(request) else { return }
+        for event in events {
+            context.delete(event)
+        }
+        save()
+    }
     
     func fetchEventByID(eventID: UUID) -> IrregularEventCoreData? {
         fetchRequest.predicate = NSPredicate(format: "eventID == %@", eventID as NSUUID)

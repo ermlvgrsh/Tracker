@@ -3,7 +3,7 @@ import UIKit
 
 class EmojiSupplementaryView: UICollectionReusableView {
     let titleLabel: UILabel = {
-       let titleLabel = UILabel()
+        let titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         
         var paragraphStyle = NSMutableParagraphStyle()
@@ -35,7 +35,7 @@ class EmojiSupplementaryView: UICollectionReusableView {
 class ColorSupplementaryView: UICollectionReusableView {
     
     let titleLabel: UILabel = {
-       let titleLabel = UILabel()
+        let titleLabel = UILabel()
         titleLabel.font = UIFont.systemFont(ofSize: 19, weight: .bold)
         
         var paragraphStyle = NSMutableParagraphStyle()

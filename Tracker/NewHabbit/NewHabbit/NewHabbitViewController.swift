@@ -2,11 +2,17 @@ import UIKit
 
 protocol NewTrackerDelegate: AnyObject {
     func didCreateTracker(newTracker: Tracker, with category: TrackerCategory)
+    func didUpdateTracker(tracker: Tracker, with category: TrackerCategory)
 }
 
 
 final class NewHabbitViewController: UIViewController {
-    
+    var selectedTrackerType: TrackerType?
+    var selectedFlow: TrackerFlowView? {
+        didSet {
+            setTitle(selectedFlow)
+        }
+    }
     var selectedName: String?
     var selectedColor: UIColor?
     var selectedEmoji: String?
@@ -16,11 +22,13 @@ final class NewHabbitViewController: UIViewController {
     weak var delegate: NewTrackerDelegate?
     var trackerService: TrackerService = TrackerService.shared
     var viewModel = TrackerCategoryViewModel()
-    
+    var isPinned: Bool = false
     var isShifted = false
+    var categoryCell: NewHabbitCell?
+    var scheduleCell: NewHabbitCell?
     var selectedEmojiIndexPath: IndexPath?
     var selectedColorIndexPath: IndexPath?
-
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -30,22 +38,53 @@ final class NewHabbitViewController: UIViewController {
     }()
     
     private let habbitLabel: UILabel = {
-        let habbitLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 133, height: 22))
+        let habbitLabel = UILabel()
         habbitLabel.font = .systemFont(ofSize: 16, weight: .medium)
         habbitLabel.backgroundColor = .white
         habbitLabel.textAlignment = .center
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         habbitLabel.attributedText =
-        NSMutableAttributedString(string: "Новая привычка",
+        NSMutableAttributedString(string: "new_habbit".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         habbitLabel.translatesAutoresizingMaskIntoConstraints = false
         return habbitLabel
     }()
     
+    private let editLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.backgroundColor = .white
+        label.textAlignment = .center
+        var paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = 1.15
+        label.attributedText =
+        NSMutableAttributedString(string: "edit_habbit".localized,
+                                  attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let counterLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        label.textColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private let counterStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.spacing = 24
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
     private let habbitNameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
+        textField.placeholder = "tracker_name".localized
         textField.textColor = .black
         textField.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3).cgColor
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -58,16 +97,16 @@ final class NewHabbitViewController: UIViewController {
         
         return textField
     }()
-
+    
     
     private let limitCharacterLabel: UILabel = {
-       let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 286, height: 22))
         label.font = .systemFont(ofSize: 17, weight: .regular)
         label.backgroundColor = .white
         label.textColor = UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1)
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.08
-        label.attributedText = NSMutableAttributedString(string: "Ограничение 38 символов", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        label.attributedText = NSMutableAttributedString(string: "limit".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isHidden = true
@@ -94,7 +133,7 @@ final class NewHabbitViewController: UIViewController {
         view.isHidden = true
         return view
     }()
-
+    
     
     @objc func deleteHabbitName() {
         habbitNameTextField.text = ""
@@ -105,22 +144,16 @@ final class NewHabbitViewController: UIViewController {
         deleteButton.isHidden = true
     }
     
-    let tableViewInstets = ["Категория", "Расписание"]
+    let tableViewInstets = ["category".localized, "schedule".localized]
     
     lazy var createHabbitButton: UIButton = {
         let createHabbitButton = UIButton(type: .system)
         createHabbitButton.layer.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1).cgColor
         createHabbitButton.layer.masksToBounds = true
         createHabbitButton.layer.cornerRadius = 16
-        
-        let titleAttribute: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 17)
-        ]
-        
-        let titleAtributedString = NSAttributedString(string: "Создать",
-                                                      attributes: titleAttribute)
+        createHabbitButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        createHabbitButton.setTitle("create".localized, for: UIControl.State.normal)
         createHabbitButton.tintColor = .white
-        createHabbitButton.setAttributedTitle(titleAtributedString, for: .normal)
         createHabbitButton.translatesAutoresizingMaskIntoConstraints = false
         createHabbitButton.addTarget(self, action: #selector(createHabbitButtonTapped), for: .touchUpInside)
         return createHabbitButton
@@ -138,7 +171,7 @@ final class NewHabbitViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Отменить",
+        let titleAtributedString = NSAttributedString(string: "cancel".localized,
                                                       attributes: titleAttribute)
         cancelButton.tintColor = .red
         cancelButton.setAttributedTitle(titleAtributedString, for: .normal)
@@ -149,16 +182,16 @@ final class NewHabbitViewController: UIViewController {
     
     private let centralTableView: UITableView = {
         let tableView = UITableView()
-         tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
-         tableView.layer.cornerRadius = 16
-         tableView.backgroundColor = .white
-         tableView.isScrollEnabled = false
-         tableView.translatesAutoresizingMaskIntoConstraints = false
-         tableView.register(NewHabbitCell.self, forCellReuseIdentifier: NewHabbitCell.identifier)
-         tableView.separatorStyle = .singleLine
-         tableView.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-         tableView.clipsToBounds = true
-         return tableView
+        tableView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner]
+        tableView.layer.cornerRadius = 16
+        tableView.backgroundColor = .white
+        tableView.isScrollEnabled = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(NewHabbitCell.self, forCellReuseIdentifier: NewHabbitCell.identifier)
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        tableView.clipsToBounds = true
+        return tableView
     }()
     
     lazy var emojiCollectionView: UICollectionView = {
@@ -197,33 +230,71 @@ final class NewHabbitViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
- 
-     }
-
-
+        
+    }
+    
+    
     @objc func cancelButtonTapped() {
         self.dismiss(animated: true)
     }
     
-    @objc func createHabbitButtonTapped() {
+    func setupNewHabbit(selectedType: TrackerType) -> Tracker? {
         guard let name = selectedName,
               let emoji = selectedEmoji,
               let color = selectedColor,
-              let category = viewModel.selectedCategory,
-              let schedule = selectedSchedule else { return }
-        
-        let newTracker = Tracker(id: UUID(), name: name, schedule: schedule, color: color, emoji: emoji, dayCounter: dayCounter)
-
-        delegate?.didCreateTracker(newTracker: newTracker, with: category)
-        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+              let schedule = selectedSchedule else { return nil }
+        let id = UUID()
+        let isPinned = false
+        let dayCounter = 0
+        switch selectedType {
+        case .event:
+            let schedule = WeekDay.allCases
+            let event = Tracker(id: id, name: name, schedule: schedule, color: color, emoji: emoji, isPinned: isPinned, dayCounter: dayCounter)
+            return event
+        case .habbit:
+            let tracker = Tracker(id: id, name: name, schedule: schedule, color: color, emoji: emoji, isPinned: isPinned, dayCounter: dayCounter)
+            return tracker
+        }
+    }
+    
+    @objc func createHabbitButtonTapped() {
+        guard let category = selectedCategory,
+              let selectedType = selectedTrackerType else { return }
+        if selectedFlow?.flow == .edit {
+            if let inititalTrackerInfo = selectedFlow?.trackerInfo {
+                guard let tracker = setupNewHabbit(selectedType: selectedType) else { return }
+                updateCurrentTracker(initialTracker: inititalTrackerInfo,
+                                     name: tracker.name,
+                                     color: tracker.color,
+                                     categoryName: category.categoryName)
+                delegate?.didUpdateTracker(tracker: tracker, with: category)
+                dismiss(animated: true)
+            }
+            
+        } else {
+            if let newTracker = setupNewHabbit(selectedType: selectedType) {
+                delegate?.didCreateTracker(newTracker: newTracker, with: category)
+                presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+            }
+        }
     }
     
     func setTextFieldDelegate() {
         habbitNameTextField.delegate = self
+    }
+    
+    private func configureCounter() {
+        scrollView.addSubview(counterStackView)
+        counterStackView.addArrangedSubview(counterLabel)
+        
+        NSLayoutConstraint.activate([
+            counterLabel.topAnchor.constraint(equalTo: habbitLabel.topAnchor, constant: 38),
+            counterStackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
+        ])
     }
     
     func setTableView() {
@@ -255,6 +326,94 @@ extension NewHabbitViewController {
         setTableView()
         setTextFieldDelegate()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        if selectedFlow?.flow == .edit {
+            configureEditFlow()
+            configureCounter()
+        }
+    }
+    
+    
+    
+    private func configureEditFlow() {
+        createHabbitButton.setTitle("save".localized, for: .normal)
+        guard let trackerInfo = selectedFlow?.trackerInfo,
+              let trackerDetails = trackerInfo.trackerInfo else { return }
+        self.dayCounter = trackerDetails.dayCounter
+        self.counterLabel.text = dayCounter.dayToString()
+        self.habbitNameTextField.text = trackerDetails.name
+        self.selectedName = trackerDetails.name
+        self.selectedEmoji = trackerDetails.emoji
+        self.selectedColor = trackerDetails.color
+        setTableView()
+        setCollections()
+        guard let categoryCell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
+        categoryCell.subLabel.text = trackerInfo.categoryName
+        guard let categoryName = trackerInfo.categoryName else { return }
+        guard let category = trackerService.getCategoryByName(name: categoryName) else { return }
+        self.selectedCategory = category
+        categoryCell.moveLabel()
+        guard let scheduleCell = centralTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? NewHabbitCell else { fatalError() }
+        
+        updateCellAppearance(for: trackerDetails.schedule ?? [] , cell: scheduleCell)
+        
+        let emojiIndexPath = IndexPath(row: Emojis.findEmojiIndex(emoji: trackerDetails.emoji) ?? 0 , section: 0)
+        
+        if let previousSelectedEmojiIndexPath = selectedEmojiIndexPath {
+            if let previousSelectedEmojiCell = emojiCollectionView.cellForItem(at: previousSelectedEmojiIndexPath) as? EmojiCell {
+                previousSelectedEmojiCell.emojiBackgroundView.isHidden = true
+            }
+        }
+        
+        if let newSelectedEmojiCell = emojiCollectionView.cellForItem(at: emojiIndexPath) as? EmojiCell {
+            newSelectedEmojiCell.emojiBackgroundView.isHidden = false
+        }
+        
+        selectedEmojiIndexPath = emojiIndexPath
+        
+        let colorIndexPath = IndexPath(row: Colors.findColorIndex(color: trackerDetails.color) ?? 0, section: 0)
+        if let previousSelectedColorCell = selectedColorIndexPath {
+            if let previousSelectedColorCell = colorCollectionView.cellForItem(at: previousSelectedColorCell) as? ColorCell {
+                previousSelectedColorCell.colorBackgroundView.isHidden = true
+            }
+            
+        }
+        if let colorCell = colorCollectionView.cellForItem(at: colorIndexPath) as? ColorCell {
+            colorCell.colorBackgroundView.isHidden = false
+        }
+        selectedColorIndexPath = colorIndexPath
+        
+        if isTrackerComplete() {
+            createHabbitButton.layer.backgroundColor = UIColor.black.cgColor
+            createHabbitButton.isEnabled = true
+        } else {
+            createHabbitButton.isEnabled = false
+        }
+        
+    }
+    
+    private func updateCurrentTracker(initialTracker: TrackerInfo, name: String, color: UIColor, categoryName: String) {
+        guard let initialTracker = initialTracker.trackerInfo,
+              let selectedColor = selectedColor,
+              let selectedEmoji = selectedEmoji else { return }
+        let tracker = Tracker(id: initialTracker.id,
+                              name: name,
+                              schedule: selectedFlow?.trackerInfo.type == .event ? WeekDay.allCases : initialTracker.schedule,
+                              color: selectedColor,
+                              emoji: selectedEmoji,
+                              isPinned: initialTracker.isPinned,
+                              dayCounter: initialTracker.dayCounter)
+        trackerService.updateCurrentTracker(tracker: tracker, categoryName: categoryName)
+    }
+    
+    private func setTitle(_ trackerFlow: TrackerFlowView?) {
+        guard let trackerFlow = trackerFlow else { return }
+        if trackerFlow.flow == TrackerFlow.edit {
+            habbitLabel.text = editLabel.text
+            return
+        }
+        habbitLabel.text = trackerFlow.trackerInfo.type == TrackerType.habbit ? "new_habbit".localized : "new_event".localized
+    }
 }
 
 //MARK: UITableViewDelegate, UITableViewDataSource
@@ -272,7 +431,7 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configureCell(with: text, and: image)
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastRowIndex = tableView.numberOfRows(inSection: 0) - 1
         if indexPath.row == lastRowIndex {
@@ -281,7 +440,7 @@ extension NewHabbitViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-        case 0: let category = CategoriesViewController()
+        case 0: let category = CategoriesViewController(viewModel: viewModel)
             category.delegate = self
             viewModel.bindCategory()
             self.present(category, animated: true)
@@ -330,7 +489,7 @@ extension NewHabbitViewController: UICollectionViewDataSource {
             guard let colorView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? ColorSupplementaryView else {
                 return UICollectionReusableView() }
             
-            colorView.titleLabel.text = "Цвет"
+            colorView.titleLabel.text = "color".localized
             return colorView
         }
         guard let emojiView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as? EmojiSupplementaryView else { return UICollectionReusableView() }
@@ -357,7 +516,7 @@ extension NewHabbitViewController: UICollectionViewDelegate {
             selectedEmojiIndexPath = indexPath
             selectedEmoji = selectedEmojiCell.titleLabel.text
             
-
+            
         case colorCollectionView:
             if let previousSelected = selectedColorIndexPath {
                 if let previousSelectedColorCell = collectionView.cellForItem(at: previousSelected) as? ColorCell {
@@ -399,7 +558,7 @@ extension NewHabbitViewController: UICollectionViewDelegateFlowLayout {
             return colorCell.calculateColorCell(collectionView: colorCollectionView)
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let indexPath = IndexPath(row: 0, section: section)
         let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
@@ -420,7 +579,7 @@ extension NewHabbitViewController: UITextFieldDelegate {
         let newHabbitName = (habbitName as NSString).replacingCharacters(in: range, with: string)
         let limitCharacter = 38
         let amount: CGFloat = 38
-      
+        
         if newHabbitName.count > 0 {
             showDeleteButton()
         }
@@ -456,6 +615,15 @@ extension NewHabbitViewController {
         colorCollectionView.frame.origin.y += amount
         lowStackView.frame.origin.y += amount
         scrollView.contentSize.height += amount
+        if selectedFlow?.flow == .edit {
+            habbitNameTextField.frame.origin.y += amount
+            limitCharacterLabel.isHidden = true
+            centralTableView.frame.origin.y += amount
+            emojiCollectionView.frame.origin.y += amount
+            colorCollectionView.frame.origin.y += amount
+            lowStackView.frame.origin.y += amount
+            scrollView.contentSize.height += amount
+        }
         
         isShifted = true
     }
@@ -483,7 +651,43 @@ extension NewHabbitViewController {
         
         scrollView.addSubview(deleteButtonContainerView)
         deleteButtonContainerView.addSubview(deleteButton)
+        createCommonConstraints()
+        if selectedFlow?.trackerInfo.type == .event {
+            createConstraintsForEvent()
+        } else {
+            createConstraintsForHabbit()
+        }
         
+        if selectedFlow?.flow == .edit {
+            createConstraintsForEditMode()
+        } else {
+            createConstraintsForCreateMode()
+        }
+        
+        scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
+        colorCollectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+    }
+    
+    private func createConstraintsForEvent() {
+        NSLayoutConstraint.activate([
+            centralTableView.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 24),
+            centralTableView.centerXAnchor.constraint(equalTo: habbitNameTextField.centerXAnchor),
+            centralTableView.heightAnchor.constraint(equalToConstant: 75),
+            centralTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+        centralTableView.separatorStyle = .none
+    }
+    
+    private func createConstraintsForHabbit() {
+        NSLayoutConstraint.activate([
+            centralTableView.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 24),
+            centralTableView.centerXAnchor.constraint(equalTo: habbitNameTextField.centerXAnchor),
+            centralTableView.heightAnchor.constraint(equalToConstant: 150),
+            centralTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+    }
+    
+    private func createCommonConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -493,19 +697,13 @@ extension NewHabbitViewController {
             habbitLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 38),
             habbitLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             habbitLabel.heightAnchor.constraint(equalToConstant: 22),
-            habbitLabel.widthAnchor.constraint(equalToConstant: 133),
-            
-            habbitNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 110),
-            habbitNameTextField.centerXAnchor.constraint(equalTo: habbitLabel.centerXAnchor),
-            habbitNameTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            habbitNameTextField.heightAnchor.constraint(equalToConstant: 75),
             
             deleteButtonContainerView.leadingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor, constant: -41),
             deleteButtonContainerView.trailingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor),
             deleteButtonContainerView.topAnchor.constraint(equalTo: habbitNameTextField.topAnchor),
             deleteButtonContainerView.bottomAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor),
             deleteButtonContainerView.widthAnchor.constraint(equalToConstant: 41),
-                    
+            
             deleteButton.centerYAnchor.constraint(equalTo: habbitNameTextField.centerYAnchor),
             deleteButton.trailingAnchor.constraint(equalTo: habbitNameTextField.trailingAnchor, constant: -12),
             deleteButton.widthAnchor.constraint(equalToConstant: 17),
@@ -516,17 +714,11 @@ extension NewHabbitViewController {
             limitCharacterLabel.widthAnchor.constraint(equalToConstant: 286),
             limitCharacterLabel.heightAnchor.constraint(equalTo: habbitLabel.heightAnchor),
             
-            centralTableView.topAnchor.constraint(equalTo: habbitNameTextField.bottomAnchor, constant: 24),
-            centralTableView.centerXAnchor.constraint(equalTo: habbitNameTextField.centerXAnchor),
-            centralTableView.heightAnchor.constraint(equalToConstant: 150),
-            centralTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
             emojiCollectionView.topAnchor.constraint(equalTo: centralTableView.bottomAnchor, constant: 32),
             emojiCollectionView.centerXAnchor.constraint(equalTo: centralTableView.centerXAnchor),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 220),
             emojiCollectionView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
-
             colorCollectionView.topAnchor.constraint(equalTo: emojiCollectionView.bottomAnchor, constant: 47),
             colorCollectionView.centerXAnchor.constraint(equalTo: emojiCollectionView.centerXAnchor),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 220),
@@ -543,38 +735,28 @@ extension NewHabbitViewController {
             cancelButton.widthAnchor.constraint(equalToConstant: 161),
             cancelButton.heightAnchor.constraint(equalToConstant: 60)
         ])
-        scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
-        colorCollectionView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     }
-
     
-   private func isTrackerComplete() -> Bool {
-        guard let name = selectedName,
-              let category = selectedCategory,
-              !name.isEmpty,
-              !category.categoryName.isEmpty,
-              selectedEmoji != nil,
-              selectedColor != nil,
-              let selectedSchedule = selectedSchedule,
-              !selectedSchedule.isEmpty else { return false }
-        return true
+    private func createConstraintsForEditMode() {
+        NSLayoutConstraint.activate([
+            habbitNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 150),
+            habbitNameTextField.centerXAnchor.constraint(equalTo: habbitLabel.centerXAnchor),
+            habbitNameTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            habbitNameTextField.heightAnchor.constraint(equalToConstant: 75),
+        ])
     }
-}
-
-extension NewHabbitViewController: CategoriesDelegate {
-
-    func didSelectCategory(_ selectedCategory: TrackerCategory) {
-        self.selectedCategory = selectedCategory
-        guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
-        cell.subLabel.text = viewModel.currentNewCategoryName
-        cell.moveLabel()
-    }
-}
-
-extension NewHabbitViewController: ScheduleViewControllerDelegate {
     
-    func didSetSchedule(for weekDays: [WeekDay]) {
-        guard let cell = centralTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? NewHabbitCell else { fatalError() }
+    private func createConstraintsForCreateMode() {
+        NSLayoutConstraint.activate([
+            habbitNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 110),
+            habbitNameTextField.centerXAnchor.constraint(equalTo: habbitLabel.centerXAnchor),
+            habbitNameTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            habbitNameTextField.heightAnchor.constraint(equalToConstant: 75),
+        ])
+    }
+    
+    
+    func updateCellAppearance(for weekDays: [WeekDay], cell: NewHabbitCell) {
         if weekDays.count == WeekDay.allCases.count {
             cell.subLabel.text = "Каждый день"
             cell.moveLabel()
@@ -587,4 +769,40 @@ extension NewHabbitViewController: ScheduleViewControllerDelegate {
             selectedSchedule = weekDays
         }
     }
+    
+    private func isTrackerComplete() -> Bool {
+        guard let name = selectedName,
+              let category = selectedCategory,
+              !name.isEmpty,
+              !category.categoryName.isEmpty,
+              selectedEmoji != nil,
+              selectedColor != nil else { return false }
+        if let selectedTrackerType = selectedTrackerType, selectedTrackerType == .event {
+            return true
+        }
+        if let selectedSchedule = selectedSchedule, !selectedSchedule.isEmpty {
+            return true
+        }
+        return false
+    }
+}
+
+extension NewHabbitViewController: CategoriesDelegate {
+    
+    func didSelectCategory(_ selectedCategory: TrackerCategory) {
+        self.selectedCategory = selectedCategory
+        guard let cell = centralTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? NewHabbitCell else { fatalError() }
+        cell.subLabel.text = selectedCategory.categoryName
+        cell.moveLabel()
+    }
+}
+
+extension NewHabbitViewController: ScheduleViewControllerDelegate {
+    
+    func didSetSchedule(for weekDays: [WeekDay]) {
+        guard let cell = centralTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? NewHabbitCell else { fatalError() }
+        updateCellAppearance(for: weekDays, cell: cell)
+    }
+    
+    
 }

@@ -10,10 +10,17 @@ final class CategoriesViewController: UIViewController {
     var categories = [TrackerCategory]()
     
     weak var delegate: CategoriesDelegate?
-    private let viewModel = TrackerCategoryViewModel()
-    private let eventViewModel = EventViewModel()
+    private let viewModel: TrackerCategoryViewModel
     private var categoryTableViewHeightConstraint: NSLayoutConstraint?
     
+    init(viewModel: TrackerCategoryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     
     private let scrollView: UIScrollView = {
@@ -31,7 +38,7 @@ final class CategoriesViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         label.attributedText =
-        NSMutableAttributedString(string: "Категория",
+        NSMutableAttributedString(string: "category".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -48,7 +55,7 @@ final class CategoriesViewController: UIViewController {
         paragraphStyle.lineHeightMultiple = 1.26
         paragraphStyle.alignment = .center
         label.attributedText =
-        NSMutableAttributedString(string: "Привычки и события можно  объединить по смыслу", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        NSMutableAttributedString(string: "category_placeholder".localized, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         label.isHidden = false
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -85,7 +92,7 @@ final class CategoriesViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Добавить категорию",
+        let titleAtributedString = NSAttributedString(string: "add_category".localized,
                                                       attributes: titleAttribute)
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)
@@ -94,13 +101,13 @@ final class CategoriesViewController: UIViewController {
         return button
     }()
     
-
+    
     @objc func createCategory() {
-        let newCategoryVC = NewCategoryViewController(viewModel: viewModel, eventViewModel: eventViewModel)
+        let newCategoryVC = NewCategoryViewController(viewModel: viewModel)
         present(newCategoryVC, animated: true)
     }
     
-
+    
     private func bindCategoryViewModel() {
         viewModel.$categories.bind { [weak self] trackerCategory in
             self?.categoryTableView.reloadData()
@@ -145,7 +152,7 @@ final class CategoriesViewController: UIViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
+            
             titleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 38),
             titleLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             titleLabel.widthAnchor.constraint(equalToConstant: 84),
@@ -173,7 +180,7 @@ final class CategoriesViewController: UIViewController {
         scrollView.contentSize = CGSize(width: view.bounds.width, height: view.bounds.height)
         categoryTableView.layoutIfNeeded()
     }
-
+    
 }
 
 extension CategoriesViewController: UITableViewDelegate {
@@ -185,7 +192,7 @@ extension CategoriesViewController: UITableViewDelegate {
         guard let categoryCell = categoryTableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as? CategoryCell else { fatalError() }
         let selectedCategories = viewModel.categories[indexPath.row]
         categoryCell.checkmarkImage.isHidden = false
-        delegate?.didSelectCategory(selectedCategories)
+        viewModel.didSelectTrackerCategory(category: selectedCategories)
         dismiss(animated: true)
     }
 }
@@ -201,6 +208,7 @@ extension CategoriesViewController: UITableViewDataSource {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         } else {
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.size.width, bottom: 0, right: 0)
+            (cell as? CategoryCell)?.roundCorners(corners: [.bottomRight, .bottomLeft], radius: 16)
         }
     }
     

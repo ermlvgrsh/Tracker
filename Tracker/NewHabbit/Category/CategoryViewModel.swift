@@ -1,7 +1,20 @@
 import Foundation
 
+protocol TrackerCategoryViewModelProtocol {
+    var categories: [TrackerCategory] { get }
+    var selectedCategory: TrackerCategory? { get }
+    var currentNewCategoryName: String { get }
+    var isPlaceholderHidden: Bool { get }
+    var isTableViewHidden: Bool { get }
+    
+    func bindCategory()
+    func didSelectTrackerCategory(category: TrackerCategory?)
+    func didSaveNewTrackerCategory(category: TrackerCategory, newCategoryName: String?)
+    func didCreateTrackerCategory()
+}
 
-final class TrackerCategoryViewModel {
+final class TrackerCategoryViewModel: TrackerCategoryViewModelProtocol {
+    
     private let trackerService = TrackerService.shared
     @Observable
     private(set) var categories: [TrackerCategory] = []

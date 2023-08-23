@@ -6,5 +6,6 @@ struct Tracker {
     let schedule: [WeekDay]?
     let color: UIColor
     let emoji: String
+    let isPinned: Bool
     let dayCounter: Int
 }

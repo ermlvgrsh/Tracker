@@ -1,20 +1,12 @@
 import UIKit
 
-
-protocol NewEventCategoryDelegate: AnyObject {
-    func didSaveEventCategory(_ category: IrregularEventCategory, namedCategory: String?)
-}
-
 final class NewCategoryViewController: UIViewController {
     
-    weak var eventDelegate: NewEventCategoryDelegate?
-    private let viewModel: TrackerCategoryViewModel
-    private let eventViewModel: EventViewModel
+    private let viewModel: TrackerCategoryViewModelProtocol
     var namedCategory: String?
     
-    init(viewModel: TrackerCategoryViewModel, eventViewModel: EventViewModel) {
+    init(viewModel: TrackerCategoryViewModelProtocol) {
         self.viewModel = viewModel
-        self.eventViewModel = eventViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -36,7 +28,7 @@ final class NewCategoryViewController: UIViewController {
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.15
         label.attributedText =
-        NSMutableAttributedString(string: "Новая категория",
+        NSMutableAttributedString(string: "new_category".localized,
                                   attributes: [NSAttributedString.Key.paragraphStyle : paragraphStyle])
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -44,7 +36,7 @@ final class NewCategoryViewController: UIViewController {
     
     lazy var categoryTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
+        textField.placeholder = "enter_category_name".localized
         textField.textColor = .black
         textField.layer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3).cgColor
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
@@ -56,23 +48,19 @@ final class NewCategoryViewController: UIViewController {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addTarget(self, action: #selector(textFieldDidChanged(_:)), for: .editingChanged)
         return textField
-     }()
-
+    }()
     
-
+    
+    
     
     @objc func doneButtonTapped() {
-         guard let categoryName = categoryTextField.text else { return }
-         if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
-             let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
-             viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
-         } else if let _ = presentingViewController?.presentingViewController as? IrregularEventViewController {
-  
-             let newEvent = IrregularEventCategory(categoryName: categoryName, irregularEvents: [])
-             eventViewModel.didSaveEventCategory(eventCategory: newEvent, newEventCategory: newEvent.categoryName)
-         }
-         dismiss(animated: true)
-     }
+        guard let categoryName = categoryTextField.text else { return }
+        if let _ = presentingViewController?.presentingViewController as? NewHabbitViewController {
+            let newCategory = TrackerCategory(categoryName: categoryName, trackers: [])
+            viewModel.didSaveNewTrackerCategory(category: newCategory, newCategoryName: newCategory.categoryName)
+        }
+        dismiss(animated: true)
+    }
     
     @objc func textFieldDidChanged(_ textfield: UITextField) {
         isTextFieldEmpty()
@@ -89,7 +77,7 @@ final class NewCategoryViewController: UIViewController {
             .font: UIFont.systemFont(ofSize: 17)
         ]
         
-        let titleAtributedString = NSAttributedString(string: "Готово",
+        let titleAtributedString = NSAttributedString(string: "done".localized,
                                                       attributes: titleAttribute)
         button.tintColor = .white
         button.setAttributedTitle(titleAtributedString, for: .normal)
@@ -101,8 +89,8 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-
-     }
+        
+    }
     
     func isTextFieldEmpty() {
         if categoryTextField.text?.isEmpty == false {
@@ -126,7 +114,7 @@ final class NewCategoryViewController: UIViewController {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        
+            
             newCategoryLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             newCategoryLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 38),
             newCategoryLabel.heightAnchor.constraint(equalToConstant: 22),
@@ -141,7 +129,7 @@ final class NewCategoryViewController: UIViewController {
             
             addCategory.widthAnchor.constraint(equalToConstant: 335),
             addCategory.heightAnchor.constraint(equalToConstant: 60)
-        
+            
         ])
     }
 }
@@ -154,5 +142,3 @@ extension NewCategoryViewController: UITextFieldDelegate {
         addDoneButtonToKeyboard()
     }
 }
-
-

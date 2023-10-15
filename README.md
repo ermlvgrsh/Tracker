@@ -2,7 +2,7 @@
 Tracker - The application helps users establish beneficial habits and track their adherence to these habits.
 
 ## **Link** 
-[Design Figma] (https://www.figma.com/file/owAO4CAPTJdpM1BZU5JHv7/Tracker-(YP)?node-id=1%3A60&mode=dev)
+[Design Figma](https://www.figma.com/file/owAO4CAPTJdpM1BZU5JHv7/Tracker-(YP)?node-id=1%3A60&mode=dev)
 
 ## **Application purpose**
 - Habit tracking by days of the week.
